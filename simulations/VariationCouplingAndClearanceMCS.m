@@ -208,6 +208,8 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
         save([savepath 'delta_omega_A_max.mat'],'delta_omega_A_max')
         save([savepath 'Resp_type_mt.mat'],'Resp_type_mt')
         save([savepath 'Resp_type_tuned.mat'],'Resp_type_tuned')
+        save([savepath 'qhat_mt.mat'],'qhat_mt')
+        save([savepath 'qhat_mt_std.mat'],'qhat_mt_std')
 
     end
 
@@ -233,6 +235,8 @@ save([savepath 'delta_omega_Aref_max.mat'],'delta_omega_Aref_max')
 save([savepath 'delta_omega_A_max.mat'],'delta_omega_A_max')
 save([savepath 'Resp_type_mt.mat'],'Resp_type_mt')
 save([savepath 'Resp_type_tuned.mat'],'Resp_type_tuned')
+save([savepath 'qhat_mt.mat'],'qhat_mt')
+save([savepath 'qhat_mt_std.mat'],'qhat_mt_std')
 
 
 figure(1)
