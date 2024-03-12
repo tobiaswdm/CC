@@ -23,7 +23,7 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-configuration = 'ConvMCS_kc0_01_sigmaomega_0_01_Gamma_0_33_k0_1';     % System configuration file
+configuration = 'test_timeint';     % System configuration file
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,6 +52,9 @@ switch simulation
     case 'ConvergenceMCS'
         fprintf('Running convergence study on MCS... \n')
         ConvergenceMCS;
+    case 'TimeSimulation'
+        fprintf('Running single time simulation... \n')
+        TimeSimulation;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')

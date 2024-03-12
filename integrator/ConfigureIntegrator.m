@@ -18,9 +18,9 @@ function sol = ConfigureIntegrator(sol,sys,exc,initial_condition,cut_transient,d
             sol.u0 = zeros(sys.N_s,1);
             sol.ua0 = zeros(sys.N_s,1);
             if strcmp(disorder,'tuned')
-                sol.qa0 = -0.99*sys.Gamma(1:2:2*sys.N_s)+sol.q0;
+                sol.qa0 = -0.99*sys.Gamma(1:2:2*sys.N_s)+q0;
             else
-                sol.qa0 = -0.99*sys.Gamma_mt(1:2:2*sys.N_s)+sol.q0;
+                sol.qa0 = -0.99*sys.Gamma_mt(1:2:2*sys.N_s)+q0;
             end
         case 'localized'
             q0 = zeros(sys.N_s,1);
@@ -29,9 +29,9 @@ function sol = ConfigureIntegrator(sol,sys,exc,initial_condition,cut_transient,d
             sol.u0 = zeros(sys.N_s,1);
             sol.ua0 = zeros(sys.N_s,1);
             if strcmp(disorder,'tuned')
-                sol.qa0 = -0.99*sys.Gamma(1:2:2*sys.N_s)+sol.q0;
+                sol.qa0 = -0.99*sys.Gamma(1:2:2*sys.N_s)+q0;
             else
-                sol.qa0 = -0.99*sys.Gamma_mt(1:2:2*sys.N_s)+sol.q0;
+                sol.qa0 = -0.99*sys.Gamma_mt(1:2:2*sys.N_s)+q0;
             end
     end
 
