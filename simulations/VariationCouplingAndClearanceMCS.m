@@ -240,10 +240,10 @@ save([savepath 'qhat_mt_std.mat'],'qhat_mt_std')
 
 
 figure(1)
-s=scatterhistogram(A_ref(1,:),squeeze(A(1,1,:)),'HistogramDisplayStyle','bar');
+s=scatterhistogram(squeeze(A(1,1,:)),A_ref(1,:),'HistogramDisplayStyle','bar');
 s.Color = {color.ies};
-xlabel('$A_\mathrm{ref}$')
-ylabel('$A$')
+xlabel('$A$')
+ylabel('$A_\mathrm{ref}$')
 title(['Correlation: ' num2str(corr(A_ref(1,:)',squeeze(A(1,1,:))))])
 savefig([savepath 'A_A_ref_relation.fig'])
 
@@ -419,6 +419,15 @@ ylabel('PDF')
 title('Solution types')
 axis tight;
 savefig([savepath 'Resp_type_mt.fig'])
+
+figure(7)
+s=scatterhistogram(squeeze(qhat_mt(1,1,:))/sys.qref,A_ref(1,:),'HistogramDisplayStyle','bar');
+s.Color = {color.ies};
+xlabel('$\mathrm{max}_j \left\{ \hat{q}_j^\ast \right\} / \hat{q}_\mathrm{ref}$')
+ylabel('$A_\mathrm{ref}$')
+title(['Correlation: ' num2str(corr(A_ref(1,:)',squeeze(qhat_mt(1,1,:))/sys.qref))])
+savefig([savepath 'qhat_A_ref_relation.fig'])
+
 
 
 function parsave(savepath_backup,i,j,k,qhat_tuned, qhat_tuned_std, N_sipp_tuned, qhat_mt, qhat_std_mt, N_sipp_mt)
