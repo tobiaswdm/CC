@@ -1,9 +1,9 @@
-function fighandle = DrawDispersion(sys,color,savepath)
+function DrawDispersion(sys,color,savepath)
 
 k_continuous =linspace(0,floor(sys.N_s/2),100*sys.N_s);
 [r_continuous,~] = DispersionRelation(k_continuous,sys);
 
-fighandle = figure;
+figure;
 plot(k_continuous,r_continuous,'LineWidth',1.5,'Color',color.reference)
 hold on;
 plot(sys.k,sys.r_k,'o','Color',color.reference,'MarkerSize',8,'LineWidth',1.5)

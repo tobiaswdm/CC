@@ -105,11 +105,13 @@ simsetup.ConvergenceMCS.r_scale = [0.98 1.03];
 % Steps in frequency stepping interval
 simsetup.ConvergenceMCS.N_rSteps = 50;
 
+% =========================================================================
+% Singel Time Simulation
+% =========================================================================
 
-
-
-
-
-
-
-
+% Type of mistuning - 'tuned', 'mistuned_defined' or 'mistuned'
+simsetup.TimeSimulation.disorder = 'mistuned';
+% Cut transient response in the beginning?
+simsetup.TimeSimulation.cut_transient = true;
+% Initial conditions - 'random', 'zero' or 'localized'
+simsetup.TimeSimulation.initial_conditions = 'random';
