@@ -280,6 +280,44 @@ if (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
     zlim([-inf inf])
     savefig([savepath 'qhat_removed.fig'])
 
+    % Magnification factor Fixed absorber
+    figure(4);
+    surf(XX,YY,qhat_fixed./qhat_tuned,'EdgeAlpha',0)
+    hold on;
+    title('Magnification fixed absorber')
+    box on;
+    colormap(1-pink)
+    xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+    ylabel('$\kappa_\mathrm{c}$')
+    zlabel('$A$')
+    set(gca,'XScale','log')
+    set(gca,'YScale','log')
+    xlim([simsetup.VariationCouplingAndClearance.Range_GammaScale(1),...
+         simsetup.VariationCouplingAndClearance.Range_GammaScale(2)])
+    ylim([simsetup.VariationCouplingAndClearance.Range_kappa_c(1),...
+         simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
+    zlim([-inf inf])
+    savefig([savepath 'A_fixed.fig'])
+
+    % Magnification factor Removed absorber
+    figure(5);
+    surf(XX,YY,qhat_removed./qhat_tuned,'EdgeAlpha',0)
+    hold on;
+    title('Magnification removed absorber')
+    box on;
+    colormap(1-pink)
+    xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+    ylabel('$\kappa_\mathrm{c}$')
+    zlabel('$A$')
+    set(gca,'XScale','log')
+    set(gca,'YScale','log')
+    xlim([simsetup.VariationCouplingAndClearance.Range_GammaScale(1),...
+         simsetup.VariationCouplingAndClearance.Range_GammaScale(2)])
+    ylim([simsetup.VariationCouplingAndClearance.Range_kappa_c(1),...
+         simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
+    zlim([-inf inf])
+    savefig([savepath 'A_removed.fig'])
+
 elseif (simsetup.VariationCouplingAndClearance.Number_GammaScale==1 && ...
         simsetup.VariationCouplingAndClearance.Number_kappa_c>1)
 
@@ -324,6 +362,34 @@ elseif (simsetup.VariationCouplingAndClearance.Number_GammaScale==1 && ...
          simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
     ylim([-inf inf])
     savefig([savepath 'qhat_removed.fig'])
+
+    % Fixed absorber
+    figure(4);
+    plot(kappa_c,qhat_fixed./qhat_tuned,'LineWidth',1.5,'Color',color.ies)
+    hold on;
+    title('Amplification fixed absorber')
+    box on;
+    xlabel('$\kappa_\mathrm{c}$')
+    ylabel('$A$')
+    set(gca,'XScale','log')
+    xlim([simsetup.VariationCouplingAndClearance.Range_kappa_c(1),...
+         simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
+    ylim([-inf inf])
+    savefig([savepath 'A_fixed.fig'])
+   
+     % Fixed absorber
+    figure(5);
+    plot(kappa_c,qhat_removed./qhat_tuned,'LineWidth',1.5,'Color',color.ies)
+    hold on;
+    title('Amplification removed absorber')
+    box on;
+    xlabel('$\kappa_\mathrm{c}$')
+    ylabel('$A$')
+    set(gca,'XScale','log')
+    xlim([simsetup.VariationCouplingAndClearance.Range_kappa_c(1),...
+         simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
+    ylim([-inf inf])
+    savefig([savepath 'A_removed.fig'])
 
 elseif (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
         simsetup.VariationCouplingAndClearance.Number_kappa_c==1)
@@ -376,4 +442,36 @@ elseif (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
     xlim([simsetup.VariationCouplingAndClearance.Range_GammaScale(1),...
          simsetup.VariationCouplingAndClearance.Range_GammaScale(2)])
     savefig([savepath 'qhat_removed.fig'])
+
+    % Fixed abosrber
+    figure(4);
+    plot(Gamma_Scale,qhat_fixed./qhat_tuned,'LineWidth',1.5,'Color',color.ies)
+    hold on;
+    scatter(Gamma_Scale_min_fixed,qhat_min_fixed,50,'MarkerEdgeColor',color.show,...
+        'MarkerFaceColor',color.show);
+    title('Amplification fixed absorber')
+    box on;
+    xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+    ylabel('$A$')
+    set(gca,'XScale','log')
+    axis tight;
+    xlim([simsetup.VariationCouplingAndClearance.Range_GammaScale(1),...
+         simsetup.VariationCouplingAndClearance.Range_GammaScale(2)])
+    savefig([savepath 'A_fixed.fig'])
+    
+    % Removed absorber
+    figure(5);
+    plot(Gamma_Scale,qhat_removed./qhat_tuned,'LineWidth',1.5,'Color',color.ies)
+    hold on;
+    scatter(Gamma_Scale_min_removed,qhat_min_removed,50,'MarkerEdgeColor',color.show,...
+        'MarkerFaceColor',color.show);
+    title('Amplification removed absorber')
+    box on;
+    xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+    ylabel('$A$')
+    set(gca,'XScale','log')
+    axis tight;
+    xlim([simsetup.VariationCouplingAndClearance.Range_GammaScale(1),...
+         simsetup.VariationCouplingAndClearance.Range_GammaScale(2)])
+    savefig([savepath 'A_removed.fig'])
 end
