@@ -34,24 +34,25 @@ r_perm = permute(r,[1 3 2]);
 % Linear transfer function matrix
 switch disorder
     case 'tuned'
-        H = pageinv(-r_perm.^2 .* sys.M + 1i*r_perm.*sys.C + sys.K);
+        H = pageinv(-r_perm.^2 .* sys.mu + 1i*r_perm.*sys.beta + sys.kappa);
+        Hnn = pagemtimes(sys.Phi(1,:),H);
+        Hnn = repmat(squeeze(pagemtimes(Hnn,transpose(sys.Phi(1,:)))),[1,Nxi]);
         Q_nn_lin = repmat(transpose((-(1-sys.epsilon_a)*r.^2 +...
                 2*sys.D*1i*sys.r_k(exc.k+1)*r + ....
                 sys.r_k(exc.k+1)^2).^-1),[1,Nxi]);
     case 'mistuned'
         H = pageinv(-r_perm.^2 .* sys.M_mt + 1i*r_perm.*sys.C + sys.K_mt);
+        Hnn = repmat(squeeze(H(1,1,:)),[1 Nxi]);
         Q_lin = pagemtimes(H(1,:,:),exc.F);
         Q_nn_lin = repmat(squeze(Q_lin),[1,Nxi]);
     otherwise
         error('Case not defined.')
 end
-Hnn = repmat(squeeze(H(1,1,:)),[1 Nxi]);
-
 
 Gamma_Scale_Exp = Q_nn_lin./(Xi + Hnn.*Pi);
 
-Gamma_Scale = abs(Gamma_Scale_Exp);
-Complex_Phase = angle(Gamma_Scale);
+Gamma_Scale = abs(Gamma_Scale_Exp); % Clearance
+Complex_Phase = angle(Gamma_Scale); % Phase
 
 end
 
