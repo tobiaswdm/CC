@@ -1,4 +1,4 @@
-function [Q] = RecoverCondensedDOFs(sys,exc,r,xi,phase)
+function [Q] = RecoverCondensedDOFs(sys,exc,r,xi,disorder)
 %RECOVERCONDENSEDDOFS Compute the Fourier Coefficients of remaining
 % linear DOFs that are ignored in Condensation Equation
 %   r - [1, N] vector of frequencies
@@ -7,7 +7,6 @@ function [Q] = RecoverCondensedDOFs(sys,exc,r,xi,phase)
 
 r  = permute(r,[1 3 2]);
 xi  = permute(xi,[1 3 2]);
-phase = permute(phase,[1 3 2]);
 
 % Auxilliary Variable
 rho = (2/pi) * (1-sys.eN) / (1+sys.eN);
@@ -16,12 +15,12 @@ rho = (2/pi) * (1-sys.eN) / (1+sys.eN);
 theta = (1+sqrt((1+rho^2)*xi.^2 - rho^2))/(1+rho^2);
 
 % Phase lag of absorber - exp(-1i * Delta)
-expDelta = cos((theta-1)./xi) - 1i*sin(rho*theta./xi);
+expDelta = (theta-1)./xi - 1i*rho*theta./xi;
 
 % Fourier Coefficient of 1:1 resonance
 Pi = zeros(sys.N_s,1,length(r));
-Pi(1,1,:) = -8*sys.epsilon_a*sys.qref*sys.Gamma_Scale*exp(1i*phase)....
-    .*theta.*expDelta.*r.^2 / pi^2;
+Pi(1,1,:) = -8*sys.epsilon_a*....
+    theta.*expDelta.*r.^2 / pi^2;
 
 % Linear transfer function matrix
 switch disorder
@@ -38,6 +37,9 @@ switch disorder
     otherwise
         error('Case not defined.')
 end
+
+Phase = angle(Q_lin(1,1,:)./(xi + H(1,1,:).*Pi(1,1,:)));
+Pi(1,1,:) = sys.qref*sys.Gamma_Scale*Pi(1,1,:).*exp(1i*Phase);
 
 Q = squeeze(Q_lin - pagemtimes(H,Pi));
 

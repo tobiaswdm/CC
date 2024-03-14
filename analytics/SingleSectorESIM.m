@@ -1,4 +1,4 @@
-function [Gamma_Scale,Complex_Phase,Xi,R] = SingleSectorESIM(xi,r,sys,exc,disorder)
+function [Gamma_Scale,Xi,R] = SingleSectorESIM(xi,r,sys,exc,disorder)
 % Determine the extendend SIM (ESIM) of the localization in a single sector
 % for either the tuned or the mistuned configuration
 %   
@@ -23,7 +23,7 @@ rho = (2/pi) * (1-sys.eN) / (1+sys.eN);
 Theta = repmat((1+sqrt((1+rho^2)*xi.^2 - rho^2))/(1+rho^2),[Nr,1]);
 
 % Phase lag of absorber - exp(-1i * Delta)
-expDelta = cos((Theta-1)./Xi) - 1i*sin(rho*Theta./Xi);
+expDelta = (Theta-1)./Xi - 1i*rho*Theta./Xi;
 
 % Fourier Coefficient of 1:1 resonance
 Pi = -8*sys.epsilon_a*Theta.*expDelta.*R.^2 / pi^2;
@@ -49,10 +49,8 @@ switch disorder
         error('Case not defined.')
 end
 
-Gamma_Exp = Q_nn_lin./(Xi + Hnn.*Pi);
+Gamma_Scale = abs(Q_nn_lin./(Xi + Hnn.*Pi))/sys.qref; % Clearance
 
-Gamma_Scale = abs(Gamma_Exp)/sys.qref; % Clearance
-Complex_Phase = angle(Gamma_Exp); % Phase
 
 end
 

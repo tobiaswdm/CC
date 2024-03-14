@@ -23,7 +23,7 @@ r = linspace(simsetup.LocalizationSingleSectorAnalytical.r_range(1),...
     simsetup.LocalizationSingleSectorAnalytical.Nr);
 
 % ESIM
-[Gamma_Scale,~,Xi,R] = SingleSectorESIM(xi,r,sys,exc,'tuned');
+[Gamma_Scale,Xi,R] = SingleSectorESIM(xi,r,sys,exc,'tuned');
 
 % Plot
 figure(2);
@@ -55,7 +55,7 @@ axis tight;
 %% Compute example of mistuned manifold
 
 [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
-[Gamma_Scale_mt,~,Xi,R] = SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
+[Gamma_Scale_mt,Xi,R] = SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
 
 % Plot
 figure(4);
@@ -89,7 +89,7 @@ xi_max = 0;
 for i = 1:simsetup.LocalizationSingleSectorAnalytical.N_MCS
     
     [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
-    [Gamma_Scale_mt,~,Xi,R] = SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
+    [Gamma_Scale_mt,Xi,R] = SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
 
     figure(6)
     hold on;
@@ -102,10 +102,31 @@ for i = 1:simsetup.LocalizationSingleSectorAnalytical.N_MCS
         'LineWidth',.5,'EdgeColor',color.background,....
         'HandleVisibility','off');
     end
-    xi_max_temp = max(xi_max,max(c(2,c(2,:)~=ceil(c(2,:)))));
+    c(:,c(2,:)==ceil(c(2,:))) = NaN;
+    xi_max_temp = max(xi_max,max(c(2,:)));
     if xi_max_temp > xi_max
         xi_max = xi_max_temp;
     end
+    
+    % Recover remaining linear DOFs
+    [Q] = RecoverCondensedDOFs(sys_mt,exc_mt,c(1,:),c(2,:),'mistuned');
+    
+    % Check for kinematic constraint
+    index_kin_constr = all(abs(Q(2:end,:)) < sys_mt.Gamma(3:2:end),1);
+    Q(:,~index_kin_constr) = NaN;
+
+    figure(7);
+    hold on;
+    if i == 1
+        plot(c(1,:),max(abs(Q)/sys.qref,[],1),...
+            'LineWidth',.5,'Color',color.background,'DisplayName', ...
+            'Mistuned')
+    else
+        plot(c(1,index_kin_constr),max(abs(Q(:,index_kin_constr))/sys.qref,[],1),...
+            'LineWidth',.5,'Color',color.background,...
+            'HandleVisibility', 'off')
+    end
+    axis tight;
     
 
 end
@@ -125,5 +146,26 @@ box on
 xlabel('$r$')
 ylabel('$\xi$')
 ylim([xi_min,xi_max])
+legend;
+title(['$\Gamma / \hat{q}_\mathrm{ref} = ' num2str(sys.Gamma_Scale) '$'])
+
+c(2,c(2,:)==ceil(c(2,:))) = NaN;
+% Recover remaining linear DOFs tuned system
+[Q] = RecoverCondensedDOFs(sys,exc,c(1,:),c(2,:),'tuned');
+% Check for kinematic constraint
+index_kin_constr = all(abs(Q(2:end,:)) < sys.Gamma(3:2:end),1);
+Q(:,~index_kin_constr) = NaN;
+
+
+figure(7)
+hold on;
+plot(c(1,:),max(abs(Q)/sys.qref,[],1),...
+            'LineWidth',1.5,'Color',color.ies,'DisplayName', ...
+            'Tuned')
+axis tight;
+set(gca,'YScale','log')
+box on
+xlabel('$r$')
+ylabel('$\hat{q}/\hat{q}_\mathrm{ref}$')
 legend;
 title(['$\Gamma / \hat{q}_\mathrm{ref} = ' num2str(sys.Gamma_Scale) '$'])
