@@ -84,6 +84,24 @@ ylabel('$\xi$')
 set(gca,'YScale','log')
 axis tight;
 
+% Linear FRF
+q_fixed = abs(ComputeLinearResponse(r,sys,exc,'tuned','fixed_absorbers'));
+q_fixed = q_fixed(1,:);
+q_removed = abs(ComputeLinearResponse(r,sys,exc,'tuned','removed_absorbers'));
+q_removed = q_removed(1,:);
+
+figure(7);
+hold on;
+plot(r,q_fixed/sys.qref,...
+    'LineWidth',.5,'Color',color.reference,'DisplayName', ...
+    'Fixed abs.')
+plot(r,q_removed/sys.qref,'-.',...
+    'LineWidth',.5,'Color',color.reference,'DisplayName', ...
+    'Removed abs.')
+
+axis tight;
+
+
 %% Different realizations of FRFs at fixed clearances
 xi_max = 0;
 for i = 1:simsetup.LocalizationSingleSectorAnalytical.N_MCS
@@ -102,27 +120,19 @@ for i = 1:simsetup.LocalizationSingleSectorAnalytical.N_MCS
         'LineWidth',.5,'EdgeColor',color.background,....
         'HandleVisibility','off');
     end
-    c(:,c(2,:)==ceil(c(2,:))) = NaN;
-    xi_max_temp = max(xi_max,max(c(2,:)));
-    if xi_max_temp > xi_max
-        xi_max = xi_max_temp;
-    end
-    
-    % Recover remaining linear DOFs
-    [Q] = RecoverCondensedDOFs(sys_mt,exc_mt,c(1,:),c(2,:),'mistuned');
-    
-    % Check for kinematic constraint
-    index_kin_constr = all(abs(Q(2:end,:)) < sys_mt.Gamma(3:2:end),1);
-    Q(:,~index_kin_constr) = NaN;
+
+    % Recover maximum amplitude
+    [qhat_max,~,r_plot] = ...
+        LocalizedFrequencyAmplitudeCurve(c,sys_mt,exc_mt,'mistuned');
 
     figure(7);
     hold on;
     if i == 1
-        plot(c(1,:),max(abs(Q)/sys.qref,[],1),...
+        plot(r_plot,qhat_max/sys.qref,...
             'LineWidth',.5,'Color',color.background,'DisplayName', ...
             'Mistuned')
     else
-        plot(c(1,index_kin_constr),max(abs(Q(:,index_kin_constr))/sys.qref,[],1),...
+        plot(r_plot,qhat_max/sys.qref,...
             'LineWidth',.5,'Color',color.background,...
             'HandleVisibility', 'off')
     end
@@ -134,7 +144,7 @@ end
 figure(6)
 hold on;
 c=contour(R,Xi,Gamma_Scale,sys.Gamma_Scale*[1 1],...
-        'LineWidth',1.5,'EdgeColor',color.ies,...
+        'LineWidth',2.5,'EdgeColor',color.ies,...
         'DisplayName','Tuned');
 xi_max_temp = max(xi_max,max(c(2,c(2,:)~=ceil(c(2,:)))));
 if xi_max_temp > xi_max
@@ -149,19 +159,18 @@ ylim([xi_min,xi_max])
 legend;
 title(['$\Gamma / \hat{q}_\mathrm{ref} = ' num2str(sys.Gamma_Scale) '$'])
 
-c(2,c(2,:)==ceil(c(2,:))) = NaN;
-% Recover remaining linear DOFs tuned system
-[Q] = RecoverCondensedDOFs(sys,exc,c(1,:),c(2,:),'tuned');
-% Check for kinematic constraint
-index_kin_constr = all(abs(Q(2:end,:)) < sys.Gamma(3:2:end),1);
-Q(:,~index_kin_constr) = NaN;
-
+% Recover maximum amplitude
+[qhat_max,qhat_max_violated,r_plot] = ...
+    LocalizedFrequencyAmplitudeCurve(c,sys,exc,'tuned');
 
 figure(7)
 hold on;
-plot(c(1,:),max(abs(Q)/sys.qref,[],1),...
-            'LineWidth',1.5,'Color',color.ies,'DisplayName', ...
+plot(r_plot,qhat_max/sys.qref,...
+            'LineWidth',2.5,'Color',color.ies,'DisplayName', ...
             'Tuned')
+plot(r_plot,qhat_max_violated/sys.qref,':',...
+            'LineWidth',2.5,'Color',color.show,'DisplayName', ...
+            'Tuned - Viol. kin. constr.')
 axis tight;
 set(gca,'YScale','log')
 box on
