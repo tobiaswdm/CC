@@ -12,6 +12,7 @@ addpath('.\simulations\')   % Path for simulation cases
 addpath('.\integrator\')    % Path for Time integration schemes
 addpath('.\postprocessing\')% Path for Post processings
 addpath('.\statistics\')    % Path for Statistics
+addpath('.\analytics\')     % Path for Anayltical methods
 fprintf('Initializing data structures... \n')
 InitStructs;
 
@@ -23,7 +24,7 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-configuration = 'test_timeint';     % System configuration file
+configuration = 'test_ESIM';     % System configuration file
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -40,9 +41,6 @@ run([configuration '.m'])
 
 % Run desired simulation
 switch simulation
-    case 'convergence study'
-        fprintf('Running convergence study... \n')
-        convergencestudy;
     case 'VariationCouplingAndClearanceMCS'
         fprintf('Running Variation of Coupling and Clearance with MCS... \n')
         VariationCouplingAndClearanceMCS;
@@ -55,6 +53,9 @@ switch simulation
     case 'TimeSimulation'
         fprintf('Running single time simulation... \n')
         TimeSimulation;
+    case 'LocalizationSingleSectorAnalytical'
+        fprintf('Running analytical study on localization in a single sector... \n')
+        LocalizationSingleSectorAnalytical;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')

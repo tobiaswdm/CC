@@ -106,7 +106,7 @@ simsetup.ConvergenceMCS.r_scale = [0.98 1.03];
 simsetup.ConvergenceMCS.N_rSteps = 50;
 
 % =========================================================================
-% Singel Time Simulation
+% Single Time Simulation
 % =========================================================================
 
 % Type of mistuning - 'tuned', 'mistuned_defined' or 'mistuned'
@@ -115,3 +115,18 @@ simsetup.TimeSimulation.disorder = 'mistuned';
 simsetup.TimeSimulation.cut_transient = true;
 % Initial conditions - 'random', 'zero' or 'localized'
 simsetup.TimeSimulation.initial_conditions = 'random';
+
+% =========================================================================
+% Analytical Study of Localization in single sector
+% =========================================================================
+
+% Maximum of clearance normalized amplitude
+simsetup.LocalizationSingleSectorAnalytical.xi_max = 20;
+% Number of samples of clearance normalized amplitude
+simsetup.LocalizationSingleSectorAnalytical.Nxi = 1000;
+% Range of excitaiton frequencies
+simsetup.LocalizationSingleSectorAnalytical.r_range = [0.9 1.1];
+% Number of samples of excitation frequencies
+simsetup.LocalizationSingleSectorAnalytical.Nr = 1000;
+% Number of Mistuning realizations for frequency amplitude curves
+simsetup.LocalizationSingleSectorAnalytical.N_MCS = 10;

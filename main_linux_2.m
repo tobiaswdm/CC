@@ -44,9 +44,6 @@ run([configuration '.m'])
 
 % Run desired simulation
 switch simulation
-    case 'convergence study'
-        fprintf('Running convergence study... \n')
-        convergencestudy;
     case 'VariationCouplingAndClearanceMCS'
         fprintf('Running Variation of Coupling and Clearance with MCS... \n')
         VariationCouplingAndClearanceMCS;
@@ -56,9 +53,13 @@ switch simulation
     case 'ConvergenceMCS'
         fprintf('Running convergence study on MCS... \n')
         ConvergenceMCS;
+    case 'TimeSimulation'
+        fprintf('Running single time simulation... \n')
+        TimeSimulation;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')
 end
+
 
 [~,~] = rmdir(savepath_backup,'s');

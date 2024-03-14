@@ -23,10 +23,10 @@ rho = (2/pi) * (1-sys.eN) / (1+sys.eN);
 Theta = repmat((1+sqrt((1+rho^2)*xi.^2 - rho^2))/(1+rho^2),[Nr,1]);
 
 % Phase lag of absorber - exp(-1i * Delta)
-expDelta = repmat(cos((Theta-1)./xi) - 1i*sin(rho*Theta./xi),[Nr,1]);
+expDelta = cos((Theta-1)./Xi) - 1i*sin(rho*Theta./Xi);
 
 % Fourier Coefficient of 1:1 resonance
-Pi = -8*sys.epsilon_a*Theta*expDelta.*R.^2 / pi^2;
+Pi = -8*sys.epsilon_a*Theta.*expDelta.*R.^2 / pi^2;
 
 % Frequencies
 r_perm = permute(r,[1 3 2]);
@@ -44,15 +44,15 @@ switch disorder
         H = pageinv(-r_perm.^2 .* sys.M_mt + 1i*r_perm.*sys.C + sys.K_mt);
         Hnn = repmat(squeeze(H(1,1,:)),[1 Nxi]);
         Q_lin = pagemtimes(H(1,:,:),exc.F);
-        Q_nn_lin = repmat(squeze(Q_lin),[1,Nxi]);
+        Q_nn_lin = repmat(squeeze(Q_lin),[1,Nxi]);
     otherwise
         error('Case not defined.')
 end
 
-Gamma_Scale_Exp = Q_nn_lin./(Xi + Hnn.*Pi);
+Gamma_Exp = Q_nn_lin./(Xi + Hnn.*Pi);
 
-Gamma_Scale = abs(Gamma_Scale_Exp); % Clearance
-Complex_Phase = angle(Gamma_Scale); % Phase
+Gamma_Scale = abs(Gamma_Exp)/sys.qref; % Clearance
+Complex_Phase = angle(Gamma_Exp); % Phase
 
 end
 
