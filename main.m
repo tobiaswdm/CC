@@ -12,7 +12,7 @@ addpath('.\simulations\')   % Path for simulation cases
 addpath('.\integrator\')    % Path for Time integration schemes
 addpath('.\postprocessing\')% Path for Post processings
 addpath('.\statistics\')    % Path for Statistics
-addpath('.\analytics\')     % Path for Anayltical methods
+addpath('.\analytics\')     % Path for Analytical methods
 fprintf('Initializing data structures... \n')
 InitStructs;
 
