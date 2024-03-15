@@ -37,7 +37,7 @@ switch disorder
         % Phase of nonlinear DOF
         Phase = angle(Q_lin(1,1,:)./(xi + H(1,1,:).*Pi(1,1,:)));
         % Fourier Coefficient contact forces
-        Pi(1,1,:) = sys.qref*sys.Gamma_Scale*Pi(1,1,:).*exp(1i*Phase);
+        Pi(1,1,:) = sys.Gamma(1)*Pi(1,1,:).*exp(1i*Phase);
     case 'mistuned'
         % Transfer function matrix with removed absorbers
         H = pageinv(-r.^2 .* sys.M_mt + 1i*r.*sys.C + sys.K_mt);
@@ -46,8 +46,7 @@ switch disorder
         % Phase of nonlinear DOF
         Phase = angle(Q_lin(1,1,:)./(xi + H(1,1,:).*Pi(1,1,:)));
         % Fourier Coefficient contact forces
-        Pi(1,1,:) = sys.qref*sys.Gamma_Scale*(1+sys.delta_g(1))*...
-            Pi(1,1,:).*exp(1i*Phase);
+        Pi(1,1,:) = sys.Gamma_mt(1)*Pi(1,1,:).*exp(1i*Phase);
     otherwise
         error('Case not defined.')
 end

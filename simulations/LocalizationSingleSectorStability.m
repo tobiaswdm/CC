@@ -97,6 +97,10 @@ scatter(r_num,qhat_practically_stable/sys.qref,50,'pentagram',...
     'MarkerFaceColor',myColors('green'),'MarkerEdgeColor','k',...
     'Displayname','Pract. Stable')
 set(gca,'YScale','log')
+axis tight;
+box on;
+xlabel('$r$')
+ylabel('$\hat{q}/\hat{q}_\mathrm{ref}$')
 
 
 

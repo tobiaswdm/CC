@@ -1,4 +1,5 @@
-function [qhat_max,qhat_max_violated,r] = LocalizedFrequencyAmplitudeCurve(c,sys,exc,disorder)
+function [qhat_max,qhat_max_violated,qhat_localized,r] = ...
+    LocalizedFrequencyAmplitudeCurve(c,sys,exc,disorder)
 %LOCALIZEDFREQUENCYAMPLITUDECURVE Determine the different parts of
 % localized frequency amplitude curve from contour estimation c
 % c - contour of ESIM
@@ -29,9 +30,11 @@ switch disorder
     case 'tuned'
         qhat_max_check(indices) = all(qhat(2:end,:)<...
             (sys.Gamma_Scale*sys.qref),1);
+        qhat_localized = sys.Gamma(1)*xi;
     case 'mistuned'
         qhat_max_check(indices) = all(qhat(2:end,:)<...
             sys.Gamma_mt(3:2:end),1);
+        qhat_localized = sys.Gamma_mt(1)*xi;
     otherwise
         error('Case not defined.')
 end

@@ -85,10 +85,10 @@ set(gca,'YScale','log')
 axis tight;
 
 % Linear FRF
-q_fixed = abs(ComputeLinearResponse(r,sys,exc,'tuned','fixed_absorbers'));
-q_fixed = q_fixed(1,:);
-q_removed = abs(ComputeLinearResponse(r,sys,exc,'tuned','removed_absorbers'));
-q_removed = q_removed(1,:);
+q_fixed = ComputeLinearResponse(r,sys,exc,'tuned','fixed_absorbers');
+q_fixed = abs(q_fixed(1,:));
+q_removed = ComputeLinearResponse(r,sys,exc,'tuned','removed_absorbers');
+q_removed = abs(q_removed(1,:));
 
 figure(7);
 hold on;
@@ -121,7 +121,7 @@ for i = 1:simsetup.LocalizationSingleSectorAnalytical.N_MCS
     end
 
     % Recover maximum amplitude
-    [qhat_max,~,r_plot] = ...
+    [qhat_max,~,~,r_plot] = ...
         LocalizedFrequencyAmplitudeCurve(c,sys_mt,exc_mt,'mistuned');
 
     figure(7);
@@ -159,7 +159,7 @@ legend;
 title(['$\Gamma / \hat{q}_\mathrm{ref} = ' num2str(sys.Gamma_Scale) '$'])
 
 % Recover maximum amplitude
-[qhat_max,qhat_max_violated,r_plot] = ...
+[qhat_max,qhat_max_violated,~,r_plot] = ...
     LocalizedFrequencyAmplitudeCurve(c,sys,exc,'tuned');
 
 figure(7)
