@@ -63,16 +63,16 @@ axis tight;
 c = contourc(r,xi,Gamma_Scale',[sys.Gamma_Scale sys.Gamma_Scale]);
 
 % Determine max amplitude FRF
-[qhat_max,qhat_max_violated,r_plot] = ...
+[qhat_max,qhat_max_violated,~,r_plot] = ...
     LocalizedFrequencyAmplitudeCurve(c,sys,exc,'tuned');
 
 % Coarsen contour for stability analysis
-[c_coarse] = CoarsenContour(c,...
+c = CoarsenContour(c,...
     simsetup.LocalizationSingleSectorStability.stepsize);
 
 % Study asymptotic and practical stability of tuned system
 [qhat_practically_stable,qhat_stable,qhat_unstable,r_num] =...
-    StabilityAnalysis(c_coarse,sys,sol,exc,'tuned',true,true);
+    StabilityAnalysis(c,sys,sol,exc,'tuned',true,true);
 
 
 figure(4);
@@ -103,5 +103,34 @@ xlabel('$r$')
 ylabel('$\hat{q}/\hat{q}_\mathrm{ref}$')
 
 
+%% Study realizations of mistuned systems
 
+for i = 1:simsetup.LocalizationSingleSectorStability.N_MCS
+
+    % Build mistuned system
+    [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
+    % Determine mistuned ESIM
+    [Gamma_Scale_mt,~,~] = ...
+        SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
+
+    % Get Level curves at clearance
+    c = contourc(r,xi,Gamma_Scale_mt',...
+        [sys_mt.Gamma_Scale sys_mt.Gamma_Scale]*(1+sys_mt.delta_g(1)));
+
+    % Coarsen contour for stability analysis
+    c = CoarsenContour(c,...
+        simsetup.LocalizationSingleSectorStability.stepsize);
+
+    % Study asymptotic and practical stability of tuned system
+    [qhat_practically_stable,~,~,r_num] =...
+        StabilityAnalysis(c,sys_mt,sol,exc_mt,'mistuned',false,true);
+    
+    % Scatter practically stable solutions
+    figure(4);
+    hold on;
+    scatter(r_num,qhat_practically_stable/sys.qref,20,'square',...
+    'MarkerFaceColor',color.iesabsorber,'MarkerEdgeColor','k',...
+    'Displayname','Pract. Stable')
+
+end
 
