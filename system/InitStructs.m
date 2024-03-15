@@ -145,3 +145,5 @@ simsetup.LocalizationSingleSectorStability.r_range = [0.9 1.1];
 simsetup.LocalizationSingleSectorStability.Nr = 1000;
 % Number of Mistuning realizations for frequency amplitude curves
 simsetup.LocalizationSingleSectorStability.N_MCS = 10;
+% Take every stepsize-th point of contour for stability analysis
+simsetup.LocalizationSingleSectorStability.stepsize = 200;

@@ -57,6 +57,14 @@ c = contourc(r,xi,Gamma_Scale,[sys.Gamma_Scale sys.Gamma_Scale]);
 [qhat_max,qhat_max_violated,r_plot] = ...
     LocalizedFrequencyAmplitudeCurve(c,sys,exc,'tuned');
 
+% Coarsen contour for stability analysis
+[c_coarse] = CoarsenContour(c,...
+    simsetup.LocalizationSingleSectorStability.stepsize);
+
+% Study asymptotic and practical stability of tuned system
+[qhat_practically_stable,qhat_stable,qhat_unstable,r] =...
+    StabilityAnalysis(c,sys,sol,exc,'tuned',true,true);
+
 
 
 

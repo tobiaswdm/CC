@@ -43,6 +43,5 @@ qhat_max_violated(~qhat_max_check) = qhat_max(~qhat_max_check);
 % Amplitudes with fulfilled kinematic constraint
 qhat_max(~qhat_max_check) = NaN;
 
-
 end
 
