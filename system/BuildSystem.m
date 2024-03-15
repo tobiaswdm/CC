@@ -131,6 +131,7 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
             else
                 sys.K_mt = sys.K;
                 sys.kappa_mt = sys.kappa;
+                sys.delta_omega = zeros(sys.N_s,1);
             end
 
             % Local clearance mistuning
@@ -146,6 +147,7 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
                 sys.Gamma_mt(2:2:(2*sys.N_s)) = sys.Gamma(2:2:(2*sys.N_s)).*(1+sys.delta_g);
             else
                 sys.Gamma_mt = sys.Gamma;
+                sys.delta_g = zeros(sys.N_s,1);
             end
 
             % Mass matrices
@@ -197,7 +199,7 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
             else
                 sys.K_mt = sys.K;
                 sys.kappa_mt = sys.kappa;
-
+                sys.delta_omega = zeros(sys.N_s,1);
             end
 
             % Local clearance mistuning
@@ -211,6 +213,7 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
             else
 
                 sys.Gamma_mt = sys.Gamma;
+                sys.delta_g = zeros(sys.N_s,1);
                 
             end
 

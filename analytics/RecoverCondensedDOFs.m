@@ -1,4 +1,4 @@
-function [Q] = RecoverCondensedDOFs(sys,exc,r,xi,disorder)
+function [Q,theta,expDelta] = RecoverCondensedDOFs(sys,exc,r,xi,disorder)
 %RECOVERCONDENSEDDOFS Compute the Fourier Coefficients of remaining
 % linear DOFs that are ignored in Condensation Equation
 %   r - [1, N] vector of frequencies
@@ -25,22 +25,34 @@ Pi(1,1,:) = -8*sys.epsilon_a*....
 % Linear transfer function matrix
 switch disorder
     case 'tuned'
+        % Transfer function matrix with removed absorbers
         % Start in modal basis
         H = pageinv(-r.^2 .* sys.mu + 1i*r.*sys.beta + sys.kappa);
+        % Linear displacement with removed absorbers
         Q_lin = pagemtimes(H,exc.F_mod);
         Q_lin = pagemtimes(sys.Phi,Q_lin);
+        % Transform back to phsysical coordinates
         H = pagemtimes(sys.Phi,H);
         H = pagemtimes(H,transpose(sys.Phi));
+        % Phase of nonlinear DOF
+        Phase = angle(Q_lin(1,1,:)./(xi + H(1,1,:).*Pi(1,1,:)));
+        % Fourier Coefficient contact forces
+        Pi(1,1,:) = sys.qref*sys.Gamma_Scale*Pi(1,1,:).*exp(1i*Phase);
     case 'mistuned'
+        % Transfer function matrix with removed absorbers
         H = pageinv(-r.^2 .* sys.M_mt + 1i*r.*sys.C + sys.K_mt);
+        % Linear displacement with removed absorbers
         Q_lin = pagemtimes(H,exc.F);
+        % Phase of nonlinear DOF
+        Phase = angle(Q_lin(1,1,:)./(xi + H(1,1,:).*Pi(1,1,:)));
+        % Fourier Coefficient contact forces
+        Pi(1,1,:) = sys.qref*sys.Gamma_Scale*(1+sys.delta_g(1))*...
+            Pi(1,1,:).*exp(1i*Phase);
     otherwise
         error('Case not defined.')
 end
 
-Phase = angle(Q_lin(1,1,:)./(xi + H(1,1,:).*Pi(1,1,:)));
-Pi(1,1,:) = sys.qref*sys.Gamma_Scale*Pi(1,1,:).*exp(1i*Phase);
-
+% Solve full HB system
 Q = squeeze(Q_lin - pagemtimes(H,Pi));
 
 end

@@ -16,7 +16,8 @@ xi = c(2,2:end);
 indices = ~isnan(xi);
 
 % Recover real-valued amplitudes of all sectors
-qhat = abs(RecoverCondensedDOFs(sys,exc,r(indices),xi(indices),disorder));
+[qhat,~,~] = RecoverCondensedDOFs(sys,exc,r(indices),xi(indices),disorder);
+qhat = abs(qhat);
 
 % Maximum amplitudes
 qhat_max = nan(1,length(r));

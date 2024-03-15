@@ -22,7 +22,7 @@ r = linspace(simsetup.LocalizationSingleSectorStability.r_range(1),...
     simsetup.LocalizationSingleSectorStability.r_range(2), ...
     simsetup.LocalizationSingleSectorStability.Nr);
 
-% Plot
+% Plot ESIM
 figure(2);
 surf(R,Xi,Gamma_Scale,'EdgeAlpha',0)
 hold on;
@@ -35,6 +35,7 @@ zlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
 set(gca,'YScale','log')
 axis tight;
 
+% Plot Level Curves
 figure(3);
 contour(R,Xi,Gamma_Scale,10,'LineWidth',1.5)
 hold on;
@@ -48,5 +49,12 @@ xlabel('$r$')
 ylabel('$\xi$')
 set(gca,'YScale','log')
 axis tight;
+
+% Get Level curves at clearance
+c = contourc(r,xi,Gamma_Scale,[sys.Gamma_Scale sys.Gamma_Scale]);
+
+% Determine max amplitude FRF
+[qhat_max,qhat_max_violated,r_plot] = ...
+    LocalizedFrequencyAmplitudeCurve(c,sys,exc,'tuned');
 
 
