@@ -24,8 +24,12 @@ qhat_unstable = nan(1,length(r));
 % Only evaluate final 50 Periods
 sol.N_Tau = 50;
 
-parfor (i = 1:length(r), sol.N_Workers)  
+parfor (i = 1:length(r), sol.N_Workers)
+%for i = 1:length(r)
     
+    % Set xi_dev to avoid temporary variable warning
+    xi_dev = inf;
+
     % Only consider cases where kinematic constraint is fulfilled
     if ~isnan(qhat_max_ana(i))
 
@@ -126,7 +130,12 @@ parfor (i = 1:length(r), sol.N_Workers)
                     all(N_SIPP(2:end)<1.98) && ... % No 1:1 remaining secs
                     xi_dev<=0.5 % Relative deviation of amplitude max 50%
                     
-                    qhat_practically_stable(i) = max(qhat);               
+                    % Amplitude
+                    qhat_practically_stable(i) = max(qhat);
+
+                    % Set stability back to NaN as practical stability
+                    % is the stronger condition
+                    qhat_stable(i) = NaN; 
                 end
 
             end

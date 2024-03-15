@@ -22,6 +22,15 @@ r = linspace(simsetup.LocalizationSingleSectorStability.r_range(1),...
     simsetup.LocalizationSingleSectorStability.r_range(2), ...
     simsetup.LocalizationSingleSectorStability.Nr);
 
+% Linear FRF
+q_fixed = abs(ComputeLinearResponse(r,sys,exc,'tuned','fixed_absorbers'));
+q_fixed = q_fixed(1,:);
+q_removed = abs(ComputeLinearResponse(r,sys,exc,'tuned','removed_absorbers'));
+q_removed = q_removed(1,:);
+
+% ESIM
+[Gamma_Scale,Xi,R] = SingleSectorESIM(xi,r,sys,exc,'tuned');
+
 % Plot ESIM
 figure(2);
 surf(R,Xi,Gamma_Scale,'EdgeAlpha',0)
@@ -51,7 +60,7 @@ set(gca,'YScale','log')
 axis tight;
 
 % Get Level curves at clearance
-c = contourc(r,xi,Gamma_Scale,[sys.Gamma_Scale sys.Gamma_Scale]);
+c = contourc(r,xi,Gamma_Scale',[sys.Gamma_Scale sys.Gamma_Scale]);
 
 % Determine max amplitude FRF
 [qhat_max,qhat_max_violated,r_plot] = ...
@@ -62,8 +71,32 @@ c = contourc(r,xi,Gamma_Scale,[sys.Gamma_Scale sys.Gamma_Scale]);
     simsetup.LocalizationSingleSectorStability.stepsize);
 
 % Study asymptotic and practical stability of tuned system
-[qhat_practically_stable,qhat_stable,qhat_unstable,r] =...
-    StabilityAnalysis(c,sys,sol,exc,'tuned',true,true);
+[qhat_practically_stable,qhat_stable,qhat_unstable,r_num] =...
+    StabilityAnalysis(c_coarse,sys,sol,exc,'tuned',true,true);
+
+
+figure(4);
+hold on;
+plot(r,q_fixed/sys.qref,...
+    'LineWidth',.5,'Color',color.reference,'DisplayName', ...
+    'Fixed abs.')
+plot(r,q_removed/sys.qref,'-.',...
+    'LineWidth',.5,'Color',color.reference,'DisplayName', ...
+    'Removed abs.')
+plot(r_plot,qhat_max/sys.qref,...
+            'LineWidth',2.5,'Color',color.ies,'DisplayName', ...
+            'Tuned')
+plot(r_plot,qhat_max_violated/sys.qref,':',...
+            'LineWidth',2.5,'Color',color.show,'DisplayName', ...
+            'Tuned - Viol. kin. constr.')
+scatter(r_num,qhat_unstable/sys.qref,50,'MarkerFaceColor',color.show,...
+    'MarkerEdgeColor','k','Displayname','Unstable')
+scatter(r_num,qhat_stable/sys.qref,50,'MarkerFaceColor',color.ies,...
+    'MarkerEdgeColor','k','Displayname','Stable')
+scatter(r_num,qhat_practically_stable/sys.qref,50,'pentagram',...
+    'MarkerFaceColor',myColors('green'),'MarkerEdgeColor','k',...
+    'Displayname','Pract. Stable')
+set(gca,'YScale','log')
 
 
 
