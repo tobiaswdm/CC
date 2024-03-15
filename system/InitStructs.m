@@ -130,3 +130,18 @@ simsetup.LocalizationSingleSectorAnalytical.r_range = [0.9 1.1];
 simsetup.LocalizationSingleSectorAnalytical.Nr = 1000;
 % Number of Mistuning realizations for frequency amplitude curves
 simsetup.LocalizationSingleSectorAnalytical.N_MCS = 10;
+
+% =========================================================================
+% Numerical stability analysis of Localization in single sector
+% =========================================================================
+
+% Maximum of clearance normalized amplitude
+simsetup.LocalizationSingleSectorStability.xi_max = 20;
+% Number of samples of clearance normalized amplitude
+simsetup.LocalizationSingleSectorStability.Nxi = 1000;
+% Range of excitaiton frequencies
+simsetup.LocalizationSingleSectorStability.r_range = [0.9 1.1];
+% Number of samples of excitation frequencies
+simsetup.LocalizationSingleSectorStability.Nr = 1000;
+% Number of Mistuning realizations for frequency amplitude curves
+simsetup.LocalizationSingleSectorStability.N_MCS = 10;

@@ -56,6 +56,9 @@ switch simulation
     case 'LocalizationSingleSectorAnalytical'
         fprintf('Running analytical study on localization in a single sector... \n')
         LocalizationSingleSectorAnalytical;
+    case 'LocalizationSingleSectorStability'
+        fprintf('Running stability analysis on localization in a single sector... \n')
+        LocalizationSingleSectorStability;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')
