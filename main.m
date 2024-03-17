@@ -39,14 +39,6 @@ savepath_backup = ['.\data\' configuration '\backup\'];
 fprintf('Loading configuration... \n')
 run([configuration '.m'])
 
-disp('!')
-disp('!')
-disp('!')
-disp(['Check for all sectors in 1:1 resonance with amplitude distribution being the same as Q_lin'])
-disp('!')
-disp('!')
-disp('!')
-
 % Run desired simulation
 switch simulation
     case 'VariationCouplingAndClearanceMCS'
