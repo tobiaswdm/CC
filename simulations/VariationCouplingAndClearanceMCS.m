@@ -290,7 +290,7 @@ if (simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale>1 && ...
     zlim([-inf inf])
     savefig([savepath 'A_95.fig'])
     
-    % ref Weibull
+    
     figure(4);
     plot(kappa_c,A_ref_95,'LineWidth',1.5,'Color',color.reference)
     hold on;

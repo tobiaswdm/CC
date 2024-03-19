@@ -152,8 +152,6 @@ save([savepath 'prac_stab_ratio.mat'],'prac_stab_ratio')
 disp(['Practically stable solutions found in ' ...
     num2str(100*prac_stab_ratio) ' percent of the mistuned cases.'])
 
-disp([])
-
 figure(4)
 hold on;
 scatter(r_num_t,qhat_unstable_t/sys.qref,20,'MarkerFaceColor',color.show,...

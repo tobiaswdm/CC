@@ -1,12 +1,12 @@
 simulation = 'VariationCouplingAndClearanceMCS';
 
-exc.k = 1;
+exc.k = 0;
 sys.N_s = 10;
 
 sys.sigma_omega = 1e-2;
 
 % Number of Monte Carlos Simulations per nominal configuration
-simsetup.VariationCouplingAndClearanceMCS.N_MCS = 22000;
+simsetup.VariationCouplingAndClearanceMCS.N_MCS = 6500;
 
 % Parameters of nominal coupling
 % Range
