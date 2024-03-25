@@ -164,36 +164,79 @@ for i = 1:min(sys.N_s,10)
     ylabel(name)
 end
 
+% Averaged Sector Energies Tuned
 figure(7);
-imagesc(exc.harmonic.r*TAU/2/pi,0:(sys.N_s-1),E)
+imagesc(exc.harmonic.r*TAU/2/pi,0:(sys.N_s-1),E./sum(E,1))
+hold on;
 colormap(1-pink.^2)
-colorbar;
+cb = colorbar(); 
+ylabel(cb,'$E_j^\ast / E (\tau) $','Rotation',90,'Interpreter','latex')
+title('Averaged Sector Energies Tuned')
 xlabel('$r\tau / (2 \pi)$')
-ylabel('$E_j$')
+ylabel('Sector $j$')
+ylabel('$E_j (\tau) / E (\tau) $')
 
+% Averaged Sector Energies Mistuned
 figure(8)
 imagesc(exc.harmonic.r*TAU/2/pi,0:(sys.N_s-1),E_mt)
-colormap(1-pink.^2)
-colorbar;
-xlabel('$r\tau / (2 \pi)$')
-ylabel('$E_j^\ast$')
-
-figure(9)
-plot3(Q(1,:),Q(2,:),Q(3,:),'DisplayName','$j=1$');
 hold on;
-plot3(Q(5,:),Q(6,:),Q(7,:),'DisplayName','$j=5$');
+colormap(1-pink.^2)
+cb = colorbar(); 
+ylabel(cb,'$E_j^\ast / E (\tau) $','Rotation',90,'Interpreter','latex')
+title('Averaged Sector Energies Mistuned')
+xlabel('$r\tau / (2 \pi)$')
+ylabel('Sector $j$')
+
+% State space tuned system
+figure(9)
+plot3(Q(1,:),Q(2,:),Q(3,:),'DisplayName','$j=0$',...
+    'LineWidth',0.5,'Color',color.ies);
+hold on;
 box on;
+axis tight;
 xlabel('$q_j$')
 ylabel('$q_{j+1}$')
 zlabel('$q_{j+2}$')
 grid on;
 legend;
+title('State Space Tuned system')
 
+% State space mistuned system
+figure(10)
+plot3(Q_mt(1,:),Q_mt(2,:),Q_mt(3,:),'DisplayName','$j=0$',...
+    'LineWidth',0.5,'Color',color.ies);
+hold on;
+box on;
+axis tight;
+xlabel('$q^\ast_j$')
+ylabel('$q^\ast_{j+1}$')
+zlabel('$q^\ast_{j+2}$')
+grid on;
+legend;
+title('State Space Mistuned system')
 
-%{
+% Poincare tuned system
 figure(11)
-plot(exc.harmonic.r*TAU/2/pi,E_mod./sum(E_mod,1))
+scatter(Q(1,1:sol.N_P:end),Q(2,1:sol.N_P:end),25,...
+    'MarkerEdgeColor','k','MarkerFaceColor',color.ies,...
+    'DisplayName','$j=0$');
+hold on;
+box on;
+axis tight;
+xlabel('$q_j$')
+ylabel('$q_{j+1}$')
+legend;
+title('Poincar\''e Map Tuned system')
 
+% Poincare Mistuned system
 figure(12)
-plot(exc.harmonic.r*TAU/2/pi,abs(QH(1,:)))
-%}
+scatter(Q_mt(1,1:sol.N_P:end),Q_mt(2,1:sol.N_P:end),25,...
+    'MarkerEdgeColor','k','MarkerFaceColor',color.ies,...
+    'DisplayName','$j=0$');
+hold on;
+box on;
+axis tight;
+xlabel('$q^\ast_j$')
+ylabel('$q^\ast_{j+1}$')
+legend;
+title('Poincar\''e Map Mistuned system')
