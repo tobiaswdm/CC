@@ -1,6 +1,6 @@
 simulation = 'VariationCouplingAndClearanceMCS';
 
-exc.k = 4;
+exc.k = 3;
 sys.N_s = 10;
 
 sys.sigma_omega = 1e-2;

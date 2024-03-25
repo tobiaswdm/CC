@@ -123,15 +123,16 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
                 sys.delta_omega = sys.delta_omega - mean(sys.delta_omega);
 
                 % Convert to grounding stiffness mistuning
-                delta_kg = (1+sys.delta_omega).^2 - 1;
+                sys.delta_kg = (1+sys.delta_omega).^2 - 1;
                 
                 % Mistuned matrix
-                sys.K_mt = sys.K + diag(delta_kg);
+                sys.K_mt = sys.K + diag(sys.delta_kg);
                 sys.kappa_mt = transpose(sys.Phi)*sys.K_mt*sys.Phi;
             else
                 sys.K_mt = sys.K;
                 sys.kappa_mt = sys.kappa;
                 sys.delta_omega = zeros(sys.N_s,1);
+                sys.delta_kg = zeros(sys.N_s,1);
             end
 
             % Local clearance mistuning
@@ -190,16 +191,17 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
             if isfield(sys,'delta_omega') 
 
                 % Convert to grounding stiffness mistuning
-                delta_kg = (1+sys.delta_omega).^2 - 1;
+                sys.delta_kg = (1+sys.delta_omega).^2 - 1;
                 
                 % Mistuned matrix
-                sys.K_mt = sys.K + diag(delta_kg);
+                sys.K_mt = sys.K + diag(sys.delta_kg);
                 sys.kappa_mt = transpose(sys.Phi)*sys.K_mt*sys.Phi;
 
             else
                 sys.K_mt = sys.K;
                 sys.kappa_mt = sys.kappa;
                 sys.delta_omega = zeros(sys.N_s,1);
+                sys.delta_kg = zeros(sys.N_s,1);
             end
 
             % Local clearance mistuning

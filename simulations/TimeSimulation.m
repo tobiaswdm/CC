@@ -23,21 +23,36 @@ sol_mt = ConfigureIntegrator(sol,sys,exc,...
     'mistuned'); % Mistuned system
 
 % Simulation mistuned system
-[ETA_mt,QA_mt,~,~,~] = MoreauIntegration(sys,exc,sol_mt,'mistuned');
+[ETA_mt,QA_mt,Chi_mt,UA_mt,~] = MoreauIntegration(sys,exc,sol_mt,'mistuned');
 Q_mt = sys.Phi * ETA_mt;
+U_mt = sys.Phi * Chi_mt;
 
 % Simulation tuned system
-[ETA,QA,~,~,TAU] = MoreauIntegration(sys,exc,sol,'tuned');
+[ETA,QA,Chi,UA,TAU] = MoreauIntegration(sys,exc,sol,'tuned');
 Q = sys.Phi * ETA;
+U = sys.Phi * Chi;
 TAU = TAU - TAU(1);
 
 %% Post-processing
 
 % Amplitudes - mistuned system
-[qhat_mt,qhat_mt_std] = MeanAmplitude(Q_mt(:,2:end),sol.N_Sample);
+[qhat_mt,qhat_mt_std] = MeanAmplitude(Q_mt(:,2:end),sol_mt.N_Sample);
 
 % Amplitudes - tuned system
 [qhat,qhat_std] = MeanAmplitude(Q(:,2:end),sol.N_Sample);
+
+% Modal energies
+[E_mod] = ModalEnegies(sys,sol,ETA,Chi);
+[E_mod_mt] = ModalEnegies(sys,sol_mt,ETA_mt,Chi_mt);
+
+% Spatial energies
+E = SpatialEnergies(sys,sol,Q,U,UA,'tuned');
+E_mt = SpatialEnergies(sys,sol,Q_mt,U_mt,UA_mt,'mistuned');
+
+% Hilbert transform
+QH = hilbert(Q')';
+Theta = unwrap(angle(QH),[],2);
+Theta = diff([Theta;Theta(1,:)],[],1);
 
 %% Figures
 
@@ -148,3 +163,37 @@ for i = 1:min(sys.N_s,10)
     ylim([-1.3 1.3]*(max(qhat_mt+2*qhat_mt_std+max(sys.Gamma_mt))))
     ylabel(name)
 end
+
+figure(7);
+imagesc(exc.harmonic.r*TAU/2/pi,0:(sys.N_s-1),E)
+colormap(1-pink.^2)
+colorbar;
+xlabel('$r\tau / (2 \pi)$')
+ylabel('$E_j$')
+
+figure(8)
+imagesc(exc.harmonic.r*TAU/2/pi,0:(sys.N_s-1),E_mt)
+colormap(1-pink.^2)
+colorbar;
+xlabel('$r\tau / (2 \pi)$')
+ylabel('$E_j^\ast$')
+
+figure(9)
+plot3(Q(1,:),Q(2,:),Q(3,:),'DisplayName','$j=1$');
+hold on;
+plot3(Q(5,:),Q(6,:),Q(7,:),'DisplayName','$j=5$');
+box on;
+xlabel('$q_j$')
+ylabel('$q_{j+1}$')
+zlabel('$q_{j+2}$')
+grid on;
+legend;
+
+
+%{
+figure(11)
+plot(exc.harmonic.r*TAU/2/pi,E_mod./sum(E_mod,1))
+
+figure(12)
+plot(exc.harmonic.r*TAU/2/pi,abs(QH(1,:)))
+%}
