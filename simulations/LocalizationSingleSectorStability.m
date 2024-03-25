@@ -105,29 +105,65 @@ for i = 1:simsetup.LocalizationSingleSectorStability.N_MCS
 
     disp(['Testing mistuned system ' num2str(i) ' of '...
         num2str(simsetup.LocalizationSingleSectorStability.N_MCS)])
+    
+    % Intialize cell array fro practically stable amplitudes and freqs.
+    qhat_practically_stable_array = cell(1,sys.N_s);
+    r_num_array = cell(1,sys.N_s);
+    % Maximum practically stable amplitude from circular shifts
+    qhat_practically_stable_max = zeros(1,sys.N_s);
+    
+    % Loop through circular shifts of mistuning patterns
+    % This is equivalent as shifting the localized sector j=0,...,(Ns-1)
+    for j = 1:sys.N_s
+        
+        if j == 1
+            % Build new mistuned system
+            [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
+        else
+            % Circular shift of mistuning patterns by one sector
+            sys_mt.delta_omega = circshift(sys_mt.delta_omega,1,1);
+            sys_mt.delta_g = circshift(sys_mt.delta_g,1,1);
 
-    % Build mistuned system
-    [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
-    % Determine mistuned ESIM
-    [Gamma_Scale_mt,~,~] = ...
-        SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
+            % Rebuild mistuned system
+            [sys_mt,exc_mt] = BuildSystem(sys_mt,exc,'mistuned_defined');
+        end
 
-    % Get Level curves at clearance
-    c = contourc(r,xi,Gamma_Scale_mt',...
-        [sys_mt.Gamma_Scale sys_mt.Gamma_Scale]*(1+sys_mt.delta_g(1)));
+        % Determine mistuned ESIM
+        [Gamma_Scale_mt,~,~] = ...
+            SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
 
-    % Coarsen contour for stability analysis
-    c = CoarsenContour(c,...
-        simsetup.LocalizationSingleSectorStability.stepsize);
+        % Get Level curves at clearance
+        c = contourc(r,xi,Gamma_Scale_mt',...
+            [sys_mt.Gamma_Scale sys_mt.Gamma_Scale]*(1+sys_mt.delta_g(1)));
+    
+        % Coarsen contour for stability analysis
+        c = CoarsenContour(c,...
+            simsetup.LocalizationSingleSectorStability.stepsize);
+    
+        % Study only practical stability of mistuned system
+        [qhat_practically_stable_array{j},~,~,r_num_array{j}] =...
+            StabilityAnalysis(c,sys_mt,sol,exc_mt,'mistuned',false,true);
+        
+        % Extract maximum
+        qhat_practically_stable_max(j) = ...
+            max(qhat_practically_stable_array{j});
 
-    % Study only practical stability of mistuned system
-    [qhat_practically_stable,~,~,r_num] =...
-        StabilityAnalysis(c,sys_mt,sol,exc_mt,'mistuned',false,true);
+    end
     
     % Practicaly stable solution found?
-    if any(~isnan(qhat_practically_stable))
+    if any(~isnan(qhat_practically_stable_max))
+        % Increase count
         k = k+1;
+
+        % Extract shift config with maximum pract. stbale amplitude
+        [~,j_max] = max(qhat_practically_stable_max);
+    else
+        j_max  = 1;
     end
+    
+    % Pick largest practically stable amplitudes
+    qhat_practically_stable = qhat_practically_stable_array{j_max};
+    r_num = r_num_array{j_max};
     
     % Scatter practically stable solutions
     figure(4);

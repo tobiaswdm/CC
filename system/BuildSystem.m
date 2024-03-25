@@ -144,8 +144,10 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
                 
                 % Update clearances
                 sys.Gamma_mt = zeros(2*sys.N_s,1);
-                sys.Gamma_mt(1:2:(2*sys.N_s)) = sys.Gamma(1:2:(2*sys.N_s)).*(1+sys.delta_g);
-                sys.Gamma_mt(2:2:(2*sys.N_s)) = sys.Gamma(2:2:(2*sys.N_s)).*(1+sys.delta_g);
+                sys.Gamma_mt(1:2:(2*sys.N_s)) = ...
+                    sys.Gamma(1:2:(2*sys.N_s)).*(1+sys.delta_g);
+                sys.Gamma_mt(2:2:(2*sys.N_s)) = ...
+                    sys.Gamma(2:2:(2*sys.N_s)).*(1+sys.delta_g);
             else
                 sys.Gamma_mt = sys.Gamma;
                 sys.delta_g = zeros(sys.N_s,1);
@@ -168,7 +170,8 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
                     case 'removed'
                         sys.Gamma_mt(1) = 1e6 * sys.qref;
                         sys.Gamma_mt(2) = 1e6 * sys.qref;
-                        sys.M_fixed_mt(1) = sys.M_fixed_mt(1)-sys.epsilon_a;
+                        sys.M_fixed_mt(1) = sys.M_fixed_mt(1)-...
+                            sys.epsilon_a;
                     otherwise
                         error('Case not defined.')
                 end
@@ -178,9 +181,11 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
 
             % Compute new eigenfrequencies
             % Fixed absorbers
-            sys.r_k_mt = sort(transpose(sqrt(eig(sys.K_mt,sys.M_fixed_mt))));
+            sys.r_k_mt = ...
+                sort(transpose(sqrt(eig(sys.K_mt,sys.M_fixed_mt))));
             % Removed absorbers
-            sys.r_k_noabs_mt = sort(transpose(sqrt(eig(sys.K_mt,sys.M_mt))));
+            sys.r_k_noabs_mt = ...
+                sort(transpose(sqrt(eig(sys.K_mt,sys.M_mt))));
 
         case 'mistuned_defined'
             if ~isfield(sys,'tuned_param_set')
@@ -209,8 +214,10 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
                 
                 % Update clearances
                 sys.Gamma_mt = zeros(2*sys.N_s,1);
-                sys.Gamma_mt(1:2:(2*sys.N_s)) = sys.Gamma(1:2:(2*sys.N_s)).*(1+sys.delta_g);
-                sys.Gamma_mt(2:2:(2*sys.N_s)) = sys.Gamma(2:2:(2*sys.N_s)).*(1+sys.delta_g);
+                sys.Gamma_mt(1:2:(2*sys.N_s)) = ...
+                    sys.Gamma(1:2:(2*sys.N_s)).*(1+sys.delta_g);
+                sys.Gamma_mt(2:2:(2*sys.N_s)) = ...
+                    sys.Gamma(2:2:(2*sys.N_s)).*(1+sys.delta_g);
 
             else
 
@@ -236,7 +243,8 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
                     case 'removed'
                         sys.Gamma_mt(1) = 1e6 * sys.qref;
                         sys.Gamma_mt(2) = 1e6 * sys.qref;
-                        sys.M_fixed_mt(1) = sys.M_fixed_mt(1)-sys.epsilon_a;
+                        sys.M_fixed_mt(1) = sys.M_fixed_mt(1)-...
+                            sys.epsilon_a;
                     otherwise
                         error('Case not defined.')
                 end
@@ -246,9 +254,11 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
 
             % Compute new eigenfrequencies
             % Fixed absorbers
-            sys.r_k_mt = sort(transpose(sqrt(eig(sys.K_mt,sys.M_fixed_mt))));
+            sys.r_k_mt = ...
+                sort(transpose(sqrt(eig(sys.K_mt,sys.M_fixed_mt))));
             % Removed absorbers
-            sys.r_k_noabs_mt = sort(transpose(sqrt(eig(sys.K_mt,sys.M_mt))));
+            sys.r_k_noabs_mt = ...
+                sort(transpose(sqrt(eig(sys.K_mt,sys.M_mt))));
 
         otherwise
             error('Case not defined')
