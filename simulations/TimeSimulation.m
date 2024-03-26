@@ -174,7 +174,6 @@ ylabel(cb,'$E_j^\ast / E (\tau) $','Rotation',90,'Interpreter','latex')
 title('Averaged Sector Energies Tuned')
 xlabel('$r\tau / (2 \pi)$')
 ylabel('Sector $j$')
-ylabel('$E_j (\tau) / E (\tau) $')
 
 % Averaged Sector Energies Mistuned
 figure(8)
@@ -240,3 +239,6 @@ xlabel('$q^\ast_j$')
 ylabel('$q^\ast_{j+1}$')
 legend;
 title('Poincar\''e Map Mistuned system')
+
+% Project tuned system on manifold
+ProjectOnSIM(Q(1,2:end),QA(1,2:end),sol,sys,color,savepath,'tuned')
