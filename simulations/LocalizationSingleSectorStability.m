@@ -145,8 +145,15 @@ for i = 1:simsetup.LocalizationSingleSectorStability.N_MCS
             StabilityAnalysis(c,sys_mt,sol,exc_mt,'mistuned',false,true);
         
         % Extract maximum
-        qhat_practically_stable_max(j) = ...
-            max(qhat_practically_stable_array{j});
+        if isempty(qhat_practically_stable_array{j})
+            % No solution found
+            qhat_practically_stable_max(j) = NaN;
+        else
+            % Extract maximum
+            qhat_practically_stable_max(j) = ...
+                max(qhat_practically_stable_array{j});
+        end
+        
 
     end
     
