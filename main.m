@@ -13,6 +13,7 @@ addpath('.\integrator\')    % Path for Time integration schemes
 addpath('.\postprocessing\')% Path for Post processings
 addpath('.\statistics\')    % Path for Statistics
 addpath('.\analytics\')     % Path for Analytical methods
+addpath('.\harmonic_balance\')     % Path for HB
 fprintf('Initializing data structures... \n')
 InitStructs;
 
@@ -24,7 +25,7 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-configuration = 'Loc_Mistuned_Stability_GammaOpt_k0_5'; % System configuration file
+configuration = 'Loc_Mistuned_Stability_GammaOpt_k0_4'; % System configuration file
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
