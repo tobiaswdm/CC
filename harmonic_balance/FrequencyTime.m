@@ -42,7 +42,7 @@ switch method
         end
 
         % DFT using FFT
-        freqdomain = fft(domain,1);
+        freqdomain = fft(domain);
 
         % Get only symmetric half and select number of harmonics
         transformation = [real(freqdomain(1));2*freqdomain(2:(resolution+1))]/L;

@@ -25,7 +25,7 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-configuration = 'Loc_Mistuned_Stability_GammaOpt_k0_4'; % System configuration file
+configuration = 'test_slowflow'; % System configuration file
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -60,6 +60,9 @@ switch simulation
     case 'LocalizationSingleSectorStability'
         fprintf('Running stability analysis on localization in a single sector... \n')
         LocalizationSingleSectorStability;
+    case 'DetermineSlowFlow'
+        fprintf('Solving Slow Flow equation for AQPR... \n')
+        DetermineSlowFlow;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')
