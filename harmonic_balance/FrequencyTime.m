@@ -5,7 +5,7 @@ function [transformation] = FrequencyTime(domain,resolution,method)
 % H - Harmonic order
 %
 % Freq_to_time:
-% domain - [H+1,1] Complex Fourier coefficients
+% domain - [2H+1,1] Complex Fourier coefficients
 % resolution - number of sampling points per period
 %
 % Desired resolution must be larger or equal to 2H+1
@@ -19,17 +19,22 @@ function [transformation] = FrequencyTime(domain,resolution,method)
 switch method
     case 'Freq_to_Time'
         
+        % Harmonic order
+        H = (size(domain,1)-1)/2;
+        
         % Check if resolution is sufficient
-        if resolution < (2*length(domain)-1)
+        if resolution < length(domain)
             error('Chose higher sampling rate.')
         end
+
+        % harmonics
+        h = -H : H;
         
         % Complex Harmonic Basis functions
-        W = exp(1i*(2*pi)*(0:(resolution-1))' * ...
-            (0:(length(domain)-1))/resolution);
+        W = exp(1i*(2*pi)*(0:(resolution-1))'*h);
         
         % Transform back to timedomain
-        transformation = real(W*domain);
+        transformation = (W*domain)/resolution;
 
     case 'Time_to_Freq'
 
@@ -42,10 +47,11 @@ switch method
         end
 
         % DFT using FFT
-        freqdomain = fft(domain);
+        freqdomain = fft(domain,[],1);
 
         % Get only symmetric half and select number of harmonics
-        transformation = [real(freqdomain(1));2*freqdomain(2:(resolution+1))]/L;
+        transformation = [freqdomain((end-resolution+1):end,:);...
+                          freqdomain(1:(resolution+1),:)]/L;
 
     otherwise
 
