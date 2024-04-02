@@ -1,7 +1,7 @@
 function [F_hat]=EvaluateSlowForceCoefficient(Phi_hat,N,H,sys)
 
 % Evaluate the slow nonlinear force
-% in the time domain without scaling of 8*epsilon_a*r^2 / pi^2
+% in the time domain without scaling of -8*epsilon_a*r^2 / pi^2
 %
 % Phi_hat - Fourier coefficients of amplitude envelope
 % N - Sampling points per period for AFT

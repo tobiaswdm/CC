@@ -28,13 +28,13 @@ Phi_hat = coeff_ReIm(1:(2*H+1))+1i*coeff_ReIm((2*H+1)+(1:(2*H+1)));
 % chose at least 1000 sampling points per slow period
 N = max(1000,4*(H+1));
 
-% Evaluate nonlinear dispersion relation and group velocity to get
-% slow modulation frequency Omega
+% Evaluate nonlinear dispersion relation for average amplitude level
+% get slow modulation frequency Omega (group velocity)
 [~,Omega] = NonlinearDispersionRelation(abs(Phi_hat(H+1)),theta_k_0,sys);
 
 % Evaluate the real an imaginary part of the slow nonlinear force
 % in the time domain and get Fourier coefficients of dynamic components 
-% force coefficients without scaling of 8*epsilon_a*r^2 / pi^2
+% force coefficients without scaling of -8*epsilon_a*r^2 / pi^2
 [F_hat] = EvaluateSlowForceCoefficient(Phi_hat,N,H,sys);
 
 
