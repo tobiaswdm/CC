@@ -7,7 +7,6 @@ function [F_hat]=EvaluateSlowForceCoefficient(Phi_hat,N,H,sys)
 % N - Sampling points per period for AFT
 % H - Harmonic Order
 
-
 % Slow flow in time domain
 Phi = FrequencyTime(Phi_hat,N,'Freq_to_Time');
 

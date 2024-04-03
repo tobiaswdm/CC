@@ -31,10 +31,10 @@ switch method
         h = -H : H;
         
         % Complex Harmonic Basis functions
-        W = exp(1i*(2*pi)*(0:(resolution-1))'*h);
+        W = exp(1i*(2*pi)*(0:(resolution-1))'*h /resolution);
         
         % Transform back to timedomain
-        transformation = (W*domain)/resolution;
+        transformation = (W*domain);
 
     case 'Time_to_Freq'
 

@@ -50,9 +50,7 @@ E = SpatialEnergies(sys,sol,Q,U,UA,'tuned');
 E_mt = SpatialEnergies(sys,sol,Q_mt,U_mt,UA_mt,'mistuned');
 
 % Hilbert transform
-QH = hilbert(Q')';
-Theta = unwrap(angle(QH),[],2);
-Theta = diff([Theta;Theta(1,:)],[],1);
+QH = exp(-1i*exc.harmonic.r*TAU).*transpose(hilbert(Q'));
 
 %% Figures
 
@@ -242,3 +240,22 @@ title('Poincar\''e Map Mistuned system')
 
 % Project tuned system on manifold
 ProjectOnSIM(Q(1,2:end),QA(1,2:end),sol,sys,color,savepath,'tuned')
+
+% Slow flow of sector 0
+figure(13)
+subplot(2,1,1)
+hold on;
+plot(exc.harmonic.r*TAU/2/pi,abs(QH(1,:)),'LineWidth',1.5,...
+    'Color',color.ies)
+title('Slow Amplitude')
+xlabel('$r\tau / (2 \pi)$')
+ylabel('$\Phi_0$')
+axis tight
+subplot(2,1,2)
+hold on;
+plot(exc.harmonic.r*TAU/2/pi,unwrap(angle((QH(1,:)))),'LineWidth',1.5,...
+    'Color',color.ies)
+title('Slow Phase')
+xlabel('$r\tau / (2 \pi)$')
+ylabel('$\gamma_0$')
+axis tight;
