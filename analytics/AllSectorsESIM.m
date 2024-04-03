@@ -1,6 +1,6 @@
 function [Gamma_Scale,Xi,R] = AllSectorsESIM(xi,r,sys,exc)
-% Determine the extendend SIM (ESIM) of the localization in a single sector
-% for either the tuned or the mistuned configuration
+% Determine the extendend SIM (ESIM) of the GSAPR for the 
+% tuned configuration
 %   
 %   Complex_Phase of the localized sector
 %   Gamma_Scale size of the clearance of the localized sector scaled by
@@ -9,9 +9,8 @@ function [Gamma_Scale,Xi,R] = AllSectorsESIM(xi,r,sys,exc)
 %   r = [1,Nr] - frequencies to eveluate the ESIM at
 %   xi = [1,Nxi] - clearance normalized ampltiude to evaluate the ESIM at
 
-% Get lengths
+% Get length
 Nr = length(r);
-Nxi = length(xi);
 
 % Compute grid to evaluate ESIM over
 [Xi,R] = meshgrid(xi,r);
@@ -33,8 +32,8 @@ r_k0 = sys.r_k(exc.k+1);
 
 %Evaluate ESIM
 Gamma_Scale = 2*sys.D*r_k0^2 ./ ...
-               ((-(1-sys.epsilon_a)*R.^2 + 2*sys.D*1i*R*r_k0 + ...
-               r_k0^2)*Xi+Pi);
+               abs(((-(1-sys.epsilon_a)*R.^2 + 2*sys.D*1i*R*r_k0 + ...
+               r_k0^2).*Xi+Pi));
 
 end
 
