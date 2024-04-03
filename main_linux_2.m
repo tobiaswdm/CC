@@ -13,6 +13,8 @@ addpath('./simulations/')   % Path for simulation cases
 addpath('./integrator/')    % Path for Time integration schemes
 addpath('./postprocessing/')% Path for Post processings
 addpath('./statistics/')    % Path for Statistics
+addpath('./analytics/')     % Path for Analytical methods
+addpath('./harmonic_balance/')     % Path for HB
 fprintf('Initializing data structures... \n')
 InitStructs;
 
@@ -24,7 +26,7 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-configuration = 'VariationCouplingAndClearanceMCS_k0_5';  % System configuration file
+configuration = 'ConvMCS_kc0_01_sigmag_0_01_Gamma_0_33_k0_2';  % System configuration file
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -56,6 +58,15 @@ switch simulation
     case 'TimeSimulation'
         fprintf('Running single time simulation... \n')
         TimeSimulation;
+    case 'LocalizationSingleSectorAnalytical'
+        fprintf('Running analytical study on localization in a single sector... \n')
+        LocalizationSingleSectorAnalytical;
+    case 'LocalizationSingleSectorStability'
+        fprintf('Running stability analysis on localization in a single sector... \n')
+        LocalizationSingleSectorStability;
+    case 'DetermineSlowFlow'
+        fprintf('Solving Slow Flow equation for AQPR... \n')
+        DetermineSlowFlow;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')

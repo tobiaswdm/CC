@@ -1,4 +1,4 @@
-ysimulation = 'ConvergenceMCS';
+simulation = 'ConvergenceMCS';
 
 %% System parameters
 sys.kappa_c = 0.01;
