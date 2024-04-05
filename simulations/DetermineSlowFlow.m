@@ -4,12 +4,14 @@
 [sys,exc] = BuildSystem(sys,exc,'tuned');
 
 Phi_hat_0 = [60*rand(1)*exp(2*pi*rand(1)*1i);
-    150*exp(2*pi*rand(1)*1i);...
+    220*exp(2*pi*rand(1)*1i);...
     60*rand(1)*exp(2*pi*rand(1)*1i)];
+
+Omega_0 = 0.0037;
 
 
 [Phi_hat,Omega] = ...
-    SolveSlowFlowEquation(Phi_hat_0,1,sys,exc)
+    SolveSlowFlowEquation(Phi_hat_0,Omega_0,1,sys,exc)
 
 %slowfft = fft(QH(1,:))/length(QH(1,:));
 

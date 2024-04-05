@@ -21,7 +21,8 @@ theta_k_mod = 2*pi*k_mod/sys.N_s;
 theta_k_0 = 2*pi*exc.k/sys.N_s;
 
 % Convert to complex Fourier Coefficients
-Phi_hat = coeff_ReIm(1:(2*H+1))+1i*coeff_ReIm((2*H+1)+(1:(2*H+1)));
+Phi_hat = [coeff_ReIm(1:(H+1));10;coeff_ReIm((H+2):(2*H))]...
++1i*coeff_ReIm((2*H)+(1:(2*H+1)));
 
 
 % Transform to time domain
@@ -30,7 +31,8 @@ N = max(1000,4*(H+1));
 
 % Evaluate nonlinear dispersion relation for average amplitude level
 % get slow modulation frequency Omega (group velocity)
-[~,Omega] = NonlinearDispersionRelation(abs(Phi_hat(H+1)),theta_k_0,sys);
+%[~,Omega_d] = NonlinearDispersionRelation(abs(Phi_hat(H+1)),theta_k_0,sys);
+Omega = coeff_ReIm(end)/1000;
 
 % Evaluate the real an imaginary part of the slow nonlinear force
 % in the time domain and get Fourier coefficients of dynamic components 
@@ -57,8 +59,13 @@ complex_residual = Sh.*Phi_hat - ...
                    8*sys.epsilon_a*(r/pi)^2 * F_hat - ...
                    circshift(eye(2*H+1,1),H,1);
 
+
+
 % Split into real and imaginary component
 residual = [real(complex_residual); ...
-            imag(complex_residual)];
+            imag(complex_residual);
+            coeff_ReIm((2*H+1)+(H+2))-10];
+
+%residual(H+2) = coeff_ReIm(H+2)-20;
 
 end

@@ -74,6 +74,7 @@ ylabel('$\xi$')
 zlabel('$\vartheta$')
 axis tight
 title('Motion on SIM')
+box on;
 if ~isempty(savepath)
     savefig([savepath 'SIM_motion.fig'])
 end

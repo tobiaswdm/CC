@@ -242,20 +242,26 @@ title('Poincar\''e Map Mistuned system')
 ProjectOnSIM(Q(1,2:end),QA(1,2:end),sol,sys,color,savepath,'tuned')
 
 % Slow flow of sector 0
-figure(13)
+figure(14)
 subplot(2,1,1)
 hold on;
 plot(exc.harmonic.r*TAU/2/pi,abs(QH(1,:)),'LineWidth',1.5,...
     'Color',color.ies)
+plot(exc.harmonic.r*TAU/2/pi,abs(QH(3,:)),'LineWidth',1.5,...
+    'Color',color.reference)
 title('Slow Amplitude')
 xlabel('$r\tau / (2 \pi)$')
 ylabel('$\Phi_0$')
 axis tight
+box on
 subplot(2,1,2)
 hold on;
 plot(exc.harmonic.r*TAU/2/pi,unwrap(angle((QH(1,:)))),'LineWidth',1.5,...
     'Color',color.ies)
+plot(exc.harmonic.r*TAU/2/pi,unwrap(angle((QH(3,:))))-4*pi/10,'LineWidth',1.5,...
+    'Color',color.reference)
 title('Slow Phase')
 xlabel('$r\tau / (2 \pi)$')
 ylabel('$\gamma_0$')
 axis tight;
+box on

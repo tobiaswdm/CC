@@ -240,7 +240,8 @@ save([savepath 'qhat_mt_std.mat'],'qhat_mt_std')
 
 
 figure(1)
-s=scatterhistogram(squeeze(A(1,1,:)),A_ref(1,:),'HistogramDisplayStyle','bar');
+s=scatterhistogram(squeeze(A(1,1,:)),A_ref(1,:),'HistogramDisplayStyle',...
+    'bar','MarkerSize',2);
 s.Color = {color.ies};
 xlabel('$A$')
 ylabel('$A_\mathrm{ref}$')

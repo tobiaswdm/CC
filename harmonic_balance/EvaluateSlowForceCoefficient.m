@@ -19,7 +19,7 @@ i_not_on_SIM = abs(Phi)<(sys.Gamma(1)* rho/sqrt(1+rho^2));
 % If not: Correct to avoid error but give warning
 if any(i_not_on_SIM)
     warning('Solution not on SIM.')
-    Phi(i_not_on_SIM) = 1.0001*sys.Gamma(1)* rho/sqrt(1+rho^2)*...
+    Phi(i_not_on_SIM) = 1000*sys.Gamma(1)* rho/sqrt(1+rho^2)*...
                         exp(1i*angle(Phi(i_not_on_SIM)));
 end
 
@@ -28,8 +28,7 @@ qahat = (sys.Gamma(1)+sqrt((1+rho^2)* abs(Phi).^2 ...
         - (sys.Gamma(1)*rho)^2))/(1+rho^2);
 
 % Slow Force Coefficient
-force = qahat.*(qahat*(1-1i*rho)-sys.Gamma(1))./abs(Phi) .* ...
-        exp(1i*angle(Phi));
+force = qahat.*(qahat*(1-1i*rho)-sys.Gamma(1))./conj(Phi);
 
 % Fourier coefficients
 F_hat = FrequencyTime(force,H,'Time_to_Freq');
