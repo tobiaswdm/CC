@@ -3,8 +3,8 @@
 % Tuned
 [sys,exc] = BuildSystem(sys,exc,'tuned');
 
-Phi_hat_0 = [60*rand(1)*exp(2*pi*rand(1)*1i);
-    220*exp(2*pi*rand(1)*1i);...
+Phi_hat_0 = [20*rand(1)*exp(2*pi*rand(1)*1i);
+    120*exp(2*pi*rand(1)*1i);...
     60*rand(1)*exp(2*pi*rand(1)*1i)];
 
 Omega_0 = 0.0037;

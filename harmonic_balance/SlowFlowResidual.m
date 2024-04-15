@@ -63,8 +63,7 @@ complex_residual = Sh.*Phi_hat - ...
 
 % Split into real and imaginary component
 residual = [real(complex_residual); ...
-            imag(complex_residual);
-            coeff_ReIm((2*H+1)+(H+2))-10];
+            imag(complex_residual)];
 
 %residual(H+2) = coeff_ReIm(H+2)-20;
 
