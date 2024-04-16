@@ -59,7 +59,7 @@ parfor (i = 1:length(r), sol.N_Workers)
             % Extract Amplitudes and Significant impacts
             [qhat,~] = ...
                 MeanAmplitude(sys_loop.Phi*ETA(:,2:end),sol_loop.N_Sample);
-            N_SIPP = CountImpacts(UA,sol_loop.N_Tau);
+            N_SIPP = CountImpacts(UA,sol_loop.N_Tau,'average');
             
             % Determine relative deviation of amplitude in localized sector
             switch disorder
@@ -111,7 +111,7 @@ parfor (i = 1:length(r), sol.N_Workers)
                 % Extract Amplitudes and Significant impacts
                 [qhat,~] = ...
                     MeanAmplitude(sys_loop.Phi*ETA(:,2:end),sol_loop.N_Sample);
-                N_SIPP = CountImpacts(UA,sol_loop.N_Tau);
+                N_SIPP = CountImpacts(UA,sol_loop.N_Tau,'average');
 
                 % Determine relative deviation of amplitude in localized sector
                 switch disorder

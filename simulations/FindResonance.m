@@ -29,7 +29,7 @@ for j = 1:L
     [ETA,QA,CHI,UA,~] = MoreauIntegration(sys,exc,sol,disorder);
     
     % Extract performance measures
-    N_SIPP(:,j) = CountImpacts(UA,sol.N_Tau);
+    N_SIPP(:,j) = CountImpacts(UA,sol.N_Tau,'average');
     [ampmean,ampstd] = MeanAmplitude(sys.Phi*ETA(:,2:end),sol.N_Sample);
     switch disorder
         case 'tuned'

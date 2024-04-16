@@ -25,7 +25,7 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-configuration = 'test_slowflow'; % System configuration file
+configuration = 'test_timeint'; % System configuration file
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -61,8 +61,11 @@ switch simulation
         fprintf('Running stability analysis on localization in a single sector... \n')
         LocalizationSingleSectorStability;
     case 'DetermineSlowFlow'
-        fprintf('Solving Slow Flow equation for AQPR... \n')
+        fprintf('Solving Slow Flow equation for AQPR in frequency domain... \n')
         DetermineSlowFlow;
+    case 'SlowFlowTimeSimulation'
+        fprintf('Solving Slow Flow equation for AQPR in time domain... \n')
+        SlowFlowTimeSimulation;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')

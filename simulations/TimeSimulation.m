@@ -50,7 +50,15 @@ E = SpatialEnergies(sys,sol,Q,U,UA,'tuned');
 E_mt = SpatialEnergies(sys,sol,Q_mt,U_mt,UA_mt,'mistuned');
 
 % Hilbert transform
-QH = exp(-1i*exc.harmonic.r*TAU).*transpose(hilbert(Q'));
+%QH = exp(-1i*(exc.harmonic.r*TAU+(0:(sys.N_s-1))' *2*pi*exc.k/sys.N_s))...
+%    .*transpose(hilbert(Q'));
+
+% Slow flow poor man's approach
+QH = exp(-1i*(exc.harmonic.r*TAU+(0:(sys.N_s-1))' *2*pi*exc.k/sys.N_s))...
+        .*(Q+U/(1i*exc.harmonic.r));
+
+% Count impacts in each excitation period
+N_IPP = CountImpacts(UA,sol.N_Tau,'convolution');
 
 %% Figures
 
@@ -87,6 +95,11 @@ for i = 1:min(sys.N_s,10)
     subplot(5,2,i)
     hold on;
     box on;
+    yyaxis right
+    plot(1:sol.N_Tau,N_IPP(index(i),:),'LineWidth',1,'Color',color.background)
+    ylabel('Impacts')
+    ylim([0 max(N_IPP,[],'all')])
+    yyaxis left;
     plot(exc.harmonic.r*TAU/2/pi,Q(index(i),:),'LineWidth',1,'Color',color.ies)
     yline(qhat(index(i)),'-','LineWidth',.5,'Color',color.show)
     yline(qhat(index(i))+qhat_std(index(i)),'--','LineWidth',.5,'Color',color.show)
@@ -135,7 +148,7 @@ for i = 1:min(sys.N_s,10)
     xlim(exc.harmonic.r*[TAU(1) TAU(end)]/2/pi)
     %xlim([TAU(end)-30*(2*pi/exc.harmonic.r) TAU(end)])
     xlabel('$r\tau / (2 \pi)$')
-    ylim([-1.3 1.3]*(max(qhat_mt+2*qhat_mt_std+sys.Gamma(2*index(i)))))
+    ylim([-1.3 1.3]*(max(qhat+2*qhat_std+sys.Gamma(2*index(i)))))
     ylabel(name)
 end
 
@@ -246,22 +259,23 @@ figure(14)
 subplot(2,1,1)
 hold on;
 plot(exc.harmonic.r*TAU/2/pi,abs(QH(1,:)),'LineWidth',1.5,...
-    'Color',color.ies)
-plot(exc.harmonic.r*TAU/2/pi,abs(QH(3,:)),'LineWidth',1.5,...
-    'Color',color.reference)
+    'Color',color.ies,'Displayname','$j=0$')
+plot(exc.harmonic.r*TAU/2/pi,abs(QH(5,:)),'LineWidth',1.5,...
+    'Color',color.reference,'Displayname','$j=4$')
 title('Slow Amplitude')
 xlabel('$r\tau / (2 \pi)$')
-ylabel('$\Phi_0$')
+ylabel('$\Phi_j$')
 axis tight
 box on
+legend;
 subplot(2,1,2)
 hold on;
 plot(exc.harmonic.r*TAU/2/pi,unwrap(angle((QH(1,:)))),'LineWidth',1.5,...
-    'Color',color.ies)
-plot(exc.harmonic.r*TAU/2/pi,unwrap(angle((QH(3,:))))-4*pi/10,'LineWidth',1.5,...
-    'Color',color.reference)
+    'Color',color.ies,'Displayname','$j=0$')
+plot(exc.harmonic.r*TAU/2/pi,unwrap(angle((QH(5,:)))),'LineWidth',1.5,...
+    'Color',color.reference,'Displayname','$j=4$')
 title('Slow Phase')
 xlabel('$r\tau / (2 \pi)$')
-ylabel('$\gamma_0$')
+ylabel('$\gamma_j$')
 axis tight;
 box on
