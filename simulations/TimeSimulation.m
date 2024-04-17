@@ -92,7 +92,7 @@ hold on;
 title('Displacement')
 for i = 1:min(sys.N_s,10)
     name = ['$q_' num2str(index(i)-1) '$'];
-    subplot(5,2,i)
+    ax(i)=subplot(5,2,i);
     hold on;
     box on;
     yyaxis right
@@ -109,6 +109,8 @@ for i = 1:min(sys.N_s,10)
     ylim([-1.3 1.3]*max(qhat+2*qhat_std))
     ylabel(name)
 end
+linkaxes(ax,'x');
+clear ax;
 
 % Mistuned Displacement
 figure(4);
@@ -116,7 +118,7 @@ hold on;
 title('Displacement - Mistuned')
 for i = 1:min(sys.N_s,10)
     name = ['$q_' num2str(index(i)-1) '^\ast $'];
-    subplot(5,2,i)
+    ax(i)=subplot(5,2,i);
     hold on;
     box on;
     plot(exc.harmonic.r*TAU/2/pi,Q_mt(index(i),:),'LineWidth',1,'Color',color.ies)
@@ -128,13 +130,15 @@ for i = 1:min(sys.N_s,10)
     ylim([-1.3 1.3]*max(qhat_mt+2*qhat_mt_std))
     ylabel(name)
 end
+linkaxes(ax,'x');
+clear ax;
 
 % Absorber movement tuned
 figure(5);
 hold on;
 for i = 1:min(sys.N_s,10)
     name = ['$q_{\mathrm{a},' num2str(index(i)-1) '}$'];
-    subplot(5,2,i)
+    ax(i)=subplot(5,2,i);
     hold on;
     box on;
     plot(exc.harmonic.r*TAU/2/pi,...
@@ -151,13 +155,15 @@ for i = 1:min(sys.N_s,10)
     ylim([-1.3 1.3]*(max(qhat+2*qhat_std+sys.Gamma(2*index(i)))))
     ylabel(name)
 end
+linkaxes(ax,'x');
+clear ax;
 
 % Absorber movement mistuned
 figure(6);
 hold on;
 for i = 1:min(sys.N_s,10)
     name = ['$q_{\mathrm{a},' num2str(index(i)-1) '}^\ast $'];
-    subplot(5,2,i)
+    ax(i)=subplot(5,2,i);
     hold on;
     box on;
     plot(exc.harmonic.r*TAU/2/pi,...
@@ -174,6 +180,8 @@ for i = 1:min(sys.N_s,10)
     ylim([-1.3 1.3]*(max(qhat_mt+2*qhat_mt_std+max(sys.Gamma_mt))))
     ylabel(name)
 end
+linkaxes(ax,'x');
+clear ax;
 
 % Averaged Sector Energies Tuned
 figure(7);

@@ -109,13 +109,24 @@ A_ref_95_std = std(A_ref_95,0,1);
 
 %% Plotting
 
-figure(1)
-s=scatterhistogram(A,A_ref,'HistogramDisplayStyle','bar','MarkerSize',1);
-s.Color = {color.ies};
-xlabel('$A$')
-ylabel('$A_\mathrm{ref}$')
-title(['Correlation: ' num2str(corr(A',A_ref'))])
-savefig([savepath 'A_A_ref_relation.fig'])
+if sys.sigma_omega ~= 0
+    figure(1)
+    s=scatterhistogram(A,A_ref,'HistogramDisplayStyle','bar','MarkerSize',1);
+    s.Color = {color.ies};
+    xlabel('$A$')
+    ylabel('$A_\mathrm{ref}$')
+    title(['Correlation: ' num2str(corr(A',A_ref'))])
+    savefig([savepath 'A_A_ref_relation.fig'])
+else
+    figure(1)
+    histogram(A,'Normalization','pdf','FaceColor',color.ies);
+    xlabel('$A$')
+    ylabel('PDF')
+    axis tight;
+    title('Amplitude magnification factor')
+    box on;
+    savefig([savepath 'A_A_ref_relation.fig'])
+end
 
 
 tolerance = 5e-2;
