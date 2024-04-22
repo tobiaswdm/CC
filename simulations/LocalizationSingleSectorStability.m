@@ -33,7 +33,7 @@ q_removed = q_removed(1,:);
 
 % Plot ESIM
 figure(2);
-surf(R,Xi,Gamma_Scale,'EdgeAlpha',0)
+surf(R,Xi,Gamma_Scale,'EdgeColor','none')
 hold on;
 title('Tuned System')
 box on;
@@ -264,3 +264,24 @@ box on;
 xlabel('$r$')
 ylabel('$\hat{q}/\hat{q}_\mathrm{ref}$')
 savefig([savepath 'frequency_amplitude_mistuned_example.fig'])
+
+% Plot ESIM of mistuned system
+figure(6);
+surf(R,Xi,Gamma_Scale_mt,'EdgeColor','none','DisplayName','ESIM')
+hold on;
+contour3(R,Xi,Gamma_Scale_mt,[1 1]*sys.Gamma_Scale, '-k', 'LineWidth',3,...
+    'DisplayName','Nominal Clearance')
+if sys.sigma_g ~= 0
+   contour3(R,Xi,Gamma_Scale_mt,[1 1]*(1+sys.sigma_g)*sys.Gamma_Scale, ...
+       '--k', 'LineWidth',1.5,'DisplayName','Mistuned Clearance Std.')
+   contour3(R,Xi,Gamma_Scale_mt,[1 1]*(1-sys.sigma_g)*sys.Gamma_Scale, ...
+       '--k', 'LineWidth',1.5,'HandleVisibility','off')
+end
+title('Mistuned System')
+box on;
+colormap turbo
+xlabel('$r$')
+ylabel('$\xi$')
+zlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+set(gca,'YScale','log')
+axis tight;
