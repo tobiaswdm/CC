@@ -3,7 +3,7 @@
 %
 % Cylic chain of oscialltors with vibro-impact absorbers
 %
-% Code written by Tobias Weidemann - (C) 2024
+% Code written by Tobias Weidemann, M.Sc. - (C) 2024
 % University of Stuttgart, Germany
 % Institute of Aircraft Propulsion Systems
 %
@@ -39,7 +39,7 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-configuration = 'test_timeint'; % System configuration file
+configuration = 'test_slowflow'; % System configuration file
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -74,6 +74,9 @@ switch simulation
     case 'LocalizationSingleSectorStability'
         fprintf('Running stability analysis on localization in a single sector... \n')
         LocalizationSingleSectorStability;
+    case 'GsaprStability'
+        fprintf('Running stability analysis of GSAPR... \n')
+        GsaprStability;
     case 'DetermineSlowFlow'
         fprintf('Solving Slow Flow equation for AQPR in frequency domain... \n')
         DetermineSlowFlow;

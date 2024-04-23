@@ -72,7 +72,7 @@ c = CoarsenContour(c,...
 
 % Study asymptotic and practical stability of tuned system
 [qhat_practically_stable_t,qhat_stable_t,qhat_unstable_t,r_num_t] =...
-    StabilityAnalysis(c,sys,sol,exc,'tuned',true,true);
+    StabilityAnalysisLsapr(c,sys,sol,exc,'tuned',true,true);
 
 
 figure(4);
@@ -142,7 +142,8 @@ for i = 1:simsetup.LocalizationSingleSectorStability.N_MCS
     
         % Study only practical stability of mistuned system
         [qhat_practically_stable_array{j},~,~,r_num_array{j}] =...
-            StabilityAnalysis(c,sys_mt,sol,exc_mt,'mistuned',false,true);
+            StabilityAnalysisLsapr(c,sys_mt,sol,exc_mt,'mistuned',...
+            false,true);
         
         % Extract maximum
         if isempty(qhat_practically_stable_array{j})
@@ -229,7 +230,7 @@ c = CoarsenContour(c,...
 
 % Study asymptotic and practical stability of tuned system
 [qhat_practically_stable,qhat_stable,qhat_unstable,r_num] =...
-    StabilityAnalysis(c,sys_mt,sol,exc_mt,'mistuned',true,true);
+    StabilityAnalysisLsapr(c,sys_mt,sol,exc_mt,'mistuned',true,true);
 
 % Plot FRF
 figure(5);
@@ -271,7 +272,7 @@ surf(R,Xi,Gamma_Scale_mt,'EdgeColor','none','DisplayName','ESIM')
 hold on;
 contour3(R,Xi,Gamma_Scale_mt,[1 1]*sys.Gamma_Scale, '-k', 'LineWidth',3,...
     'DisplayName','Nominal Clearance')
-if sys.sigma_g ~= 0
+if sys.sigma_g ~= 0 % Only if clearance is mistuned
    contour3(R,Xi,Gamma_Scale_mt,[1 1]*(1+sys.sigma_g)*sys.Gamma_Scale, ...
        '--k', 'LineWidth',1.5,'DisplayName','Mistuned Clearance Std.')
    contour3(R,Xi,Gamma_Scale_mt,[1 1]*(1-sys.sigma_g)*sys.Gamma_Scale, ...

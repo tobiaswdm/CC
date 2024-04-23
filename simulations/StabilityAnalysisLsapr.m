@@ -1,5 +1,5 @@
 function [qhat_practically_stable,qhat_stable,qhat_unstable,r] =...
-    StabilityAnalysis(c,sys,sol,exc,disorder,stability,practical_stability)
+    StabilityAnalysisLsapr(c,sys,sol,exc,disorder,stability,practical_stability)
 %STABILITYANALYSIS Study stability along contour plot
 %
 % c - low level contour estimation

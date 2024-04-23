@@ -189,7 +189,7 @@ imagesc(exc.harmonic.r*TAU/2/pi,0:(sys.N_s-1),E./sum(E,1))
 hold on;
 colormap(1-pink.^2)
 cb = colorbar(); 
-ylabel(cb,'$E_j^\ast / E (\tau) $','Rotation',90,'Interpreter','latex')
+ylabel(cb,'$E_j / E (\tau) $','Rotation',90,'Interpreter','latex')
 title('Averaged Sector Energies Tuned')
 xlabel('$r\tau / (2 \pi)$')
 ylabel('Sector $j$')

@@ -1,7 +1,7 @@
 function DrawDispersion(sys,color,savepath)
 
 k_continuous =linspace(0,floor(sys.N_s/2),100*sys.N_s);
-[r_continuous,~] = DispersionRelation(k_continuous,sys);
+[r_continuous,~,~] = DispersionRelation(k_continuous,sys);
 
 figure;
 plot(k_continuous,r_continuous,'LineWidth',1.5,'Color',color.reference)

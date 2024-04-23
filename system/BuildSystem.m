@@ -8,7 +8,7 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
             sys.k = 0:floor(sys.N_s/2);
 
             % Eigenfrequencies
-            [sys.r_k,sys.r_k_noabs] = DispersionRelation(sys.k,sys);
+            [sys.r_k,sys.r_k_noabs,~] = DispersionRelation(sys.k,sys);
 
             % Build tuned stiffness matrix
             K = (1+2*sys.kappa_c)*eye(sys.N_s);

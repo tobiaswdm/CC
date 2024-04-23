@@ -147,3 +147,18 @@ simsetup.LocalizationSingleSectorStability.Nr = 1000;
 simsetup.LocalizationSingleSectorStability.N_MCS = 10;
 % Take every stepsize-th point of contour for stability analysis
 simsetup.LocalizationSingleSectorStability.stepsize = 200;
+
+% =========================================================================
+% Numerical stability analysis of GSAPR
+% =========================================================================
+
+% Maximum of clearance normalized amplitude
+simsetup.GsaprStability.xi_max = 20;
+% Number of samples of clearance normalized amplitude
+simsetup.GsaprStability.Nxi = 1000;
+% Range of excitaiton frequencies
+simsetup.GsaprStability.r_range = [0.9 1.1];
+% Number of samples of excitation frequencies
+simsetup.GsaprStability.Nr = 1000;
+% Take every stepsize-th point of contour for stability analysis
+simsetup.GsaprStability.stepsize = 200;
