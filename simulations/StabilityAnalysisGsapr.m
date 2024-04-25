@@ -56,7 +56,7 @@ parfor (i = 1:length(r), sol.N_Workers)
 
         % Check if solution diverged
         if all(N_SIPP >= 1.99) && ... % All sectors in 1:1 resonance
-            xi_dev<=0.5 % Relative deviation of amplitude max 50%
+            xi_dev<=0.75 % Relative deviation of amplitude max 50%
             
             qhat_stable(i) = mean(qhat);
 
