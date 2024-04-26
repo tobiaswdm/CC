@@ -23,7 +23,7 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'GSAPR_stability_k01_largeclearance_weakkc';
+configuration = 'Loc_Mistuned_Stability_GammaAPR_k0_0';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -56,7 +56,8 @@ run([configuration '.m'])
 % Run desired simulation
 switch simulation
     case 'VariationCouplingAndClearanceMCS'
-        fprintf('Running Variation of Coupling and Clearance with MCS... \n')
+        fprintf(['Running Variation of Coupling and Clearance' ...
+            ' with MCS... \n'])
         VariationCouplingAndClearanceMCS;
     case 'VariationCouplingAndClearance'
         fprintf('Running Variation of Coupling and Clearance... \n')
@@ -68,16 +69,19 @@ switch simulation
         fprintf('Running single time simulation... \n')
         TimeSimulation;
     case 'LocalizationSingleSectorAnalytical'
-        fprintf('Running analytical study on localization in a single sector... \n')
+        fprintf(['Running analytical study on localization in a single' ...
+            ' sector... \n'])
         LocalizationSingleSectorAnalytical;
     case 'LocalizationSingleSectorStability'
-        fprintf('Running stability analysis on localization in a single sector... \n')
+        fprintf(['Running stability analysis on localization in a' ...
+            ' single sector... \n'])
         LocalizationSingleSectorStability;
     case 'GsaprStability'
         fprintf('Running stability analysis of GSAPR... \n')
         GsaprStability;
     case 'DetermineSlowFlow'
-        fprintf('Solving Slow Flow equation for AQPR in frequency domain... \n')
+        fprintf(['Solving Slow Flow equation for AQPR in frequency' ...
+            ' domain... \n'])
         DetermineSlowFlow;
     case 'SlowFlowTimeSimulation'
         fprintf('Solving Slow Flow equation for AQPR in time domain... \n')
