@@ -1,9 +1,26 @@
 %% Initialize variables
 % Amplitude magnification factors
 
-% Linear case
-A_ref = zeros(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
+if sys.sigma_omega ~= 0
+    % Linear case if linear mistuning enabled
+    A_ref = zeros(...
+        simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
               simsetup.VariationCouplingAndClearanceMCS.N_MCS);
+    % 95% quantile Estimate 
+    A_95 = zeros(...
+        simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
+             simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
+
+    % Maximum linear Amplitude magnification factor
+    A_ref_max = zeros(...
+        1,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c);
+    delta_omega_Aref = zeros(...
+        sys.N_s,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+                     simsetup.VariationCouplingAndClearanceMCS.N_MCS);
+    delta_omega_Aref_max = zeros(...
+        sys.N_s,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c);
+
+end
 % Nonlinear case
 A = zeros(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
           simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,...
@@ -15,9 +32,8 @@ delta_omega_A = zeros(sys.N_s,simsetup.VariationCouplingAndClearanceMCS.Number_k
                  simsetup.VariationCouplingAndClearanceMCS.N_MCS);
 delta_omega_A_max = zeros(sys.N_s,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
                  simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
+
 % 95% quantile Estimate 
-A_95 = zeros(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
-             simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
 A_ref_95 = zeros(1,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c);
 
 % Actual amplitudes
@@ -47,13 +63,6 @@ Resp_type_mt = nan(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
                   simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale, ...
                   simsetup.VariationCouplingAndClearanceMCS.N_MCS);
 
-% Maximum linear Amplitude magnification factor
-A_ref_max = zeros(1,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c);
-delta_omega_Aref = zeros(sys.N_s,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
-                         simsetup.VariationCouplingAndClearanceMCS.N_MCS);
-delta_omega_Aref_max = zeros(sys.N_s,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c);
-
-
 % Determine couplings strengts
 switch simsetup.VariationCouplingAndClearanceMCS.Scaling_kappa_c
     case 'logarithmic'
@@ -71,13 +80,15 @@ end
 % Determine normalized clearances
 switch simsetup.VariationCouplingAndClearanceMCS.Scaling_GammaScale
     case 'logarithmic'
-        Gamma_Scale = logspace(log10(simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(1)),...
-                           log10(simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(2)),...
-                           simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
+        Gamma_Scale = logspace(...
+            log10(simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(1)),...
+               log10(simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(2)),...
+               simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
     case 'linear'
-        Gamma_Scale = linspace(simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(1),...
-                           simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(2),...
-                           simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
+        Gamma_Scale = linspace(...
+            simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(1),...
+           simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(2),...
+           simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
     otherwise
         error('Case not defined.')
 end
@@ -151,7 +162,7 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
             
             % Store linear amplitude magnification only for first
             % nominal clearance (only depends on coupling in linear case)
-            if j == 1
+            if j == 1 && sys_mt.delta_omega ~= 0
                 A_ref(i,k) = q_max/sys_mt.qref;
                 delta_omega_Aref(:,i,k) = sys_mt.delta_omega;
             end
@@ -161,14 +172,15 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
             r_lin = linspace(0.99*sys_mt.r_k_noabs_mt(1),...
                                1.01*sys_mt.r_k_noabs_mt(end),3000);
             q = max(abs(ComputeLinearResponse(r_lin,sys_mt,exc,...
-                                        'mistuned','removed_absorbers')),[],1);
+                                    'mistuned','removed_absorbers')),[],1);
 
             % Extract overall maximum and corresponding frequency
             [~,i_max] = max(q,[],2);
             r_range = horzcat(r_range,r_lin(i_max));
             
             % Scale frequency range for stepping
-            r_range = simsetup.VariationCouplingAndClearanceMCS.r_scale.*r_range;
+            r_range = simsetup.VariationCouplingAndClearanceMCS.r_scale.*...
+                r_range;
             r_steps = linspace(r_range(1),r_range(2),...
                        simsetup.VariationCouplingAndClearanceMCS.N_rSteps);
 
@@ -203,24 +215,29 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
         save([savepath 'A.mat'],'A')
         save([savepath 'A_max.mat'],'A_max')
         save([savepath 'A_95.mat'],'A_95')
-        save([savepath 'A_ref.mat'],'A_ref')
-        save([savepath 'delta_omega_Aref_max.mat'],'delta_omega_Aref_max')
         save([savepath 'delta_omega_A_max.mat'],'delta_omega_A_max')
         save([savepath 'Resp_type_mt.mat'],'Resp_type_mt')
         save([savepath 'Resp_type_tuned.mat'],'Resp_type_tuned')
         save([savepath 'qhat_mt.mat'],'qhat_mt')
         save([savepath 'qhat_mt_std.mat'],'qhat_mt_std')
+        if sys.delta_omega ~= 0
+            save([savepath 'A_ref.mat'],'A_ref')
+            save([savepath 'delta_omega_Aref_max.mat'],...
+                'delta_omega_Aref_max')
+        end
 
     end
-
-    % Find system with largest linear Amplitude magnification factor
-    [A_ref_max(i), k_max] = max(A_ref(i,:),[],2);
-    delta_omega_Aref_max(:,i) = delta_omega_Aref(:,i,k_max);
-    save([savepath 'A_ref_max.mat'],'A_ref_max')
-
-    % 95% Interval
-    A_ref_95(i) = quantile(A_ref(i,:),0.95);
-    save([savepath 'A_ref_95.mat'],'A_ref_95')
+    
+    if sys.delta_omega ~= 0
+        % Find system with largest linear Amplitude magnification factor
+        [A_ref_max(i), k_max] = max(A_ref(i,:),[],2);
+        delta_omega_Aref_max(:,i) = delta_omega_Aref(:,i,k_max);
+        save([savepath 'A_ref_max.mat'],'A_ref_max')
+    
+        % 95% Interval
+        A_ref_95(i) = quantile(A_ref(i,:),0.95);
+        save([savepath 'A_ref_95.mat'],'A_ref_95')
+    end
 
 end
 
@@ -228,25 +245,37 @@ end
 save([savepath 'A.mat'],'A')
 save([savepath 'A_max.mat'],'A_max')
 save([savepath 'A_95.mat'],'A_95')
-save([savepath 'A_ref.mat'],'A_ref')
-save([savepath 'A_ref_max.mat'],'A_ref_max')
-save([savepath 'A_ref_95.mat'],'A_ref_95')
-save([savepath 'delta_omega_Aref_max.mat'],'delta_omega_Aref_max')
 save([savepath 'delta_omega_A_max.mat'],'delta_omega_A_max')
 save([savepath 'Resp_type_mt.mat'],'Resp_type_mt')
 save([savepath 'Resp_type_tuned.mat'],'Resp_type_tuned')
 save([savepath 'qhat_mt.mat'],'qhat_mt')
 save([savepath 'qhat_mt_std.mat'],'qhat_mt_std')
+if sys.delta_omega ~= 0
+    save([savepath 'A_ref.mat'],'A_ref')
+    save([savepath 'A_ref_max.mat'],'A_ref_max')
+    save([savepath 'A_ref_95.mat'],'A_ref_95')
+    save([savepath 'delta_omega_Aref_max.mat'],'delta_omega_Aref_max')
+
+    figure(1)
+    s=scatterhistogram(squeeze(A(1,1,:)),A_ref(1,:),...
+        'HistogramDisplayStyle','bar','MarkerSize',2);
+    s.Color = {color.ies};
+    xlabel('$A$')
+    ylabel('$A_\mathrm{ref}$')
+    title(['Correlation: ' num2str(corr(A_ref(1,:)',squeeze(A(1,1,:))))])
+    savefig([savepath 'A_A_ref_relation.fig'])
+else
+    figure(1)
+    histogram(squeeze(A(1,1,:)),...
+        'Normalization','pdf','FaceColor',color.ies);
+    xlabel('$A$')
+    ylabel('PDF')
+    title('Amplitude Magnification')
+    axis tight;
+    savefig([savepath 'A_A_ref_relation.fig'])
+end
 
 
-figure(1)
-s=scatterhistogram(squeeze(A(1,1,:)),A_ref(1,:),'HistogramDisplayStyle',...
-    'bar','MarkerSize',2);
-s.Color = {color.ies};
-xlabel('$A$')
-ylabel('$A_\mathrm{ref}$')
-title(['Correlation: ' num2str(corr(A_ref(1,:)',squeeze(A(1,1,:))))])
-savefig([savepath 'A_A_ref_relation.fig'])
 
 
 if (simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale>1 && ...
