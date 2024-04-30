@@ -1,7 +1,32 @@
-clc;
-close all;
-clearvars;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Cylic chain of oscialltors with vibro-impact absorbers
+%
+% Code written by Tobias Weidemann, M.Sc. - (C) 2024
+% University of Stuttgart, Germany
+% Institute of Aircraft Propulsion Systems
+%
+% Contact: tobias.weidemann@ila.uni-stuttgart.de
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+clc; close all; clearvars;
+
+% Randomize Seed
+rng("shuffle");
+
+%% Configuration
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% System configuration file in configuration folder
+configuration = 'test_timeint';
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Add system paths
 fprintf('Adding folder paths... \n')
@@ -18,23 +43,7 @@ addpath('./harmonic_balance/')     % Path for HB
 fprintf('Initializing data structures... \n')
 InitStructs;
 
-% Randomize Seed
-rng("shuffle");
-
-%% Configuration
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-configuration = 'ConvMCS_kc0_01_sigmag_0_01_sigmaomega_0_01_Gamma_0_33_k0_0';  % System configuration file
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % Create path to save data and figures
-savepath = [savepath configuration '/'];
-[~,~] = mkdir(savepath);
-
 savepath = ['/data1/tweidemann/CCOO_mt/data/' configuration '/'];
 savepath_backup = ['/data1/tweidemann/CCOO_mt/data/' configuration '/backup/'];
 [~,~] = mkdir(savepath);
@@ -47,7 +56,8 @@ run([configuration '.m'])
 % Run desired simulation
 switch simulation
     case 'VariationCouplingAndClearanceMCS'
-        fprintf('Running Variation of Coupling and Clearance with MCS... \n')
+        fprintf(['Running Variation of Coupling and Clearance' ...
+            ' with MCS... \n'])
         VariationCouplingAndClearanceMCS;
     case 'VariationCouplingAndClearance'
         fprintf('Running Variation of Coupling and Clearance... \n')
@@ -59,18 +69,26 @@ switch simulation
         fprintf('Running single time simulation... \n')
         TimeSimulation;
     case 'LocalizationSingleSectorAnalytical'
-        fprintf('Running analytical study on localization in a single sector... \n')
+        fprintf(['Running analytical study on localization in a single' ...
+            ' sector... \n'])
         LocalizationSingleSectorAnalytical;
     case 'LocalizationSingleSectorStability'
-        fprintf('Running stability analysis on localization in a single sector... \n')
+        fprintf(['Running stability analysis on localization in a' ...
+            ' single sector... \n'])
         LocalizationSingleSectorStability;
+    case 'GsaprStability'
+        fprintf('Running stability analysis of GSAPR... \n')
+        GsaprStability;
     case 'DetermineSlowFlow'
-        fprintf('Solving Slow Flow equation for AQPR... \n')
+        fprintf(['Solving Slow Flow equation for AQPR in frequency' ...
+            ' domain... \n'])
         DetermineSlowFlow;
+    case 'SlowFlowTimeSimulation'
+        fprintf('Solving Slow Flow equation for AQPR in time domain... \n')
+        SlowFlowTimeSimulation;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')
 end
-
 
 [~,~] = rmdir(savepath_backup,'s');
