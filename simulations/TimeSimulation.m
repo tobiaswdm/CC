@@ -23,7 +23,8 @@ sol_mt = ConfigureIntegrator(sol,sys,exc,...
     'mistuned'); % Mistuned system
 
 % Simulation mistuned system
-[ETA_mt,QA_mt,Chi_mt,UA_mt,~] = MoreauIntegration(sys,exc,sol_mt,'mistuned');
+[ETA_mt,QA_mt,Chi_mt,UA_mt,~] = ...
+    MoreauIntegration(sys,exc,sol_mt,'mistuned');
 Q_mt = sys.Phi * ETA_mt;
 U_mt = sys.Phi * Chi_mt;
 
@@ -42,8 +43,8 @@ TAU = TAU - TAU(1);
 [qhat,qhat_std] = MeanAmplitude(Q(:,2:end),sol.N_Sample);
 
 % Modal energies
-[E_mod] = ModalEnegies(sys,sol,ETA,Chi);
-[E_mod_mt] = ModalEnegies(sys,sol_mt,ETA_mt,Chi_mt);
+[E_mod,E_mod_avg] = ModalEnegies(sys,sol,ETA,Chi);
+[E_mod_mt,~] = ModalEnegies(sys,sol_mt,ETA_mt,Chi_mt);
 
 % Spatial energies
 E = SpatialEnergies(sys,sol,Q,U,UA,'tuned');
@@ -287,3 +288,17 @@ xlabel('$r\tau / (2 \pi)$')
 ylabel('$\gamma_j$')
 axis tight;
 box on
+
+% Average modal energies tuned system
+figure(15)
+bar(0:floor(sys.N_s/2),E_mod_avg/sum(E_mod_avg),...
+    'FaceColor',color.ies)
+hold on;
+xline(exc.k,'--k','LineWidth',1,'Alpha',1)
+xlim([-0.499 floor(sys.N_s/2)+0.499])
+ylim([0 1])
+box on;
+xlabel('Wavenumber - $k$')
+ylabel(['$E_{k,\,\mathrm{avg}}^\mathrm{mod} / ' ...
+    'E_{\mathrm{tot, \, avg}}^\mathrm{mod}$'])
+title('Average modal energies - tuned system')
