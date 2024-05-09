@@ -162,7 +162,7 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
             
             % Store linear amplitude magnification only for first
             % nominal clearance (only depends on coupling in linear case)
-            if j == 1 && sys_mt.delta_omega ~= 0
+            if (j == 1) && (sys_mt.sigma_omega~=0)
                 A_ref(i,k) = q_max/sys_mt.qref;
                 delta_omega_Aref(:,i,k) = sys_mt.delta_omega;
             end
@@ -220,7 +220,7 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
         save([savepath 'Resp_type_tuned.mat'],'Resp_type_tuned')
         save([savepath 'qhat_mt.mat'],'qhat_mt')
         save([savepath 'qhat_mt_std.mat'],'qhat_mt_std')
-        if sys.delta_omega ~= 0
+        if sys.sigma_omega ~= 0
             save([savepath 'A_ref.mat'],'A_ref')
             save([savepath 'delta_omega_Aref_max.mat'],...
                 'delta_omega_Aref_max')
@@ -228,7 +228,7 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
 
     end
     
-    if sys.delta_omega ~= 0
+    if sys.sigma_omega ~= 0
         % Find system with largest linear Amplitude magnification factor
         [A_ref_max(i), k_max] = max(A_ref(i,:),[],2);
         delta_omega_Aref_max(:,i) = delta_omega_Aref(:,i,k_max);
@@ -250,7 +250,8 @@ save([savepath 'Resp_type_mt.mat'],'Resp_type_mt')
 save([savepath 'Resp_type_tuned.mat'],'Resp_type_tuned')
 save([savepath 'qhat_mt.mat'],'qhat_mt')
 save([savepath 'qhat_mt_std.mat'],'qhat_mt_std')
-if sys.delta_omega ~= 0
+save([savepath 'qhat_tuned.mat'],'qhat_tuned')
+if sys.sigma_omega ~= 0
     save([savepath 'A_ref.mat'],'A_ref')
     save([savepath 'A_ref_max.mat'],'A_ref_max')
     save([savepath 'A_ref_95.mat'],'A_ref_95')

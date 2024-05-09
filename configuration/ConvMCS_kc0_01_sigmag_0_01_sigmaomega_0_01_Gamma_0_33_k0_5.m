@@ -8,7 +8,7 @@ sys.Gamma_Scale = 0.33;    % Gamma = qref*Gamma_scale
 sys.sigma_omega = 0.01;
 sys.sigma_g = 0.01;
 
-exc.k = 0;
+exc.k = 5;
 
 % Number of Monte Carlos Simulations per nominal configuration
 % Maximum Number of MCSs

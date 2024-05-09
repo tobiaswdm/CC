@@ -228,7 +228,7 @@ c = contourc(r,xi,Gamma_Scale_mt',...
 c = CoarsenContour(c,...
     simsetup.LocalizationSingleSectorStability.stepsize);
 
-% Study asymptotic and practical stability of tuned system
+% Study asymptotic and practical stability of mistuned system
 [qhat_practically_stable,qhat_stable,qhat_unstable,r_num] =...
     StabilityAnalysisLsapr(c,sys_mt,sol,exc_mt,'mistuned',true,true);
 
@@ -286,3 +286,140 @@ ylabel('$\xi$')
 zlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
 set(gca,'YScale','log')
 axis tight;
+
+%% Highest practically stable amplitude in tuned system
+
+if any(~isnan(qhat_practically_stable_t))
+    
+    % Extract highest practically stable amplitude
+    [xi_max_t,i_max_t] = max(qhat_practically_stable_t/sys.Gamma(1));
+    exc.harmonic.r = r_num_t(i_max_t);
+
+    % Get initial conditions for time simulation
+    % Get initial conditions
+    sol.N_Tau = 300;
+    [sol.q0,sol.u0,sol.qa0,sol.ua0] = ...
+        LocalizedInitialConditions(sys,exc,xi_max_t,exc.harmonic.r,...
+        'tuned','practical_stability');
+    sol = ConfigureIntegrator(sol,sys,exc,...
+                    'no change',false,'tuned');
+    sol.NP_trans = sol.N_P*1000;
+
+    % Simulation
+    [ETA,QA,Chi,~,TAU] = MoreauIntegration(sys,exc,sol,'tuned');
+    Q = sys.Phi*ETA;
+    U = sys.Phi*Chi;
+
+    % Extract amplitudes
+    [qhat,~] = MeanAmplitude(Q(:,2:end),sol.N_Sample);
+    
+    figure(7)
+    plot(0:(sys.N_s-1),qhat/sys.qref,'-o','Color',color.ies,...
+        'LineWidth',1.5,'DisplayName','Simulation','MarkerSize',8)
+    hold on;
+    box on;
+    plot(0,qhat(1)/sys.qref,'o','Color',color.ies,...
+        'LineWidth',1.5,'MarkerFaceColor',color.ies,'MarkerSize',8,...
+        'HandleVisibility','off')
+    xlabel('Sector - $j$')
+    ylabel('$\hat{q}/\hat{q}_\mathrm{ref}$')
+    axis tight;
+    ylim([0.98*min(qhat), 1.02*max(qhat)]/sys.qref)
+
+
+    % Average modal energies tuned system
+    [E_mod,E_mod_avg] = ModalEnegies(sys,sol,ETA,Chi);
+
+    figure(8)
+    bar(0:floor(sys.N_s/2),E_mod_avg/sum(E_mod_avg),...
+        'FaceColor',color.ies)
+    hold on;
+    xline(exc.k,'--k','LineWidth',1,'Alpha',1)
+    xlim([-0.499 floor(sys.N_s/2)+0.499])
+    ylim([0 1])
+    box on;
+    xlabel('Wavenumber - $k$')
+    ylabel(['$E_{k,\,\mathrm{avg}}^\mathrm{mod} / ' ...
+        'E_{\mathrm{tot, \, avg}}^\mathrm{mod}$'])
+    title('Average modal energies - tuned system')
+    savefig([savepath 'modal energies_tuned_example.fig'])
+    
+    % Phase space tuned system
+    % Get analytical HB approximation
+    [Qana,~,~] = ...
+        RecoverCondensedDOFs(sys,exc,exc.harmonic.r,xi_max_t,'tuned');
+
+    expirTau = exp(1i*linspace(0,2*pi,sol.N_Sample));
+    
+    Qloc = real(Qana(1)*expirTau);
+    Uloc = real(1i*exc.harmonic.r*Qana(1)*expirTau);
+
+    Qnonloc = real(Qana(4)*expirTau);
+    Unonloc = real(1i*exc.harmonic.r*Qana(4)*expirTau);
+
+    figure(7)
+    hold on;
+    plot(0:(sys.N_s-1),abs(Qana)/sys.qref,'--o','Color',color.analytics,...
+        'LineWidth',1.5,'MarkerSize',8,'DisplayName','HB')
+    legend;
+    savefig([savepath 'amplitude_distribution_tuned_example.fig'])
+
+    
+    figure(9)
+    p1 = plot(Q(1,:)/sys.qref,U(1,:)/sys.qref/exc.harmonic.r,...
+        'LineWidth',0.5,'Color',color.ies);
+    hold on;
+    p1.Color(4) = 0.05;
+    plot(Qloc/sys.qref,Uloc/sys.qref/exc.harmonic.r,...
+        '--','LineWidth',2.5,'Color',color.analytics);
+    box on;
+    title('Synchronized Sector')
+    xlabel('$q/\hat{q}_\mathrm{ref}$')
+    ylabel('$u/\hat{u}_\mathrm{ref}$')
+    savefig([savepath 'phasespace_synch_tuned_example.fig'])
+
+    figure(10)
+    p2 = plot(Q(4,:)/sys.qref,U(4,:)/sys.qref/exc.harmonic.r,...
+        'LineWidth',0.5,'Color',color.ies);
+    hold on;
+    p2.Color(4) = 0.05;
+    plot(Qnonloc/sys.qref,Unonloc/sys.qref/exc.harmonic.r,...
+        '--','LineWidth',2.5,'Color',color.analytics);
+    box on;
+    title('Non-Synchronized Sector')
+    xlabel('$q/\hat{q}_\mathrm{ref}$')
+    ylabel('$u/\hat{u}_\mathrm{ref}$')
+    savefig([savepath 'phasespace_nonsynch_tuned_example.fig'])
+
+    % Plot absorber motion
+    figure(11)
+    plot(exc.harmonic.r*TAU/2/pi,QA(1,:),'LineWidth',1,...
+        'Color',color.iesabsorber)
+    hold on;
+    plot(exc.harmonic.r*TAU/2/pi,Q(1,:)+sys.Gamma(1),'LineWidth',1,...
+        'Color',color.ies)
+    plot(exc.harmonic.r*TAU/2/pi,Q(1,:)-sys.Gamma(1),'LineWidth',1,...
+        'Color',color.ies)
+    box on;
+    xlabel('$r\tau / (2 \pi)$')
+    ylabel('$q_\mathrm{a}$')
+    axis tight;
+    title('Synchronized Sector')
+    savefig([savepath 'absmove_synch_tuned_example.fig'])
+
+    figure(12)
+    plot(exc.harmonic.r*TAU/2/pi,QA(4,:),'LineWidth',1,...
+        'Color',color.iesabsorber)
+    hold on;
+    plot(exc.harmonic.r*TAU/2/pi,Q(4,:)+sys.Gamma(4),'LineWidth',1,...
+        'Color',color.ies)
+    plot(exc.harmonic.r*TAU/2/pi,Q(4,:)-sys.Gamma(4),'LineWidth',1,...
+        'Color',color.ies)
+    box on;
+    xlabel('$r\tau / (2 \pi)$')
+    ylabel('$q_\mathrm{a}$')
+    axis tight;
+    title('Non-Synchronized Sector')
+    savefig([savepath 'absmove_nonsynch_tuned_example.fig'])
+end
+
