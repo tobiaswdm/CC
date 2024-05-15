@@ -6,10 +6,9 @@ if sys.sigma_omega ~= 0
     A_ref = zeros(...
         simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
               simsetup.VariationCouplingAndClearanceMCS.N_MCS);
+
     % 95% quantile Estimate 
-    A_95 = zeros(...
-        simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
-             simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
+    A_ref_95 = zeros(1,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c);
 
     % Maximum linear Amplitude magnification factor
     A_ref_max = zeros(...
@@ -21,6 +20,7 @@ if sys.sigma_omega ~= 0
         sys.N_s,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c);
 
 end
+
 % Nonlinear case
 A = zeros(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
           simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,...
@@ -34,9 +34,13 @@ delta_omega_A_max = zeros(sys.N_s,simsetup.VariationCouplingAndClearanceMCS.Numb
                  simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
 
 % 95% quantile Estimate 
-A_ref_95 = zeros(1,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c);
+A_95 = zeros(...
+    simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
+         simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
+
 
 % Actual amplitudes
+qref = zeros(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,1);
 qhat_tuned = zeros(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
                 simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
 qhat_tuned_std = zeros(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
@@ -116,6 +120,7 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
 
     % Build nominal system
     [sys,exc] = BuildSystem(sys,exc,'tuned');
+    qref(i) = sys.qref;
 
     % Determine performance of tuned system with absorber
 
@@ -251,213 +256,171 @@ save([savepath 'Resp_type_tuned.mat'],'Resp_type_tuned')
 save([savepath 'qhat_mt.mat'],'qhat_mt')
 save([savepath 'qhat_mt_std.mat'],'qhat_mt_std')
 save([savepath 'qhat_tuned.mat'],'qhat_tuned')
+save([savepath 'qref.mat'],'qref')
+
+% Vectors containing the indices
+i_ind = repelem(1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
+       simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
+j_ind = repmat(1:simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale, ...
+       [1, simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c]);
+
+% Plot Scatter Histograms
 if sys.sigma_omega ~= 0
     save([savepath 'A_ref.mat'],'A_ref')
     save([savepath 'A_ref_max.mat'],'A_ref_max')
     save([savepath 'A_ref_95.mat'],'A_ref_95')
     save([savepath 'delta_omega_Aref_max.mat'],'delta_omega_Aref_max')
+    
+    for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
+             simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+        
+        figure(1)
+        subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+            simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
+        s=scatterhistogram(squeeze(A(i_ind(i),j_ind(i),:)),A_ref(i_ind(i),:),...
+        'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
+        s.Color = {color.ies};
+        s.LineWidth = 0.1;
+        xlabel('$A$')
+        ylabel('$A_\mathrm{ref}$')
+        title(['\rho = ' num2str(round(1000*corr(A_ref(i_ind(i),:)', ...
+        squeeze(A(i_ind(i),j_ind(i),:))))/1000)])
 
-    figure(1)
-    s=scatterhistogram(squeeze(A(1,1,:)),A_ref(1,:),...
-        'HistogramDisplayStyle','bar','MarkerSize',2);
-    s.Color = {color.ies};
-    xlabel('$A$')
-    ylabel('$A_\mathrm{ref}$')
-    title(['Correlation: ' num2str(corr(A_ref(1,:)',squeeze(A(1,1,:))))])
-    savefig([savepath 'A_A_ref_relation.fig'])
-else
-    figure(1)
-    histogram(squeeze(A(1,1,:)),...
-        'Normalization','pdf','FaceColor',color.ies);
+        figure(2)
+        subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+            simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
+        s=scatterhistogram(squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i)) ...
+            ,A_ref(i_ind(i),:),...
+        'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
+        s.Color = {color.ies};
+        s.LineWidth = 0.1;
+        xlabel('$\hat{q}^\ast / \hat{q}_\mathrm{ref}$')
+        ylabel('$A_\mathrm{ref}$')
+        title(['\rho = ' num2str(round(1000*corr(A_ref(i_ind(i),:)', ...
+        squeeze(qhat_mt(i_ind(i),j_ind(i),:))))/1000)])
+    end
+
+end
+
+
+for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
+         simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+    
+    [E,x] = ecdf(squeeze(A(i_ind(i),j_ind(i),:)));
+
+    figure(3)
+    subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
+    hold on;
+    yyaxis right;
+    stairs(x,E,'--k','LineWidth',1.5)
+    ylabel('CDF')
+    yyaxis left;
+    histogram(squeeze(A(i_ind(i),j_ind(i),:)),...
+    'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
+    box on;
     xlabel('$A$')
     ylabel('PDF')
-    title('Amplitude Magnification')
-    axis tight;
-    savefig([savepath 'A_A_ref_relation.fig'])
+    axis tight
+    
+    [E,x] = ecdf(squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i)));
+
+    figure(4)
+    subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
+    hold on;
+    yyaxis right;
+    stairs(x,E,'--k','LineWidth',1.5)
+    ylabel('CDF')
+    yyaxis left;
+    histogram(squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i)),...
+    'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
+    box on;
+    xlabel('$\hat{q}^\ast / \hat{q}_\mathrm{ref}$')
+    ylabel('PDF')
+    axis tight
+
 end
 
 
+figure(3)
+savefig([savepath 'A_PDF.fig'])
+
+figure(4)
+savefig([savepath 'qhat_PDF.fig'])
 
 
-if (simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale>1 && ...
-    simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c>1)
+% Plot response types
+figure(5)
+for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
+             simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
 
-    [XX,YY] = meshgrid(Gamma_Scale,kappa_c);
-    % Max A
-    figure(2);
-    surf(XX,YY,A_max,'EdgeAlpha',0)
+    subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+            simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
+    histogram(squeeze(Resp_type_mt(i_ind(i),j_ind(i),:)),'Normalization', ...
+        'pdf','FaceColor',color.ies,'FaceAlpha',1,'LineWidth',1);
     hold on;
-    title('Maximum from MCSs')
-    box on;
-    colormap turbo
-    xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
-    ylabel('$\kappa_\mathrm{c}$')
-    zlabel('$\mathrm{max}\left\{A \right\}$')
-    set(gca,'XScale','log')
-    set(gca,'YScale','log')
-    xlim([simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(1),...
-         simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(2)])
-    ylim([simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(1),...
-         simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(2)])
-    zlim([-inf inf])
-    savefig([savepath 'A_max.fig'])
-    
-    % 95% Interval
-    figure(3);
-    surf(XX,YY,A_95,'EdgeAlpha',0)
-    hold on;
-    title('95\% percentile w/ absorbers')
-    box on;
-    colormap turbo
-    xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
-    ylabel('$\kappa_\mathrm{c}$')
-    zlabel('$A | \mathcal{F} (A) = 95\, \%$')
-    set(gca,'XScale','log')
-    set(gca,'YScale','log')
-    xlim([simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(1),...
-         simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(2)])
-    ylim([simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(1),...
-         simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(2)])
-    zlim([-inf inf])
-    savefig([savepath 'A_95.fig'])
-    
-    
-    figure(4);
-    plot(kappa_c,A_ref_95,'LineWidth',1.5,'Color',color.reference)
-    hold on;
-    title('95\% percentile w/o absorbers')
-    xlabel('$\kappa_\mathrm{c}$')
-    ylabel('$A_\mathrm{ref} | \mathcal{F} (A_\mathrm{ref}) = 95\, \%$')
-    xlim([simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(1),...
-         simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(2)])
-    ylim([-inf inf])
-    savefig([savepath 'A_ref_95.fig'])
-    
-    % Max weibull
-    figure(5);
-    plot(kappa_c,A_ref_max,'LineWidth',1.5,'Color',color.reference)
-    hold on;
-    title('Maximum w/o absorbers')
-    xlabel('$\kappa_\mathrm{c}$')
-    ylabel('$\mathrm{max}\left\{A_\mathrm{ref} \right\}$')
-    xlim([simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(1),...
-         simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(2)])
-    ylim([-inf inf])
-    savefig([savepath 'A_ref_max.fig'])
-
-elseif (simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale==1 && ...
-        simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c>1)
-    % A max
-    figure(2);
-    plot(kappa_c,A_max,'LineWidth',1.5,'Color',color.ies)
-    hold on;
-    title('Maximum from MCSs')
-    box on;
-    xlabel('$\kappa_\mathrm{c}$')
-    ylabel('$\mathrm{max}\left\{A \right\}$')
-    set(gca,'XScale','log')
-    xlim([simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(1),...
-         simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(2)])
-    ylim([-inf inf])
-    savefig([savepath 'A_max.fig'])
-    
-    % 95% Interval
-    figure(3);
-    plot(kappa_c,A_95,'LineWidth',1.5,'Color',color.ies)
-    hold on;
-    title('95\% percentile w/ absorbers')
-    box on;
-    xlabel('$\kappa_\mathrm{c}$')
-    ylabel('$A | \mathcal{F} (A) = 95\, \%$')
-    set(gca,'XScale','log')
-    xlim([simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(1),...
-         simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(2)])
-    ylim([-inf inf])
-    savefig([savepath 'A_95.fig'])
-   
-    % A ref Weibull
-    figure(4);
-    plot(kappa_c,A_ref_95,'LineWidth',1.5,'Color',color.reference)
-    hold on;
-    title('95\% percentile w/o absorbers')
-    xlabel('$\kappa_\mathrm{c}$')
-    ylabel('$A_\mathrm{ref} | \mathcal{F} (A_\mathrm{ref}) = 95\, \%$')
-    xlim([simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(1),...
-         simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(2)])
-    ylim([-inf inf])
-    savefig([savepath 'A_ref_95.fig'])
-
-    % A ref max
-    figure(5);
-    plot(kappa_c,A_ref_max,'LineWidth',1.5,'Color',color.reference)
-    hold on;
-    title('95\% percentile w/o absorbers')
-    xlabel('$\kappa_\mathrm{c}$')
-    ylabel('$\mathrm{max}\left\{A_\mathrm{ref} \right\}$')
-    xlim([simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(1),...
-         simsetup.VariationCouplingAndClearanceMCS.Range_kappa_c(2)])
-    ylim([-inf inf])
-    savefig([savepath 'A_ref_max.fig'])
-
-elseif (simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale>1 && ...
-        simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c==1)
-
-    % A max
-    figure(2);
-    plot(Gamma_Scale,A_max,'LineWidth',1.5,'Color',color.ies)
-    hold on;
-    title('Maximum from MCSs')
-    box on;
-    xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
-    ylabel('$\mathrm{max}\left\{A \right\}$')
-    set(gca,'XScale','log')
-    axis tight;
-    xlim([simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(1),...
-         simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(2)])
-    savefig([savepath 'A_max.fig'])
-    
-    % 95% Interval
-    figure(3);
-    plot(Gamma_Scale,A_95,'LineWidth',1.5,'Color',color.ies)
-    hold on;
-    title('95\% percentile w/ absorbers')
-    box on;
-    xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
-    ylabel('$A | \mathcal{F} (A) = 95\, \%$')
-    set(gca,'XScale','log')
-    xlim([simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(1),...
-         simsetup.VariationCouplingAndClearanceMCS.Range_GammaScale(2)])
-    ylim([-inf inf])
-    savefig([savepath 'A_95.fig'])
-   
-    disp(['95% Interval A_ref estimation: ' num2str(A_ref_95)])
-    disp(['Maximum A_ref: ' num2str(A_ref_max)])
-
-else
-    disp(['95% Interval A estimation: ' num2str(A_95)])
-    disp(['Maximum A: ' num2str(A_max)])
-    disp(['95% Interval A_ref estimation: ' num2str(A_ref_95)])
-    disp(['Maximum A_ref: ' num2str(A_ref_max)])
+    set(gca,'XTick',[0 1 2],'XTickLabel',{'GSR';'LSR';'SMR'})
+    ylabel('PDF')
+    xlim([-0.5 2.5])
+    ylim([0 1])
+    box on;      
 end
-
-
-figure(6)
-histogram(squeeze(Resp_type_mt(1,1,:)),'Normalization','pdf',...
-    'FaceColor',color.ies);
-hold on;
-set(gca,'XTick',[0 1 2],'XTickLabel',{'GSAPR';'LSAPR';'SMR'})
-ylabel('PDF')
-title('Solution types')
-axis tight;
 savefig([savepath 'Resp_type_mt.fig'])
 
+
+% Colorscale
+if simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale==3
+    cScale = [myColors('orange');myColors('cyan');myColors('black')];
+else
+    cScale = 1-hot(round( ...
+    1.8*simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale));
+    cScale = flipud( ...
+        cScale(1:simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,:));
+end
+
+figure(6)
+hold on;
+for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale
+    yyaxis left;
+    plot(kappa_c,A_95(:,i),'-o','LineWidth',1.5,'Color',cScale(i,:), ...
+        'MarkerFaceColor',cScale(i,:))
+    box on;
+    yyaxis right;
+    plot(kappa_c,(A_95(:,i).*qhat_tuned(:,i))./qref ...
+        ,'--+','LineWidth',1.5,'Color',cScale(i,:))
+end
+set(gca,'XScale','log')
+xlabel('$\kappa_\mathrm{c}$')
+yyaxis left
+ylabel('$A_{95}$')
+axis tight;
+yyaxis right
+ylabel('$(\hat{q}^\ast / \hat{q}_\mathrm{ref})_{95}$')
+savefig([savepath 'A_95.fig'])
+
 figure(7)
-s=scatterhistogram(squeeze(qhat_mt(1,1,:))/sys.qref,A_ref(1,:),'HistogramDisplayStyle','bar');
-s.Color = {color.ies};
-xlabel('$\mathrm{max}_j \left\{ \hat{q}_j^\ast \right\} / \hat{q}_\mathrm{ref}$')
-ylabel('$A_\mathrm{ref}$')
-title(['Correlation: ' num2str(corr(A_ref(1,:)',squeeze(qhat_mt(1,1,:))/sys.qref))])
-savefig([savepath 'qhat_A_ref_relation.fig'])
+hold on;
+for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale
+    yyaxis left;
+    plot(kappa_c,A_max(:,i),'-o','LineWidth',1.5,'Color',cScale(i,:), ...
+        'MarkerFaceColor',cScale(i,:))
+    box on;
+    yyaxis right;
+    plot(kappa_c,A_max(:,i).*qhat_tuned(:,i)./qref ...
+        ,'--+','LineWidth',1.5,'Color',cScale(i,:))
+end
+set(gca,'XScale','log')
+xlabel('$\kappa_\mathrm{c}$')
+yyaxis left
+ylabel('$A_\mathrm{max}$')
+axis tight;
+yyaxis right
+ylabel('$(\hat{q}^\ast / \hat{q}_\mathrm{ref})_\mathrm{max}$')
+savefig([savepath 'A_max.fig'])
+
+
+
 
 
 
