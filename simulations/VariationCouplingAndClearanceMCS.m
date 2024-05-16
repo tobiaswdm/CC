@@ -270,13 +270,21 @@ if sys.sigma_omega ~= 0
     save([savepath 'A_ref_max.mat'],'A_ref_max')
     save([savepath 'A_ref_95.mat'],'A_ref_95')
     save([savepath 'delta_omega_Aref_max.mat'],'delta_omega_Aref_max')
+
+    figure(1)
+    tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+            simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+    figure(2)
+    tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+            simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
     
     for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
              simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
         
         figure(1)
-        subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
-            simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
+        %subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        %    simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
+        nexttile
         s=scatterhistogram(squeeze(A(i_ind(i),j_ind(i),:)),A_ref(i_ind(i),:),...
         'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
         s.Color = {color.ies};
@@ -287,8 +295,9 @@ if sys.sigma_omega ~= 0
         squeeze(A(i_ind(i),j_ind(i),:))))/1000)])
 
         figure(2)
-        subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
-            simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
+        %subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        %    simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
+        nexttile
         s=scatterhistogram(squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i)) ...
             ,A_ref(i_ind(i),:),...
         'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
@@ -300,8 +309,21 @@ if sys.sigma_omega ~= 0
         squeeze(qhat_mt(i_ind(i),j_ind(i),:))))/1000)])
     end
 
+    figure(1)
+    savefig([savepath 'A_A_ref_relation.fig'])
+
+    figure(2)
+    savefig([savepath 'qhat_A_ref_relation.fig'])
+
 end
 
+
+figure(3)
+tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+figure(4)
+tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
 
 for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
          simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
@@ -309,9 +331,9 @@ for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
     [E,x] = ecdf(squeeze(A(i_ind(i),j_ind(i),:)));
 
     figure(3)
-    subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
-        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
+    nexttile
     hold on;
+    colororder({color.ies;color.analytics})
     yyaxis right;
     stairs(x,E,'--k','LineWidth',1.5)
     ylabel('CDF')
@@ -326,9 +348,9 @@ for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
     [E,x] = ecdf(squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i)));
 
     figure(4)
-    subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
-        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
+    nexttile
     hold on;
+    colororder({color.ies;color.analytics})
     yyaxis right;
     stairs(x,E,'--k','LineWidth',1.5)
     ylabel('CDF')
@@ -352,11 +374,12 @@ savefig([savepath 'qhat_PDF.fig'])
 
 % Plot response types
 figure(5)
+tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
 for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
              simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
 
-    subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
-            simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
+    nexttile
     histogram(squeeze(Resp_type_mt(i_ind(i),j_ind(i),:)),'Normalization', ...
         'pdf','FaceColor',color.ies,'FaceAlpha',1,'LineWidth',1);
     hold on;
@@ -371,57 +394,66 @@ savefig([savepath 'Resp_type_mt.fig'])
 
 % Colorscale
 if simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale==3
-    cScale = [myColors('orange');myColors('cyan');myColors('black')];
+    lstyleA = {'-+';':+';'--+'};
+    lstyleq = {'-+';':+';'--+'};
 else
-    cScale = 1-hot(round( ...
-    1.8*simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale));
-    cScale = flipud( ...
-        cScale(1:simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,:));
+    lstyleA = repmat({'-o';'--o';':o'}, ...
+        [simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale 1]);
+    lstyleq = repmat({'-o';'--o';':o'}, ...
+        [simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale 1]);
 end
 
 figure(6)
 hold on;
+colororder({color.analytics;color.ies})
 for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale
     yyaxis left;
-    plot(kappa_c,A_95(:,i),'-o','LineWidth',1.5,'Color',cScale(i,:), ...
-        'MarkerFaceColor',cScale(i,:))
+    plot(kappa_c,A_95(:,i),lstyleA{i},'LineWidth',1.5,'Color',color.analytics, ...
+        'MarkerFaceColor',color.analytics)
     box on;
     yyaxis right;
     plot(kappa_c,(A_95(:,i).*qhat_tuned(:,i))./qref ...
-        ,'--+','LineWidth',1.5,'Color',cScale(i,:))
+        ,lstyleq{i},'LineWidth',1.5,'Color',color.ies,'HandleVisibility','off')
 end
 set(gca,'XScale','log')
 xlabel('$\kappa_\mathrm{c}$')
+if simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale==3
+    legend('$\Gamma_\mathrm{APR}$','$\Gamma_\mathrm{opt}$', ...
+        '$\Gamma_\mathrm{SMR}$')
+end
 yyaxis left
 ylabel('$A_{95}$')
 axis tight;
 yyaxis right
 ylabel('$(\hat{q}^\ast / \hat{q}_\mathrm{ref})_{95}$')
+axis tight;
 savefig([savepath 'A_95.fig'])
 
 figure(7)
 hold on;
+colororder({color.analytics;color.ies})
 for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale
     yyaxis left;
-    plot(kappa_c,A_max(:,i),'-o','LineWidth',1.5,'Color',cScale(i,:), ...
-        'MarkerFaceColor',cScale(i,:))
+    plot(kappa_c,A_max(:,i),lstyleA{i},'LineWidth',1.5,'Color',color.analytics, ...
+        'MarkerFaceColor',color.analytics)
     box on;
     yyaxis right;
     plot(kappa_c,A_max(:,i).*qhat_tuned(:,i)./qref ...
-        ,'--+','LineWidth',1.5,'Color',cScale(i,:))
+        ,lstyleq{i},'LineWidth',1.5,'Color',color.ies,'HandleVisibility','off')
 end
 set(gca,'XScale','log')
 xlabel('$\kappa_\mathrm{c}$')
+if simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale==3
+    legend('$\Gamma_\mathrm{APR}$','$\Gamma_\mathrm{opt}$', ...
+        '$\Gamma_\mathrm{SMR}$')
+end
 yyaxis left
 ylabel('$A_\mathrm{max}$')
 axis tight;
 yyaxis right
 ylabel('$(\hat{q}^\ast / \hat{q}_\mathrm{ref})_\mathrm{max}$')
+axis tight;
 savefig([savepath 'A_max.fig'])
-
-
-
-
 
 
 function parsave(savepath_backup,i,j,k,qhat_tuned, qhat_tuned_std, N_sipp_tuned, qhat_mt, qhat_std_mt, N_sipp_mt)
