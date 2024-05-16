@@ -5,6 +5,7 @@ if sys.sigma_omega ~= 0
     % Linear case if linear mistuning enabled
     A_ref = zeros(...
         simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale, ...
               simsetup.VariationCouplingAndClearanceMCS.N_MCS);
 
     % 95% quantile Estimate 
@@ -167,9 +168,12 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
             
             % Store linear amplitude magnification only for first
             % nominal clearance (only depends on coupling in linear case)
-            if (j == 1) && (sys_mt.sigma_omega~=0)
-                A_ref(i,k) = q_max/sys_mt.qref;
-                delta_omega_Aref(:,i,k) = sys_mt.delta_omega;
+            if sys_mt.sigma_omega~=0
+                A_ref(i,j,k) = q_max/sys_mt.qref;
+
+                if j == 1
+                    delta_omega_Aref(:,i,k) = sys_mt.delta_omega;
+                end
             end
             
             % Removed absorbers
@@ -206,8 +210,7 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
             % Response type
             Resp_type_mt(i,j,k) = ResponseType(N_sipp_mt_temp);
         end
-
-        
+     
 
         % Maximum amplification
         [A_max(i,j), k_max] = max(A(i,j,:));
@@ -235,12 +238,12 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
     
     if sys.sigma_omega ~= 0
         % Find system with largest linear Amplitude magnification factor
-        [A_ref_max(i), k_max] = max(A_ref(i,:),[],2);
+        [A_ref_max(i), k_max] = max(A_ref(i,1,:),[],3);
         delta_omega_Aref_max(:,i) = delta_omega_Aref(:,i,k_max);
         save([savepath 'A_ref_max.mat'],'A_ref_max')
     
         % 95% Interval
-        A_ref_95(i) = quantile(A_ref(i,:),0.95);
+        A_ref_95(i) = quantile(squeeze(A_ref(i,1,:)),0.95);
         save([savepath 'A_ref_95.mat'],'A_ref_95')
     end
 
@@ -285,13 +288,15 @@ if sys.sigma_omega ~= 0
         %subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
         %    simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
         nexttile
-        s=scatterhistogram(squeeze(A(i_ind(i),j_ind(i),:)),A_ref(i_ind(i),:),...
+        s=scatterhistogram(squeeze(A(i_ind(i),j_ind(i),:)), ...
+            A_ref(i_ind(i),j_ind(i),:),...
         'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
         s.Color = {color.ies};
         s.LineWidth = 0.1;
         xlabel('$A$')
         ylabel('$A_\mathrm{ref}$')
-        title(['\rho = ' num2str(round(1000*corr(A_ref(i_ind(i),:)', ...
+        title(['\rho = ' num2str(round(1000*corr(squeeze(...
+        A_ref(i_ind(i),j_ind(i),:)), ...
         squeeze(A(i_ind(i),j_ind(i),:))))/1000)])
 
         figure(2)
@@ -299,13 +304,14 @@ if sys.sigma_omega ~= 0
         %    simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
         nexttile
         s=scatterhistogram(squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i)) ...
-            ,A_ref(i_ind(i),:),...
+            ,A_ref(i_ind(i),j_ind(i),:),...
         'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
         s.Color = {color.ies};
         s.LineWidth = 0.1;
         xlabel('$\hat{q}^\ast / \hat{q}_\mathrm{ref}$')
         ylabel('$A_\mathrm{ref}$')
-        title(['\rho = ' num2str(round(1000*corr(A_ref(i_ind(i),:)', ...
+        title(['\rho = ' num2str(round(1000*corr(squeeze(...
+        A_ref(i_ind(i),j_ind(i),:)), ...
         squeeze(qhat_mt(i_ind(i),j_ind(i),:))))/1000)])
     end
 
