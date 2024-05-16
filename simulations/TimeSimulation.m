@@ -87,14 +87,22 @@ xlim([-0.5 sys.N_s-0.5])
 savefig([savepath 'amplitude_distribution.fig'])
 
 % Tuned Displacement
-index=[1 6 2 7 3 8 4 9 5 10];
+index = zeros(1,sys.N_s);
+if rem(sys.N_s,2)
+    index(1:2:sys.N_s) = 1:ceil(sys.N_s/2);
+    index(2:2:end) = (ceil(sys.N_s/2)+1):sys.N_s;
+else
+    index(1:2:(sys.N_s-1)) = 1:(sys.N_s/2);
+    index(2:2:sys.N_s) = (sys.N_s/2+1):sys.N_s;
+end
 figure(3);
 hold on;
-title('Displacement')
-for i = 1:min(sys.N_s,10)
+tiledlayout(ceil(sys.N_s/2),2)
+for i = 1:sys.N_s
     name = ['$q_' num2str(index(i)-1) '$'];
-    ax(i)=subplot(5,2,i);
+    ax(i)=nexttile;
     hold on;
+    colororder({color.ies;color.analytics})
     box on;
     yyaxis right
     plot(1:sol.N_Tau,N_IPP(index(i),:),'LineWidth',1,'Color',color.background)
@@ -116,10 +124,10 @@ clear ax;
 % Mistuned Displacement
 figure(4);
 hold on;
-title('Displacement - Mistuned')
-for i = 1:min(sys.N_s,10)
+tiledlayout(ceil(sys.N_s/2),2)
+for i = 1:sys.N_s
     name = ['$q_' num2str(index(i)-1) '^\ast $'];
-    ax(i)=subplot(5,2,i);
+    ax(i)=nexttile;
     hold on;
     box on;
     plot(exc.harmonic.r*TAU/2/pi,Q_mt(index(i),:),'LineWidth',1,'Color',color.ies)
@@ -137,9 +145,10 @@ clear ax;
 % Absorber movement tuned
 figure(5);
 hold on;
-for i = 1:min(sys.N_s,10)
+tiledlayout(ceil(sys.N_s/2),2)
+for i = 1:sys.N_s
     name = ['$q_{\mathrm{a},' num2str(index(i)-1) '}$'];
-    ax(i)=subplot(5,2,i);
+    ax(i)=nexttile;
     hold on;
     box on;
     plot(exc.harmonic.r*TAU/2/pi,...
@@ -162,9 +171,10 @@ clear ax;
 % Absorber movement mistuned
 figure(6);
 hold on;
-for i = 1:min(sys.N_s,10)
+tiledlayout(ceil(sys.N_s/2),2)
+for i = 1:sys.N_s
     name = ['$q_{\mathrm{a},' num2str(index(i)-1) '}^\ast $'];
-    ax(i)=subplot(5,2,i);
+    ax(i)=nexttile;
     hold on;
     box on;
     plot(exc.harmonic.r*TAU/2/pi,...
@@ -265,7 +275,8 @@ ProjectOnSIM(Q(1,2:end),QA(1,2:end),sol,sys,color,savepath,'tuned')
 
 % Slow flow of sector 0
 figure(14)
-subplot(2,1,1)
+tiledlayout(2,1)
+nexttile
 hold on;
 plot(exc.harmonic.r*TAU/2/pi,abs(QH(1,:)),'LineWidth',1.5,...
     'Color',color.ies,'Displayname','$j=0$')
@@ -277,7 +288,7 @@ ylabel('$\Phi_j$')
 axis tight
 box on
 legend;
-subplot(2,1,2)
+nexttile
 hold on;
 plot(exc.harmonic.r*TAU/2/pi,unwrap(angle((QH(1,:)))),'LineWidth',1.5,...
     'Color',color.ies,'Displayname','$j=0$')
