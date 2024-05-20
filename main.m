@@ -23,7 +23,7 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'test_timeint';
+configuration = 'VariationCouplingAndClearanceMCS_eigenfreqmist_k0_5';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,6 +86,9 @@ switch simulation
     case 'SlowFlowTimeSimulation'
         fprintf('Solving Slow Flow equation for AQPR in time domain... \n')
         SlowFlowTimeSimulation;
+    case 'LinearMistuningAnalysis'
+        fprintf('Performing Linear Mistuning Analysis using MCS... \n')
+        LinearMistuningAnalysis;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')

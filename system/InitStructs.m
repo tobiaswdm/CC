@@ -162,3 +162,18 @@ simsetup.GsaprStability.r_range = [0.9 1.1];
 simsetup.GsaprStability.Nr = 1000;
 % Take every stepsize-th point of contour for stability analysis
 simsetup.GsaprStability.stepsize = 200;
+
+% =========================================================================
+% Linear Mistuning Analysis using MCS
+% =========================================================================
+
+% Number of Monte Carlos Simulations per nominal configuration
+simsetup.LinearMistuningAnalysis.N_MCS = 50;
+
+% Parameters of nominal coupling
+% Range
+simsetup.LinearMistuningAnalysis.Range_kappa_c = [1e-4,3];
+% Scaling of discrete points in interval
+simsetup.LinearMistuningAnalysis.Scaling_kappa_c = 'logarithmic';
+% Number of discrete points in interval
+simsetup.LinearMistuningAnalysis.Number_kappa_c = 10;

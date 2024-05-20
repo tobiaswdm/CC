@@ -159,7 +159,7 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
             % Fixed absorbers
             % Frequency response function of max amplitude
             r_lin = linspace(0.99*sys_mt.r_k_mt(1),...
-                               1.01*sys_mt.r_k_mt(end),3000);
+                               1.01*sys_mt.r_k_mt(end),12000);
             q = max(abs(ComputeLinearResponse(r_lin,sys_mt,exc,...
                                         'mistuned','fixed_absorbers')),[],1);
             % Extract overall maximum and corresponding frequency
@@ -179,7 +179,7 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
             % Removed absorbers
             % Frequency response function of max amplitude
             r_lin = linspace(0.99*sys_mt.r_k_noabs_mt(1),...
-                               1.01*sys_mt.r_k_noabs_mt(end),3000);
+                               1.01*sys_mt.r_k_noabs_mt(end),12000);
             q = max(abs(ComputeLinearResponse(r_lin,sys_mt,exc,...
                                     'mistuned','removed_absorbers')),[],1);
 
@@ -289,7 +289,7 @@ if sys.sigma_omega ~= 0
         %    simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
         nexttile
         s=scatterhistogram(squeeze(A(i_ind(i),j_ind(i),:)), ...
-            A_ref(i_ind(i),j_ind(i),:),...
+            squeeze(A_ref(i_ind(i),j_ind(i),:)),...
         'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
         s.Color = {color.ies};
         s.LineWidth = 0.1;
@@ -304,7 +304,7 @@ if sys.sigma_omega ~= 0
         %    simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
         nexttile
         s=scatterhistogram(squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i)) ...
-            ,A_ref(i_ind(i),j_ind(i),:),...
+            ,squeeze(A_ref(i_ind(i),j_ind(i),:)),...
         'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
         s.Color = {color.ies};
         s.LineWidth = 0.1;
