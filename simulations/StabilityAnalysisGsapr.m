@@ -18,7 +18,7 @@ qhat_stable = nan(1,length(r));
 qhat_unstable = nan(1,length(r));
 
 % Only evaluate final 50 Periods
-sol.N_Tau = 50;
+sol.N_Tau = 300;
 
 parfor (i = 1:length(r), sol.N_Workers)
 %for i = 1:length(r)
@@ -43,20 +43,26 @@ parfor (i = 1:length(r), sol.N_Workers)
         sol_loop.NP_trans = sol_loop.N_P*1000; 
 
         % Simulation
-        [ETA,~,~,UA,~] = ...
+        [ETA,~,CHI,UA,~] = ...
             MoreauIntegration(sys_loop,exc_loop,sol_loop,'tuned');
 
         % Extract Amplitudes and Significant impacts
-        [qhat,~] = ...
+        [qhat,qhatstd] = ...
             MeanAmplitude(sys_loop.Phi*ETA(:,2:end),sol_loop.N_Sample);
         N_SIPP = CountImpacts(UA,sol_loop.N_Tau,'average');
 
         % Relative deviation from analytical model
         xi_dev = abs((mean(qhat)/sys_loop.Gamma(1)-xi(i))/xi(i)); 
+        
+        % Modal Energies
+        [~,E_avg] = ModalEnegies(sys_loop,sol_loop,ETA,CHI);
+        E_avg = E_avg/sum(E_avg);
+        E_avg(exc.k+1) = [];
 
         % Check if solution diverged
         if all(N_SIPP >= 1.99) && ... % All sectors in 1:1 resonance
-            xi_dev<=0.75 % Relative deviation of amplitude max 50%
+            (xi_dev<=0.25) && ... % Relative deviation of amplitude max 50%
+            all(qhatstd./qhat <= 5e-2)
             
             qhat_stable(i) = mean(qhat);
 
