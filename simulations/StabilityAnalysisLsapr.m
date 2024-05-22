@@ -1,4 +1,5 @@
-function [qhat_practically_stable,qhat_stable,qhat_unstable,r] =...
+function [qhatmax_practically_stable,qhatmax_stable,qhatmax_unstable, ... 
+    qhat_practically_stable,qhat_stable,qhat_unstable,r] =...
     StabilityAnalysisLsapr(c,sys,sol,exc,disorder,stability,practical_stability)
 %STABILITYANALYSIS Study stability along contour plot
 %
@@ -7,7 +8,7 @@ function [qhat_practically_stable,qhat_stable,qhat_unstable,r] =...
 % practical_stability - study practical stability? - true, false
 
 % Determine maximum amplitude allong contour and its kin. accessible ranges
-[qhat_max_ana,~,~,r] = ...
+[qhat_max_ana,~,qhat_synchronized,r] = ...
     LocalizedFrequencyAmplitudeCurve(c,sys,exc,disorder);
 
 % Find beginning of level curves in c
@@ -17,12 +18,17 @@ c(2,floor(c(2,:))==c(2,:)) = NaN;
 xi = c(2,2:end);
 
 % Initialize amplitudes
+% Maximum
+qhatmax_practically_stable = nan(1,length(r));
+qhatmax_stable = nan(1,length(r));
+qhatmax_unstable = nan(1,length(r));
+% Synchronized sector
 qhat_practically_stable = nan(1,length(r));
 qhat_stable = nan(1,length(r));
 qhat_unstable = nan(1,length(r));
 
 % Only evaluate final 50 Periods
-sol.N_Tau = 50;
+sol.N_Tau = 300;
 
 parfor (i = 1:length(r), sol.N_Workers)
 %for i = 1:length(r)
@@ -76,9 +82,10 @@ parfor (i = 1:length(r), sol.N_Workers)
             % Check if solution diverged
             if N_SIPP(1) >= 1.99 && ... % Sector in 1:1 resonance
                 all(N_SIPP(2:end)==0) && ... % No impacts in remaining secs
-                xi_dev<=0.5 % Relative deviation of amplitude max 50%
+                xi_dev<=0.3 % Relative deviation of amplitude max 50%
                 
-                qhat_stable(i) = max(qhat);
+                qhat_stable(i) = qhat(1);
+                qhatmax_stable(i) = max(qhat);
                 
             end
 
@@ -127,15 +134,17 @@ parfor (i = 1:length(r), sol.N_Workers)
 
                 % Check if solution diverged
                 if N_SIPP(1) >= 1.99 && ... % Sector in 1:1 resonance
-                    all(N_SIPP(2:end)<1.98) && ... % No 1:1 remaining secs
-                    xi_dev<=0.5 % Relative deviation of amplitude max 50%
+                    all(N_SIPP(2:end)<1.99) && ... % No 1:1 remaining secs
+                    xi_dev<=0.3 % Relative deviation of amplitude max 50%
                     
                     % Amplitude
-                    qhat_practically_stable(i) = max(qhat);
+                    qhatmax_practically_stable(i) = max(qhat);
+                    qhat_practically_stable(i) = qhat(1);
 
                     % Set stability back to NaN as practical stability
                     % is the stronger condition
-                    qhat_stable(i) = NaN; 
+                    qhat_stable(i) = NaN;
+                    qhatmax_stable(i) = NaN;
                 end
 
             end
@@ -145,7 +154,8 @@ parfor (i = 1:length(r), sol.N_Workers)
         % Assign unstable solution
         if isnan(qhat_practically_stable(i)) && ...
                 isnan(qhat_stable(i))
-            qhat_unstable(i) = qhat_max_ana(i);
+            qhatmax_unstable(i) = qhat_max_ana(i);
+            qhat_unstable(i) = qhat_synchronized(i);
         end
 
     end
