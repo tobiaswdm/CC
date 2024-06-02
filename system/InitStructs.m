@@ -147,6 +147,10 @@ simsetup.LocalizationSingleSectorStability.Nr = 1000;
 simsetup.LocalizationSingleSectorStability.N_MCS = 10;
 % Take every stepsize-th point of contour for stability analysis
 simsetup.LocalizationSingleSectorStability.stepsize = 200;
+% Frequency range for estimation of tuned resonance
+simsetup.LocalizationSingleSectorStability.r_scale = [0.98 1.03];
+% Steps in frequency stepping interval
+simsetup.LocalizationSingleSectorStability.N_rSteps = 50;
 
 % =========================================================================
 % Numerical stability analysis of GSAPR

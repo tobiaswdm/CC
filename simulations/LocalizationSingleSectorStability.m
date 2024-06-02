@@ -75,6 +75,13 @@ c = CoarsenContour(c,...
 qhatsynch_practically_stable_t,qhatsynch_stable_t,qhatsynch_unstable_t, ...
 r_num_t] = StabilityAnalysisLsapr(c,sys,sol,exc,'tuned',true,true);
 
+% Get maximum practically stable amplitude in tuned case
+if ~isempty(qhat_practically_stable_t)
+    qhat_practically_stable_max_t = max(qhat_practically_stable_t);
+else
+    qhat_practically_stable_max_t = NaN;
+end
+
 
 figure(4);
 hold on;
@@ -113,6 +120,11 @@ ylabel('$\hat{q}/\hat{q}_\mathrm{ref}$')
 
 % Count if practically stable solutions were found
 k = 0;
+
+% Save maximum practically stable clearance
+qhat_practically_stable_max_mt = nan(1, ...
+    simsetup.LocalizationSingleSectorStability.N_MCS);
+
 
 for i = 1:simsetup.LocalizationSingleSectorStability.N_MCS
 
@@ -177,9 +189,11 @@ for i = 1:simsetup.LocalizationSingleSectorStability.N_MCS
         k = k+1;
 
         % Extract shift config with maximum pract. stbale amplitude
-        [~,j_max] = max(qhat_practically_stable_max);
+        [qhat_practically_stable_max_mt(i),j_max] = ...
+        max(qhat_practically_stable_max);
     else
         j_max  = 1;
+        qhat_practically_stable_max_mt(i) = NaN;
     end
     
     % Pick largest practically stable amplitudes
@@ -456,4 +470,51 @@ if any(~isnan(qhat_practically_stable_t))
     title('Non-Synchronized Sector')
     savefig([savepath 'absmove_nonsynch_tuned_example.fig'])
 end
+
+% Plot PDF of maximum amplitude
+[E,x] = ecdf(qhat_practically_stable_max_mt/sys.qref);
+
+figure(13)
+hold on;
+colororder({color.ies;color.analytics})
+yyaxis right;
+stairs(x,E,'--k','LineWidth',1.5)
+ylabel('CDF')
+yyaxis left;
+histogram(qhat_practically_stable_max_mt/sys.qref,...
+'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
+box on;
+xlabel('$\hat{q}^\ast / \hat{q}_\mathrm{ref}$')
+ylabel('PDF')
+axis tight
+savefig([savepath 'qhat_max_pdf.fig'])
+
+ % Determine performance of tuned system with absorber
+
+% Frequency range for stepping
+r_range = [sys.r_k(exc.k+1), sys.r_k_noabs(exc.k+1)];
+r_range = simsetup.LocalizationSingleSectorStability.r_scale.*r_range;
+r_steps = linspace(r_range(1),r_range(2),...
+                   simsetup.LocalizationSingleSectorStability.N_rSteps);
+
+% Resonance amplitude tuned system
+[qhat_res_tuned, ~, ~] = ....
+FindResonance(sys,sol,exc,r_steps,'tuned');
+
+[E,x] = ecdf(qhat_practically_stable_max_mt/qhat_res_tuned);
+
+figure(14)
+hold on;
+colororder({color.ies;color.analytics})
+yyaxis right;
+stairs(x,E,'--k','LineWidth',1.5)
+ylabel('CDF')
+yyaxis left;
+histogram(qhat_practically_stable_max_mt/qhat_res_tuned,...
+'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
+box on;
+xlabel('$A$')
+ylabel('PDF')
+axis tight
+savefig([savepath 'A_max_pdf.fig'])
 
