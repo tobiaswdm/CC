@@ -23,7 +23,7 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'VariationCouplingAndClearanceMCS_eigenfreqmist_k0_1';
+configuration = 'VariationCouplingAndClearanceMCS_combinedmist_k0_1';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

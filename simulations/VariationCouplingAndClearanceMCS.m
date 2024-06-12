@@ -199,6 +199,15 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
             qhat_mt(i,j,k) = qhat_mt_temp;
             qhat_mt_std(i,j,k) = qhat_mt_std_temp;
             N_sipp_mt(:,i,j,k) = N_sipp_mt_temp;
+
+            % If absorber malfunction: Check if impact occured in
+            % malfunctioning sector
+            if isfield(sys_mt,'absorber_malfunction') && ...
+                 N_sipp_mt_temp(1)~=0
+                
+                warning('Impact detected in sector without absorber.')
+
+            end
             
             % Save backup
             parsave(savepath_backup,i,j,k,qhat_tuned, qhat_tuned_std,...
@@ -208,7 +217,15 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
             A(i,j,k) = qhat_mt_temp/qhat_tuned(i,j);
 
             % Response type
-            Resp_type_mt(i,j,k) = ResponseType(N_sipp_mt_temp);
+            if isfield(sys_mt,'absorber_malfunction')
+
+                Resp_type_mt(i,j,k) = ResponseType(N_sipp_mt_temp(2:end));
+                
+            else
+
+                Resp_type_mt(i,j,k) = ResponseType(N_sipp_mt_temp);
+
+            end
         end
      
 

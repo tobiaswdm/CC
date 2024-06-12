@@ -23,7 +23,7 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'LSR_eigenfreqmist_GammaOPT__kc1em2_k0_0';
+configuration = 'VariationCouplingAndClearanceMCS_combinedmist_absmalf_k0_0';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
