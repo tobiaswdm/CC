@@ -1,4 +1,4 @@
-function [ETA0,CHI0,QA0,UA0] = GsaprInititalConditions(Q,sys,exc)
+function [ETA0,CHI0,QA0,UA0] = GSRInititalConditions(Q,sys,exc)
 %LOCALIZEDINITIALCONDITIONS Return initial conditions of HB solution
 %
 % Q- Complex amplitude vector oscialltors

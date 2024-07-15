@@ -1,6 +1,6 @@
 function [qhat_stable,qhat_unstable,r, qhat_unstable_synchloss, ...
         qhat_unstable_amplitudedev,qhat_unstable_modulation] = ...
-        StabilityAnalysisGsapr(c,sys,sol,exc)
+        StabilityAnalysisGSR(c,sys,sol,exc)
 %STABILITYANALYSIS Study stability along contour plot
 %
 % c - low level contour estimation
@@ -40,7 +40,7 @@ parfor (i = 1:length(r), sol.N_Workers)
         qhat_ana = xi(i)*sys.Gamma(1);
         % Get initial conditions
         [sol_loop.q0,sol_loop.u0,sol_loop.qa0,sol_loop.ua0] = ...
-        GsaprInititalConditions(qhat_ana,sys_loop,exc_loop);
+        GSRInititalConditions(qhat_ana,sys_loop,exc_loop);
 
         % Configure integrator
         sol_loop = ConfigureIntegrator(sol_loop,sys_loop,exc_loop,...

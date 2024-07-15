@@ -6,7 +6,7 @@
 % Draw Dispersion Diagram
 DrawDispersion(sys,color,savepath);
 
-%% Compute ESIM
+%% Compute FRS
 
 % Auxilliary Variable
 rho = (2/pi) * (1-sys.eN) / (1+sys.eN);
@@ -16,11 +16,11 @@ xi_min = 1.001 * rho/sqrt(1+rho^2);
 
 % Clearance normalized amplitudes
 xi = logspace(log10(xi_min),...
-    log10(simsetup.GsaprStability.xi_max),...
-    simsetup.GsaprStability.Nxi);
-r = linspace(simsetup.GsaprStability.r_range(1),...
-    simsetup.GsaprStability.r_range(2), ...
-    simsetup.GsaprStability.Nr);
+    log10(simsetup.GSRStability.xi_max),...
+    simsetup.GSRStability.Nxi);
+r = linspace(simsetup.GSRStability.r_range(1),...
+    simsetup.GSRStability.r_range(2), ...
+    simsetup.GSRStability.Nr);
 
 % Linear FRF
 q_fixed = abs(ComputeLinearResponse(r,sys,exc,'tuned','fixed_absorbers'));
@@ -28,8 +28,8 @@ q_fixed = q_fixed(1,:);
 q_removed = abs(ComputeLinearResponse(r,sys,exc,'tuned','removed_absorbers'));
 q_removed = q_removed(1,:);
 
-% ESIM
-[Gamma_Scale,Xi,R] = AllSectorsESIM(xi,r,sys,exc);
+% FRS
+[Gamma_Scale,Xi,R] = AllSectorsFRS(xi,r,sys,exc);
 
 % Backbone
 theta = (1+sqrt((1+rho^2)*xi.^2 - rho^2))/(1+rho^2);
@@ -41,14 +41,14 @@ Gamma_scale_bb = 2*sys.D./abs((-(1-sys.epsilon_a)*varpi_bb.^2 + ...
     8*sys.epsilon_a*theta.*varpi_bb.^2 .* exp(-1i*Delta)/pi^2);
 
 
-% Plot ESIM
+% Plot FRS
 figure(2);
 surf(R/sys.r_k(exc.k+1),Xi,Gamma_Scale,'EdgeColor','none',...
-    'DisplayName','ESIM')
+    'DisplayName','FRS')
 hold on;
 plot3(varpi_bb,xi,Gamma_scale_bb,'--k','LineWidth',3,...
     'DisplayName','Backbone')
-title('ESIM GSAPR')
+title('FRS GSR')
 box on;
 legend;
 colormap turbo
@@ -61,14 +61,14 @@ axis tight;
 % Plot Level Curves
 figure(3);
 contour(R/sys.r_k(exc.k+1),Xi,Gamma_Scale,10,'LineWidth',1.5,...
-    'DisplayName','ESIM')
+    'DisplayName','FRS')
 hold on;
 plot(varpi_bb,xi,'--k','LineWidth',3,'DisplayName','Backbone')
 legend;
 h=colorbar;
 h.Label.Interpreter = 'latex';
 h.Label.String = "$\Gamma/\hat{q}_\mathrm{ref}$";
-title('ESIM GSAPR')
+title('FRS GSR')
 box on;
 colormap turbo
 xlabel('$\varpi$')
@@ -86,12 +86,12 @@ qhat(floor(c(2,:))==c(2,:)) = NaN;
 
 % Coarsen contour for stability analysis
 c = CoarsenContour(c,...
-    simsetup.GsaprStability.stepsize);
+    simsetup.GSRStability.stepsize);
 
 % Study asymptotic and practical stability of tuned system
 [qhat_stable,qhat_unstable,r_num,qhat_unstable_synchloss, ...
 qhat_unstable_amplitudedev,qhat_unstable_modulation] = ...
-StabilityAnalysisGsapr(c,sys,sol,exc);
+StabilityAnalysisGSR(c,sys,sol,exc);
 
 % Stability plot
 figure(4);
@@ -104,7 +104,7 @@ plot(r/sys.r_k(exc.k+1),q_removed/sys.qref,'-.',...
     'Removed abs.')
 plot(r_plot/sys.r_k(exc.k+1),qhat/sys.qref,...
             'LineWidth',1.5,'Color',color.ies,'DisplayName', ...
-            'GSAPR')
+            'GSR')
 scatter(r_num/sys.r_k(exc.k+1),qhat_unstable/sys.qref,20,'MarkerFaceColor',color.show,...
     'MarkerEdgeColor','k','Displayname','Unstable')
 scatter(r_num/sys.r_k(exc.k+1),qhat_stable/sys.qref,20,'MarkerFaceColor',...
@@ -185,7 +185,7 @@ plot(r/sys.r_k(exc.k+1),q_removed/sys.qref,'-.',...
     'Removed abs.')
 plot(r_plot/sys.r_k(exc.k+1),qhat/sys.qref,...
             'LineWidth',1.5,'Color',color.ies,'DisplayName', ...
-            'GSAPR')
+            'GSR')
 scatter(r_num(isnan(qhat_unstable_modulation))/sys.r_k(exc.k+1), ...
     qhat_unstable(isnan(qhat_unstable_modulation))/sys.qref,20, ...
     'MarkerFaceColor',color.show,'MarkerEdgeColor','k','Displayname', ...

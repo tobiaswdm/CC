@@ -22,8 +22,8 @@ r = linspace(simsetup.LocalizationSingleSectorAnalytical.r_range(1),...
     simsetup.LocalizationSingleSectorAnalytical.r_range(2), ...
     simsetup.LocalizationSingleSectorAnalytical.Nr);
 
-% ESIM
-[Gamma_Scale,Xi,R] = SingleSectorESIM(xi,r,sys,exc,'tuned');
+% FRS
+[Gamma_Scale,Xi,R] = SingleSectorFRS(xi,r,sys,exc,'tuned');
 
 % Plot
 figure(2);
@@ -55,7 +55,7 @@ axis tight;
 %% Compute example of mistuned manifold
 
 [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
-[Gamma_Scale_mt,Xi,R] = SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
+[Gamma_Scale_mt,Xi,R] = SingleSectorFRS(xi,r,sys_mt,exc_mt,'mistuned');
 
 % Plot
 figure(4);
@@ -106,7 +106,7 @@ xi_max = 0;
 for i = 1:simsetup.LocalizationSingleSectorAnalytical.N_MCS
     
     [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
-    [Gamma_Scale_mt,Xi,R] = SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
+    [Gamma_Scale_mt,Xi,R] = SingleSectorFRS(xi,r,sys_mt,exc_mt,'mistuned');
 
     figure(6)
     hold on;

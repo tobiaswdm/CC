@@ -1,18 +1,18 @@
-function [Gamma_Scale,Xi,R] = AllSectorsESIM(xi,r,sys,exc)
-% Determine the extendend SIM (ESIM) of the GSAPR for the 
+function [Gamma_Scale,Xi,R] = AllSectorsFRS(xi,r,sys,exc)
+% Determine the frequency response surface (FRS) of the GSR for the 
 % tuned configuration
 %   
 %   Complex_Phase of the localized sector
 %   Gamma_Scale size of the clearance of the localized sector scaled by
 %   tuned reference amplitude
 %
-%   r = [1,Nr] - frequencies to eveluate the ESIM at
-%   xi = [1,Nxi] - clearance normalized ampltiude to evaluate the ESIM at
+%   r = [1,Nr] - frequencies to eveluate the FRS at
+%   xi = [1,Nxi] - clearance normalized ampltiude to evaluate the FRS at
 
 % Get length
 Nr = length(r);
 
-% Compute grid to evaluate ESIM over
+% Compute grid to evaluate FRS over
 [Xi,R] = meshgrid(xi,r);
 
 % Auxilliary Variable
@@ -30,7 +30,7 @@ Pi = -8*sys.epsilon_a*Theta.*expDelta.*R.^2 / pi^2;
 % Linear eigenfrequency with fixed absorbers
 r_k0 = sys.r_k(exc.k+1);
 
-%Evaluate ESIM
+%Evaluate FRS
 Gamma_Scale = 2*sys.D*r_k0^2 ./ ...
                abs(((-(1-sys.epsilon_a)*R.^2 + 2*sys.D*1i*R*r_k0 + ...
                r_k0^2).*Xi+Pi));

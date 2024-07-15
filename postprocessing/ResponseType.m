@@ -3,17 +3,17 @@ function type = ResponseType(nsipp)
 % Determine the type of response based on the number of significant
 % Impacts per excitation period in the system
 % 
-% type = 0 - GSAPR
-% type = 1 - LSAPR
+% type = 0 - GSR
+% type = 1 - LSR
 % type = 2 - SMR (No differentiation between SSMR and ASMR!)
 
 type = nan(1,size(nsipp,2));
 
-% GSAPR
+% GSR
 index = min(nsipp,[],1)>=1.98; % All sectors in 1:1 resonance
 type(index) = 0;
 
-% LSAPR
+% LSR
 % At least 1 sector in 1:1 resonance and at least 1 sector
 % not in 1:1 resonance
 index = max(nsipp,[],1)>=1.98 & ...

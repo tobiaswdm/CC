@@ -137,7 +137,7 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
     
     % Response type
     if N_sipp_tuned(i,j)>=1.98
-        Resp_type_tuned(i,j) = 0; % GSAPR
+        Resp_type_tuned(i,j) = 0; % GSR
     else
         Resp_type_tuned(i,j) = 2; % SMR
     end

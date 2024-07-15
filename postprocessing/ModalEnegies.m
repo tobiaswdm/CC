@@ -1,6 +1,6 @@
 function [E,E_avg] = ModalEnegies(sys,sol,ETA,CHI)
-%MODALENEGIES Summary of this function goes here
-%   Detailed explanation goes here
+%MODALENEGIES Determine the instantaneus modal energies E and their average
+% over time E_avg.
 
 movRMS = dsp.MovingRMS(sol.N_Sample);
 

@@ -2,7 +2,7 @@ function [qhat_max,qhat_max_violated,qhat_localized,r] = ...
     LocalizedFrequencyAmplitudeCurve(c,sys,exc,disorder)
 %LOCALIZEDFREQUENCYAMPLITUDECURVE Determine the different parts of
 % localized frequency amplitude curve from contour estimation c
-% c - contour of ESIM
+% c - contour of FRS
 
 % Find beginning of level curves in c
 c(2,floor(c(2,:))==c(2,:)) = NaN;

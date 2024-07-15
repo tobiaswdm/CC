@@ -1,19 +1,19 @@
-function [Gamma_Scale,Xi,R] = SingleSectorESIM(xi,r,sys,exc,disorder)
-% Determine the extendend SIM (ESIM) of the localization in a single sector
+function [Gamma_Scale,Xi,R] = SingleSectorFRS(xi,r,sys,exc,disorder)
+% Determine the frequency amplitude surface (FRS) of the synchronization in a single sector
 % for either the tuned or the mistuned configuration
 %   
 %   Complex_Phase of the localized sector
 %   Gamma_Scale size of the clearance of the localized sector scaled by
 %   tuned reference amplitude
 %
-%   r = [1,Nr] - frequencies to eveluate the ESIM at
-%   xi = [1,Nxi] - clearance normalized ampltiude to evaluate the ESIM at
+%   r = [1,Nr] - frequencies to eveluate the FRS at
+%   xi = [1,Nxi] - clearance normalized ampltiude to evaluate the FRS at
 
 % Get lengths
 Nr = length(r);
 Nxi = length(xi);
 
-% Compute grid to evaluate ESIM over
+% Compute grid to evaluate FRS over
 [Xi,R] = meshgrid(xi,r);
 
 % Auxilliary Variable

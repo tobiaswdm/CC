@@ -28,10 +28,10 @@ q_fixed = q_fixed(1,:);
 q_removed = abs(ComputeLinearResponse(r,sys,exc,'tuned','removed_absorbers'));
 q_removed = q_removed(1,:);
 
-% ESIM
-[Gamma_Scale,Xi,R] = SingleSectorESIM(xi,r,sys,exc,'tuned');
+% FRS
+[Gamma_Scale,Xi,R] = SingleSectorFRS(xi,r,sys,exc,'tuned');
 
-% Plot ESIM
+% Plot FRS
 figure(2);
 surf(R,Xi,Gamma_Scale,'EdgeColor','none')
 hold on;
@@ -73,7 +73,7 @@ c = CoarsenContour(c,...
 % Study asymptotic and practical stability of tuned system
 [qhat_practically_stable_t,qhat_stable_t,qhat_unstable_t, ... 
 qhatsynch_practically_stable_t,qhatsynch_stable_t,qhatsynch_unstable_t, ...
-r_num_t] = StabilityAnalysisLsapr(c,sys,sol,exc,'tuned',true,true);
+r_num_t] = StabilityAnalysisLSR(c,sys,sol,exc,'tuned',true,true);
 
 % Get maximum practically stable amplitude in tuned case
 if ~isempty(qhat_practically_stable_t)
@@ -153,9 +153,9 @@ for i = 1:simsetup.LocalizationSingleSectorStability.N_MCS
             [sys_mt,exc_mt] = BuildSystem(sys_mt,exc,'mistuned_defined');
         end
 
-        % Determine mistuned ESIM
+        % Determine mistuned FRS
         [Gamma_Scale_mt,~,~] = ...
-            SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
+            SingleSectorFRS(xi,r,sys_mt,exc_mt,'mistuned');
 
         % Get Level curves at clearance
         c = contourc(r,xi,Gamma_Scale_mt',...
@@ -167,7 +167,7 @@ for i = 1:simsetup.LocalizationSingleSectorStability.N_MCS
     
         % Study only practical stability of mistuned system
         [qhat_practically_stable_array{j},~,~,~,~,~,r_num_array{j}] =...
-            StabilityAnalysisLsapr(c,sys_mt,sol,exc_mt,'mistuned',...
+            StabilityAnalysisLSR(c,sys_mt,sol,exc_mt,'mistuned',...
             false,true);
         
         % Extract maximum
@@ -250,9 +250,9 @@ savefig([savepath 'frequency_amplitude_stability.fig'])
 if sys.sigma_g ~= 0 || sys.sigma_omega ~= 0
     % Build mistuned system
     [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
-    % Determine mistuned ESIM
+    % Determine mistuned FRS
     [Gamma_Scale_mt,~,~] = ...
-        SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
+        SingleSectorFRS(xi,r,sys_mt,exc_mt,'mistuned');
     
     % Get Level curves at clearance
     c = contourc(r,xi,Gamma_Scale_mt',...
@@ -268,7 +268,7 @@ if sys.sigma_g ~= 0 || sys.sigma_omega ~= 0
     
     % Study asymptotic and practical stability of mistuned system
     [qhat_practically_stable,qhat_stable,qhat_unstable,~,~,~,r_num] =...
-        StabilityAnalysisLsapr(c,sys_mt,sol,exc_mt,'mistuned',true,true);
+        StabilityAnalysisLSR(c,sys_mt,sol,exc_mt,'mistuned',true,true);
     
     % Plot FRF
     figure(5);
@@ -281,7 +281,7 @@ if sys.sigma_g ~= 0 || sys.sigma_omega ~= 0
         'Removed abs.')
     plot(r_plot,qhat_localized/sys.qref,'--',...
         'LineWidth',1.5,'Color',color.background,'DisplayName', ...
-        'Loc. sector')
+        'Synch. sector')
     plot(r_plot,qhat_max/sys.qref,...
                 'LineWidth',1.5,'Color',color.ies,'DisplayName', ...
                 'Tuned')
@@ -304,9 +304,9 @@ if sys.sigma_g ~= 0 || sys.sigma_omega ~= 0
     ylabel('$\hat{q}/\hat{q}_\mathrm{ref}$')
     savefig([savepath 'frequency_amplitude_mistuned_example.fig'])
     
-    % Plot ESIM of mistuned system
+    % Plot FRS of mistuned system
     figure(6);
-    surf(R,Xi,Gamma_Scale_mt,'EdgeColor','none','DisplayName','ESIM')
+    surf(R,Xi,Gamma_Scale_mt,'EdgeColor','none','DisplayName','FRS')
     hold on;
     contour3(R,Xi,Gamma_Scale_mt,[1 1]*sys.Gamma_Scale, '-k', 'LineWidth',3,...
         'DisplayName','Nominal Clearance')

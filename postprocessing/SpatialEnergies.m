@@ -1,5 +1,5 @@
 function [E] = SpatialEnergies(sys,sol,Q,U,UA,disorder)
-%SPATIALENERGIES Compute and plot the Average spatial energies
+%SPATIALENERGIES Compute the Average spatial energies
 % over each period of oscillation
 %   Detailed explanation goes here
 

@@ -77,16 +77,9 @@ switch simulation
         fprintf(['Running stability analysis on localization in a' ...
             ' single sector... \n'])
         LocalizationSingleSectorStability;
-    case 'GsaprStability'
+    case 'GSRStability'
         fprintf('Running stability analysis of GSAPR... \n')
-        GsaprStability;
-    case 'DetermineSlowFlow'
-        fprintf(['Solving Slow Flow equation for AQPR in frequency' ...
-            ' domain... \n'])
-        DetermineSlowFlow;
-    case 'SlowFlowTimeSimulation'
-        fprintf('Solving Slow Flow equation for AQPR in time domain... \n')
-        SlowFlowTimeSimulation;
+        GSRStability;
     case 'LinearMistuningAnalysis'
         fprintf('Performing Linear Mistuning Analysis using MCS... \n')
         LinearMistuningAnalysis;
