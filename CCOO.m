@@ -1,21 +1,30 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Cylic chain of oscialltors with VI-NESs
+% CCOO (pronounced Coco) is a tool that performs numerical and/or
+% analytical analyses on a Cylic Chain of Oscialltors with Vibro-Impact
+% Nonlinear Energy Sinks (VI-NESs)
 %
-% Code written by Tobias Weidemann - (C) 2024
+% The Code for CCOO was written by:
+% Tobias Weidemann - (C) 2024
 % University of Stuttgart, Germany
 % Institute of Aircraft Propulsion Systems
 %
 % Contact: tobias.weidemann@ila.uni-stuttgart.de
 %
+% Feel free to use, share and modify under the GPL-3.0 license.
+% CCOO is purely academic and comes with no warranty.
+% If you use CCOO for your own research, please refer to the paper:
+%
+% T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2024)
+% "Energy Transfer and Localization in a Forced Cyclic Chain of
+% Oscillators with Vibro-Impact Nonlinear Energy Sinks".
+% Manuscript submitted to Nonlinear Dynamics
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc; close all; clearvars;
-
-% Randomize Seed
-rng("shuffle");
 
 %% Configuration
 
@@ -23,10 +32,24 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'Tuned_LSR_Stability_Example';
+configuration = 'GSR_stability_k00_largeclearance_weakkc';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+disp(' ')
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp('%%%%%%%%%%%%%%% ...Starting Simulation with CCOO... %%%%%%%%%%%%%%%')
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp(' ')
+disp('Code written by Tobias Weidemann.')
+disp('Feel free to use, share and modify under the GPL-3.0 license.')
+disp('CCOO is purely academic and comes with no warranty.')
+disp(' ')
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp('%%%%%%%%%%%%%%% ...Starting Simulation with CCOO... %%%%%%%%%%%%%%%')
+disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp(' ')
 
 %% Add system paths
 fprintf('Adding folder paths... \n')
@@ -43,6 +66,9 @@ addpath('.\analytics\')     % Path for Analytical methods
 addpath('.\harmonic_balance\')     % Path for HB
 fprintf('Initializing data structures... \n')
 InitStructs;
+
+% Randomize Seed
+rng("shuffle");
 
 % Create path to save data and figures
 savepath = ['.\data\' configuration '\'];
