@@ -7,3 +7,5 @@ All simulations are started from the 'main.m' file that reads in the specfied co
 If you are using the code for your studies, please refer to the paper:
 
 T. Weidemann, L.A. Bergman, A.F. Vakakis, M. Krack. (2024). "Energy Transfer and Localization in a Forced Cyclic Chain of Oscillators with Vibro-Impact Nonlinear Energy Sinks". Manuscript submitted to Nonlinear Dynamics
+
+Note that the current is currently extended to model the effects of random disorder.
