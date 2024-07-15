@@ -11,4 +11,4 @@ T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2024). "Energy Transfer a
 In case of any questions, feel free to contact me at: tobias.weidemann@ila.uni-stuttgart.de
 
 
-_Note that the tool is currently being extended to model the effects of random disorder._
+_Note that the CCOO is currently being extended to model the effects of random disorder._
