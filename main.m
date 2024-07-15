@@ -1,9 +1,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Cylic chain of oscialltors with vibro-impact absorbers
+% Cylic chain of oscialltors with VI-NESs
 %
-% Code written by Tobias Weidemann, M.Sc. - (C) 2024
+% Code written by Tobias Weidemann - (C) 2024
 % University of Stuttgart, Germany
 % Institute of Aircraft Propulsion Systems
 %
@@ -23,7 +23,7 @@ rng("shuffle");
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'VariationCouplingAndClearanceMCS_combinedmist_k0_1';
+configuration = 'Tuned_LSR_Stability_Example';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32,6 +32,7 @@ configuration = 'VariationCouplingAndClearanceMCS_combinedmist_k0_1';
 fprintf('Adding folder paths... \n')
 addpath('.\configuration\') % Path for config files
 addpath('.\style\')         % Path for style functions
+
 DefaultStyle;
 addpath('.\system\')        % Path for system functions
 addpath('.\simulations\')   % Path for simulation cases

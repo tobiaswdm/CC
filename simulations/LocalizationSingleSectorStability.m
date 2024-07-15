@@ -247,89 +247,95 @@ savefig([savepath 'frequency_amplitude_stability.fig'])
 
 %% Show example of full mistuned FRF and stability
 
-% Build mistuned system
-[sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
-% Determine mistuned ESIM
-[Gamma_Scale_mt,~,~] = ...
-    SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
-
-% Get Level curves at clearance
-c = contourc(r,xi,Gamma_Scale_mt',...
-    [sys_mt.Gamma_Scale sys_mt.Gamma_Scale]*(1+sys_mt.delta_g(1)));
-
-% Determine max amplitude FRF
-[qhat_max,qhat_max_violated,qhat_localized,r_plot] = ...
-    LocalizedFrequencyAmplitudeCurve(c,sys_mt,exc_mt,'mistuned');
-
-% Coarsen contour for stability analysis
-c = CoarsenContour(c,...
-    simsetup.LocalizationSingleSectorStability.stepsize);
-
-% Study asymptotic and practical stability of mistuned system
-[qhat_practically_stable,qhat_stable,qhat_unstable,~,~,~,r_num] =...
-    StabilityAnalysisLsapr(c,sys_mt,sol,exc_mt,'mistuned',true,true);
-
-% Plot FRF
-figure(5);
-hold on;
-plot(r,q_fixed/sys.qref,...
-    'LineWidth',.5,'Color',color.reference,'DisplayName', ...
-    'Fixed abs.')
-plot(r,q_removed/sys.qref,'-.',...
-    'LineWidth',.5,'Color',color.reference,'DisplayName', ...
-    'Removed abs.')
-plot(r_plot,qhat_localized/sys.qref,'--',...
-    'LineWidth',1.5,'Color',color.background,'DisplayName', ...
-    'Loc. sector')
-plot(r_plot,qhat_max/sys.qref,...
-            'LineWidth',1.5,'Color',color.ies,'DisplayName', ...
-            'Tuned')
-plot(r_plot,qhat_max_violated/sys.qref,':',...
-            'LineWidth',1.5,'Color',color.show,'DisplayName', ...
-            'Tuned - Viol. kin. constr.')
-scatter(r_num,qhat_unstable/sys.qref,20,'MarkerFaceColor',color.show,...
-    'MarkerEdgeColor','k','Displayname','Unstable')
-scatter(r_num,qhat_stable/sys.qref,20,'MarkerFaceColor',myColors('cyan'),...
-    'MarkerEdgeColor','k','Displayname','Stable')
-scatter(r_num,qhat_practically_stable/sys.qref,40,'pentagram',...
-    'MarkerFaceColor',myColors('green'),'MarkerEdgeColor','k',...
-    'Displayname','Pract. Stable')
-set(gca,'YScale','log')
-title('Mistuned System')
-axis tight;
-legend;
-box on;
-xlabel('$r$')
-ylabel('$\hat{q}/\hat{q}_\mathrm{ref}$')
-savefig([savepath 'frequency_amplitude_mistuned_example.fig'])
-
-% Plot ESIM of mistuned system
-figure(6);
-surf(R,Xi,Gamma_Scale_mt,'EdgeColor','none','DisplayName','ESIM')
-hold on;
-contour3(R,Xi,Gamma_Scale_mt,[1 1]*sys.Gamma_Scale, '-k', 'LineWidth',3,...
-    'DisplayName','Nominal Clearance')
-if sys.sigma_g ~= 0 % Only if clearance is mistuned
-   contour3(R,Xi,Gamma_Scale_mt,[1 1]*(1+sys.sigma_g)*sys.Gamma_Scale, ...
-       '--k', 'LineWidth',1.5,'DisplayName','Mistuned Clearance Std.')
-   contour3(R,Xi,Gamma_Scale_mt,[1 1]*(1-sys.sigma_g)*sys.Gamma_Scale, ...
-       '--k', 'LineWidth',1.5,'HandleVisibility','off')
+if sys.sigma_g ~= 0 || sys.sigma_omega ~= 0
+    % Build mistuned system
+    [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
+    % Determine mistuned ESIM
+    [Gamma_Scale_mt,~,~] = ...
+        SingleSectorESIM(xi,r,sys_mt,exc_mt,'mistuned');
+    
+    % Get Level curves at clearance
+    c = contourc(r,xi,Gamma_Scale_mt',...
+        [sys_mt.Gamma_Scale sys_mt.Gamma_Scale]*(1+sys_mt.delta_g(1)));
+    
+    % Determine max amplitude FRF
+    [qhat_max,qhat_max_violated,qhat_localized,r_plot] = ...
+        LocalizedFrequencyAmplitudeCurve(c,sys_mt,exc_mt,'mistuned');
+    
+    % Coarsen contour for stability analysis
+    c = CoarsenContour(c,...
+        simsetup.LocalizationSingleSectorStability.stepsize);
+    
+    % Study asymptotic and practical stability of mistuned system
+    [qhat_practically_stable,qhat_stable,qhat_unstable,~,~,~,r_num] =...
+        StabilityAnalysisLsapr(c,sys_mt,sol,exc_mt,'mistuned',true,true);
+    
+    % Plot FRF
+    figure(5);
+    hold on;
+    plot(r,q_fixed/sys.qref,...
+        'LineWidth',.5,'Color',color.reference,'DisplayName', ...
+        'Fixed abs.')
+    plot(r,q_removed/sys.qref,'-.',...
+        'LineWidth',.5,'Color',color.reference,'DisplayName', ...
+        'Removed abs.')
+    plot(r_plot,qhat_localized/sys.qref,'--',...
+        'LineWidth',1.5,'Color',color.background,'DisplayName', ...
+        'Loc. sector')
+    plot(r_plot,qhat_max/sys.qref,...
+                'LineWidth',1.5,'Color',color.ies,'DisplayName', ...
+                'Tuned')
+    plot(r_plot,qhat_max_violated/sys.qref,':',...
+                'LineWidth',1.5,'Color',color.show,'DisplayName', ...
+                'Tuned - Viol. kin. constr.')
+    scatter(r_num,qhat_unstable/sys.qref,20,'MarkerFaceColor',color.show,...
+        'MarkerEdgeColor','k','Displayname','Unstable')
+    scatter(r_num,qhat_stable/sys.qref,20,'MarkerFaceColor',myColors('cyan'),...
+        'MarkerEdgeColor','k','Displayname','Stable')
+    scatter(r_num,qhat_practically_stable/sys.qref,40,'pentagram',...
+        'MarkerFaceColor',myColors('green'),'MarkerEdgeColor','k',...
+        'Displayname','Pract. Stable')
+    set(gca,'YScale','log')
+    title('Mistuned System')
+    axis tight;
+    legend;
+    box on;
+    xlabel('$r$')
+    ylabel('$\hat{q}/\hat{q}_\mathrm{ref}$')
+    savefig([savepath 'frequency_amplitude_mistuned_example.fig'])
+    
+    % Plot ESIM of mistuned system
+    figure(6);
+    surf(R,Xi,Gamma_Scale_mt,'EdgeColor','none','DisplayName','ESIM')
+    hold on;
+    contour3(R,Xi,Gamma_Scale_mt,[1 1]*sys.Gamma_Scale, '-k', 'LineWidth',3,...
+        'DisplayName','Nominal Clearance')
+    if sys.sigma_g ~= 0 % Only if clearance is mistuned
+       contour3(R,Xi,Gamma_Scale_mt,[1 1]*(1+sys.sigma_g)*sys.Gamma_Scale, ...
+           '--k', 'LineWidth',1.5,'DisplayName','Mistuned Clearance Std.')
+       contour3(R,Xi,Gamma_Scale_mt,[1 1]*(1-sys.sigma_g)*sys.Gamma_Scale, ...
+           '--k', 'LineWidth',1.5,'HandleVisibility','off')
+    end
+    title('Mistuned System')
+    box on;
+    colormap turbo
+    xlabel('$r$')
+    ylabel('$\xi$')
+    zlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+    set(gca,'YScale','log')
+    axis tight;
 end
-title('Mistuned System')
-box on;
-colormap turbo
-xlabel('$r$')
-ylabel('$\xi$')
-zlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
-set(gca,'YScale','log')
-axis tight;
 
 %% Highest practically stable amplitude in tuned system
 
 if any(~isnan(qhat_practically_stable_t))
     
     % Extract highest practically stable amplitude
-    [xi_max_t,i_max_t] = max(qhat_practically_stable_t/sys.Gamma(1));
+    %[xi_max_t,i_max_t] = max(qhat_practically_stable_t/sys.Gamma(1));
+    % Extract highest practically stable amplitude
+    [xi_max_t,i_max_t] = min(qhat_practically_stable_t/sys.Gamma(1));
+    i_max_t = i_max_t+8;
+    xi_max_t = qhat_practically_stable_t(i_max_t)/sys.Gamma(1);
     exc.harmonic.r = r_num_t(i_max_t);
 
     % Get initial conditions for time simulation
@@ -386,6 +392,7 @@ if any(~isnan(qhat_practically_stable_t))
     % Get analytical HB approximation
     [Qana,~,~] = ...
         RecoverCondensedDOFs(sys,exc,exc.harmonic.r,xi_max_t,'tuned');
+    G = sys.Gamma(1);
 
     expirTau = exp(1i*linspace(0,2*pi,sol.N_Sample));
     

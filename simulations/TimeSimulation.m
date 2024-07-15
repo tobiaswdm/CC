@@ -61,6 +61,15 @@ QH = exp(-1i*(exc.harmonic.r*TAU+(0:(sys.N_s-1))' *2*pi*exc.k/sys.N_s))...
 % Count impacts in each excitation period
 N_IPP = CountImpacts(UA,sol.N_Tau,'convolution');
 
+% Frequency estimate PSD
+[Sqq,fpsd] = pwelch(Q',[],[],[],1/sol.dtau);
+Sqq = transpose(mean(Sqq,2));
+% Frequency estimate PSD
+Sqaqa= pwelch(QA',[],[],[],1/sol.dtau);
+Sqaqa = transpose(mean(Sqaqa,2));
+
+
+
 %% Figures
 
 figure(2);
@@ -313,3 +322,62 @@ xlabel('Wavenumber - $k$')
 ylabel(['$E_{k,\,\mathrm{avg}}^\mathrm{mod} / ' ...
     'E_{\mathrm{tot, \, avg}}^\mathrm{mod}$'])
 title('Average modal energies - tuned system')
+
+% Single Sector example
+figure(16)
+tiledlayout(2,2)
+nexttile([1 2])
+hold on;
+box on;
+plot(exc.harmonic.r*TAU/2/pi,Q(1,:),'LineWidth',.5,'Color',color.ies)
+xlabel('$r\tau / (2 \pi)$')
+axis tight;
+xlim([0 min(150, exc.harmonic.r*TAU(end)/2/pi)])
+ylabel('$q_0$')
+nexttile
+hold on;
+colororder({color.ies,color.iesabsorber})
+yyaxis left;
+plot(2*pi*fpsd,Sqq/2/pi,'LineWidth',1,'Color',color.ies,'DisplayName', ...
+    'Avg. PSD')
+set(gca,'YScale','log')
+xlabel('$r$')
+ylabel('$S_{qq}$')
+box on;
+axis tight;
+yyaxis right;
+for i = 1:length(sys.r_k)
+    if i == 1
+        xline(sys.r_k(i),'--k','LineWidth',.5,'Alpha',1, ...
+            'DisplayName','Eigenfreq.')
+    else
+        xline(sys.r_k(i),'--k','LineWidth',.5,'Alpha',1, ...
+            'HandleVisibility','off')
+    end
+end
+plot(2*pi*fpsd,Sqaqa/2/pi,'-.','LineWidth',1,'Color',color.iesabsorber, ...
+    'HandleVisibility','off')
+ylabel('$S_{q_\mathrm{a} q_\mathrm{a}}$')
+set(gca,'YScale','log')
+axis tight;
+ylim(2) = 1000;
+xlim([0.9 1.05*sys.r_k(end)])
+legend;
+nexttile
+hold on;
+box on;
+plot(exc.harmonic.r*TAU/2/pi,...
+    Q(1,:)+sys.Gamma(2),...
+    'LineWidth',1,'Color',color.ies,'DisplayName', ...
+    'Cav. walls')
+plot(exc.harmonic.r*TAU/2/pi,...
+    Q(1,:)-sys.Gamma(1),...
+    'LineWidth',1,'Color',color.ies,'HandleVisibility','off')
+plot(exc.harmonic.r*TAU/2/pi,...
+    QA(1,:),'LineWidth',1,'Color',color.iesabsorber, ...
+    'DisplayName','VI-NES')
+axis tight
+xlim([0 35])
+xlabel('$r\tau / (2 \pi)$')
+ylabel('$q_{\mathrm{a},0}$')
+legend

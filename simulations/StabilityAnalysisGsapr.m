@@ -1,5 +1,6 @@
-function [qhat_stable,qhat_unstable,r] = ...
-StabilityAnalysisGsapr(c,sys,sol,exc)
+function [qhat_stable,qhat_unstable,r, qhat_unstable_synchloss, ...
+        qhat_unstable_amplitudedev,qhat_unstable_modulation] = ...
+        StabilityAnalysisGsapr(c,sys,sol,exc)
 %STABILITYANALYSIS Study stability along contour plot
 %
 % c - low level contour estimation
@@ -17,7 +18,12 @@ r = c(1,2:end);
 qhat_stable = nan(1,length(r));
 qhat_unstable = nan(1,length(r));
 
-% Only evaluate final 50 Periods
+% Criteria
+qhat_unstable_synchloss = nan(1,length(r));
+qhat_unstable_amplitudedev = nan(1,length(r));
+qhat_unstable_modulation = nan(1,length(r));
+
+% Only evaluate final 300 Periods
 sol.N_Tau = 300;
 
 parfor (i = 1:length(r), sol.N_Workers)
@@ -43,7 +49,7 @@ parfor (i = 1:length(r), sol.N_Workers)
         sol_loop.NP_trans = sol_loop.N_P*1000; 
 
         % Simulation
-        [ETA,~,CHI,UA,~] = ...
+        [ETA,~,~,UA,~] = ...
             MoreauIntegration(sys_loop,exc_loop,sol_loop,'tuned');
 
         % Extract Amplitudes and Significant impacts
@@ -55,9 +61,9 @@ parfor (i = 1:length(r), sol.N_Workers)
         xi_dev = abs((mean(qhat)/sys_loop.Gamma(1)-xi(i))/xi(i)); 
         
         % Modal Energies
-        [~,E_avg] = ModalEnegies(sys_loop,sol_loop,ETA,CHI);
-        E_avg = E_avg/sum(E_avg);
-        E_avg(exc.k+1) = [];
+        %[~,E_avg] = ModalEnegies(sys_loop,sol_loop,ETA,CHI);
+        %E_avg = E_avg/sum(E_avg);
+        %E_avg(exc.k+1) = [];
 
         % Check if solution diverged
         if all(N_SIPP >= 1.99) && ... % All sectors in 1:1 resonance
@@ -69,6 +75,20 @@ parfor (i = 1:length(r), sol.N_Workers)
         else
 
             qhat_unstable(i) = qhat_ana;
+
+            % Return which criteria were responsible
+            % for stability loss
+            if any(N_SIPP < 1.99)
+                qhat_unstable_synchloss(i) = qhat_ana;
+            end
+
+            if xi_dev>0.25
+                qhat_unstable_amplitudedev(i) = qhat_ana;
+            end
+
+            if any(qhatstd./qhat > 5e-2)
+                qhat_unstable_modulation(i) = qhat_ana;
+            end
 
         end
 
