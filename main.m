@@ -69,14 +69,14 @@ switch simulation
     case 'TimeSimulation'
         fprintf('Running single time simulation... \n')
         TimeSimulation;
-    case 'LocalizationSingleSectorAnalytical'
+    case 'SynchronizationSingleSectorAnalytical'
         fprintf(['Running analytical study on localization in a single' ...
             ' sector... \n'])
-        LocalizationSingleSectorAnalytical;
-    case 'LocalizationSingleSectorStability'
+        SynchronizationSingleSectorAnalytical;
+    case 'SynchronizationSingleSectorStability'
         fprintf(['Running stability analysis on localization in a' ...
             ' single sector... \n'])
-        LocalizationSingleSectorStability;
+        SynchronizationSingleSectorStability;
     case 'GSRStability'
         fprintf('Running stability analysis of GSAPR... \n')
         GSRStability;

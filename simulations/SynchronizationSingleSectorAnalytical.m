@@ -16,11 +16,11 @@ xi_min = 1.001 * rho/sqrt(1+rho^2);
 
 % Clearance normalized amplitudes
 xi = logspace(log10(xi_min),...
-    log10(simsetup.LocalizationSingleSectorAnalytical.xi_max),...
-    simsetup.LocalizationSingleSectorAnalytical.Nxi);
-r = linspace(simsetup.LocalizationSingleSectorAnalytical.r_range(1),...
-    simsetup.LocalizationSingleSectorAnalytical.r_range(2), ...
-    simsetup.LocalizationSingleSectorAnalytical.Nr);
+    log10(simsetup.SynchronizationSingleSectorAnalytical.xi_max),...
+    simsetup.SynchronizationSingleSectorAnalytical.Nxi);
+r = linspace(simsetup.SynchronizationSingleSectorAnalytical.r_range(1),...
+    simsetup.SynchronizationSingleSectorAnalytical.r_range(2), ...
+    simsetup.SynchronizationSingleSectorAnalytical.Nr);
 
 % FRS
 [Gamma_Scale,Xi,R] = SingleSectorFRS(xi,r,sys,exc,'tuned');
@@ -103,7 +103,7 @@ axis tight;
 
 %% Different realizations of FRFs at fixed clearances
 xi_max = 0;
-for i = 1:simsetup.LocalizationSingleSectorAnalytical.N_MCS
+for i = 1:simsetup.SynchronizationSingleSectorAnalytical.N_MCS
     
     [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
     [Gamma_Scale_mt,Xi,R] = SingleSectorFRS(xi,r,sys_mt,exc_mt,'mistuned');

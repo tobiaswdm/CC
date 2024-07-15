@@ -16,11 +16,11 @@ xi_min = 1.001 * rho/sqrt(1+rho^2);
 
 % Clearance normalized amplitudes
 xi = logspace(log10(xi_min),...
-    log10(simsetup.LocalizationSingleSectorStability.xi_max),...
-    simsetup.LocalizationSingleSectorStability.Nxi);
-r = linspace(simsetup.LocalizationSingleSectorStability.r_range(1),...
-    simsetup.LocalizationSingleSectorStability.r_range(2), ...
-    simsetup.LocalizationSingleSectorStability.Nr);
+    log10(simsetup.SynchronizationSingleSectorStability.xi_max),...
+    simsetup.SynchronizationSingleSectorStability.Nxi);
+r = linspace(simsetup.SynchronizationSingleSectorStability.r_range(1),...
+    simsetup.SynchronizationSingleSectorStability.r_range(2), ...
+    simsetup.SynchronizationSingleSectorStability.Nr);
 
 % Linear FRF
 q_fixed = abs(ComputeLinearResponse(r,sys,exc,'tuned','fixed_absorbers'));
@@ -68,7 +68,7 @@ c = contourc(r,xi,Gamma_Scale',[sys.Gamma_Scale sys.Gamma_Scale]);
 
 % Coarsen contour for stability analysis
 c = CoarsenContour(c,...
-    simsetup.LocalizationSingleSectorStability.stepsize);
+    simsetup.SynchronizationSingleSectorStability.stepsize);
 
 % Study asymptotic and practical stability of tuned system
 [qhat_practically_stable_t,qhat_stable_t,qhat_unstable_t, ... 
@@ -91,7 +91,7 @@ plot(r,q_fixed/sys.qref,...
 plot(r,q_removed/sys.qref,'-.',...
     'LineWidth',.5,'Color',color.reference,'DisplayName', ...
     'Removed abs.')
-if simsetup.LocalizationSingleSectorStability.N_MCS == 0
+if simsetup.SynchronizationSingleSectorStability.N_MCS == 0
     plot(r_plot,qhat_syn/sys.qref,'--',...
             'LineWidth',1.5,'Color',color.background,'DisplayName', ...
             'Syn. sector')
@@ -123,13 +123,13 @@ k = 0;
 
 % Save maximum practically stable clearance
 qhat_practically_stable_max_mt = nan(1, ...
-    simsetup.LocalizationSingleSectorStability.N_MCS);
+    simsetup.SynchronizationSingleSectorStability.N_MCS);
 
 
-for i = 1:simsetup.LocalizationSingleSectorStability.N_MCS
+for i = 1:simsetup.SynchronizationSingleSectorStability.N_MCS
 
     disp(['Testing mistuned system ' num2str(i) ' of '...
-        num2str(simsetup.LocalizationSingleSectorStability.N_MCS)])
+        num2str(simsetup.SynchronizationSingleSectorStability.N_MCS)])
     
     % Intialize cell array fro practically stable amplitudes and freqs.
     qhat_practically_stable_array = cell(1,sys.N_s);
@@ -163,7 +163,7 @@ for i = 1:simsetup.LocalizationSingleSectorStability.N_MCS
     
         % Coarsen contour for stability analysis
         c = CoarsenContour(c,...
-            simsetup.LocalizationSingleSectorStability.stepsize);
+            simsetup.SynchronizationSingleSectorStability.stepsize);
     
         % Study only practical stability of mistuned system
         [qhat_practically_stable_array{j},~,~,~,~,~,r_num_array{j}] =...
@@ -218,14 +218,14 @@ for i = 1:simsetup.LocalizationSingleSectorStability.N_MCS
 end
 
 % In how many mistuned cases were practically stable solutions found?
-prac_stab_ratio = k/simsetup.LocalizationSingleSectorStability.N_MCS;
+prac_stab_ratio = k/simsetup.SynchronizationSingleSectorStability.N_MCS;
 save([savepath 'prac_stab_ratio.mat'],'prac_stab_ratio')
 disp(['Practically stable solutions found in ' ...
     num2str(100*prac_stab_ratio) ' percent of the mistuned cases.'])
 
 figure(4)
 hold on;
-if simsetup.LocalizationSingleSectorStability.N_MCS == 0
+if simsetup.SynchronizationSingleSectorStability.N_MCS == 0
     scatter(r_num_t,qhatsynch_unstable_t/sys.qref,20,'MarkerFaceColor',color.show,...
     'MarkerEdgeColor','k','Displayname','Unstable')
     scatter(r_num_t,qhatsynch_stable_t/sys.qref,20,'MarkerFaceColor',myColors('cyan'),...
@@ -264,7 +264,7 @@ if sys.sigma_g ~= 0 || sys.sigma_omega ~= 0
     
     % Coarsen contour for stability analysis
     c = CoarsenContour(c,...
-        simsetup.LocalizationSingleSectorStability.stepsize);
+        simsetup.SynchronizationSingleSectorStability.stepsize);
     
     % Study asymptotic and practical stability of mistuned system
     [qhat_practically_stable,qhat_stable,qhat_unstable,~,~,~,r_num] =...
@@ -500,9 +500,9 @@ savefig([savepath 'qhat_max_pdf.fig'])
 
 % Frequency range for stepping
 r_range = [sys.r_k(exc.k+1), sys.r_k_noabs(exc.k+1)];
-r_range = simsetup.LocalizationSingleSectorStability.r_scale.*r_range;
+r_range = simsetup.SynchronizationSingleSectorStability.r_scale.*r_range;
 r_steps = linspace(r_range(1),r_range(2),...
-                   simsetup.LocalizationSingleSectorStability.N_rSteps);
+                   simsetup.SynchronizationSingleSectorStability.N_rSteps);
 
 % Resonance amplitude tuned system
 [qhat_res_tuned, ~, ~] = ....

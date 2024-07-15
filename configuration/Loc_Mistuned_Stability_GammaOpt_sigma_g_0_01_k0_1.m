@@ -1,4 +1,4 @@
-simulation = 'LocalizationSingleSectorStability';
+simulation = 'SynchronizationSingleSectorStability';
 
 % System parameters
 sys.kappa_c = 0.006;
@@ -10,14 +10,14 @@ sys.sigma_g = 0.01;
 exc.k = 1;
 
 % Maximum of clearance normalized amplitude
-simsetup.LocalizationSingleSectorStability.xi_max = 20;
+simsetup.SynchronizationSingleSectorStability.xi_max = 20;
 % Number of samples of clearance normalized amplitude
-simsetup.LocalizationSingleSectorStability.Nxi = 2000;
+simsetup.SynchronizationSingleSectorStability.Nxi = 2000;
 % Range of excitaiton frequencies
-simsetup.LocalizationSingleSectorStability.r_range = [0.95 1.02];
+simsetup.SynchronizationSingleSectorStability.r_range = [0.95 1.02];
 % Number of samples of excitation frequencies
-simsetup.LocalizationSingleSectorStability.Nr = 4000;
+simsetup.SynchronizationSingleSectorStability.Nr = 4000;
 % Number of Mistuning realizations for frequency amplitude curves
-simsetup.LocalizationSingleSectorStability.N_MCS = 200;
+simsetup.SynchronizationSingleSectorStability.N_MCS = 200;
 % Take every stepsize-th point of contour for stability analysis
-simsetup.LocalizationSingleSectorStability.stepsize = 100;
+simsetup.SynchronizationSingleSectorStability.stepsize = 100;

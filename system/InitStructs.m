@@ -117,40 +117,40 @@ simsetup.TimeSimulation.cut_transient = true;
 simsetup.TimeSimulation.initial_conditions = 'random';
 
 % =========================================================================
-% Analytical Study of Localization in single sector
+% Analytical Study of Synchronization in single sector
 % =========================================================================
 
 % Maximum of clearance normalized amplitude
-simsetup.LocalizationSingleSectorAnalytical.xi_max = 20;
+simsetup.SynchronizationSingleSectorAnalytical.xi_max = 20;
 % Number of samples of clearance normalized amplitude
-simsetup.LocalizationSingleSectorAnalytical.Nxi = 1000;
+simsetup.SynchronizationSingleSectorAnalytical.Nxi = 1000;
 % Range of excitaiton frequencies
-simsetup.LocalizationSingleSectorAnalytical.r_range = [0.9 1.1];
+simsetup.SynchronizationSingleSectorAnalytical.r_range = [0.9 1.1];
 % Number of samples of excitation frequencies
-simsetup.LocalizationSingleSectorAnalytical.Nr = 1000;
+simsetup.SynchronizationSingleSectorAnalytical.Nr = 1000;
 % Number of Mistuning realizations for frequency amplitude curves
-simsetup.LocalizationSingleSectorAnalytical.N_MCS = 10;
+simsetup.SynchronizationSingleSectorAnalytical.N_MCS = 10;
 
 % =========================================================================
-% Numerical stability analysis of Localization in single sector
+% Numerical stability analysis of Synchronization in single sector
 % =========================================================================
 
 % Maximum of clearance normalized amplitude
-simsetup.LocalizationSingleSectorStability.xi_max = 20;
+simsetup.SynchronizationSingleSectorStability.xi_max = 20;
 % Number of samples of clearance normalized amplitude
-simsetup.LocalizationSingleSectorStability.Nxi = 1000;
+simsetup.SynchronizationSingleSectorStability.Nxi = 1000;
 % Range of excitaiton frequencies
-simsetup.LocalizationSingleSectorStability.r_range = [0.9 1.1];
+simsetup.SynchronizationSingleSectorStability.r_range = [0.9 1.1];
 % Number of samples of excitation frequencies
-simsetup.LocalizationSingleSectorStability.Nr = 1000;
+simsetup.SynchronizationSingleSectorStability.Nr = 1000;
 % Number of Mistuning realizations for frequency amplitude curves
-simsetup.LocalizationSingleSectorStability.N_MCS = 10;
+simsetup.SynchronizationSingleSectorStability.N_MCS = 10;
 % Take every stepsize-th point of contour for stability analysis
-simsetup.LocalizationSingleSectorStability.stepsize = 200;
+simsetup.SynchronizationSingleSectorStability.stepsize = 200;
 % Frequency range for estimation of tuned resonance
-simsetup.LocalizationSingleSectorStability.r_scale = [0.98 1.03];
+simsetup.SynchronizationSingleSectorStability.r_scale = [0.98 1.03];
 % Steps in frequency stepping interval
-simsetup.LocalizationSingleSectorStability.N_rSteps = 50;
+simsetup.SynchronizationSingleSectorStability.N_rSteps = 50;
 
 % =========================================================================
 % Numerical stability analysis of GSR
