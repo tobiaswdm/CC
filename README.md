@@ -2,7 +2,7 @@
 
 The tool CCOO (prononunced Coco) performs various numerical and analytical investigations of a Cyclic Chain of Oscillators (CCOO) with Vibro-Impact Nonlinear Energy Sinks (VI-NESs) under harmonic standing/traveling wave forcing.
 
-All simulations are started from the _'CCOO.m'_ file that reads in the specfied configuration file from the configuration folder. When setting up a configuration file, you first need to set which simulation you want to perform and then specifiy the parameters needed for the simulation. A list of all parameters and some useful default values can be found in the _'InitStructs.m'_ file in the system folder.
+All simulations are started from the `CCOO.m` file that reads in the specfied configuration file from the configuration folder. When setting up a configuration file, you first need to set which simulation you want to perform and then specifiy the parameters needed for the simulation. A list of all parameters and some useful default values can be found in the `InitStructs.m` file in the system folder.
 
 **If you are using CCOO for your own studies, please refer to the paper:**
 
