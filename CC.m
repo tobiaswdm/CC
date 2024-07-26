@@ -5,7 +5,7 @@
 % analytical analyses on a Cylic Chain of Oscialltors with Vibro-Impact
 % Nonlinear Energy Sinks (VI-NESs)
 %
-% The Code for CCOO was written by:
+% The Code for CC was written by:
 % Tobias Weidemann - (C) 2024
 % University of Stuttgart, Germany
 % Institute of Aircraft Propulsion Systems
