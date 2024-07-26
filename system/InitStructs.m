@@ -1,39 +1,37 @@
 %% System parameters
 % Tuned system
-sys.N_s = 10;
-sys.kappa_c = 0;
-sys.epsilon_a = 0.02;
-sys.D = 1e-3;
-sys.Gamma_Scale = 0;    % Gamma = qref*Gamma_scale
-sys.eN = 0.8;
+sys.N_s = 10;           % Number of sectors
+sys.kappa_c = 0;        % Linear coupling strength
+sys.epsilon_a = 0.02;   % Mass ratio of VI-NES
+sys.D = 1e-3;           % Uniform Modal Damping Ratio
+sys.Gamma_Scale = 0;    % Clearance normalized by linear resonance amplitude
+sys.eN = 0.8;           % Restitution coefficient
 
 % Mistuned system
-sys.sigma_omega = 0;
-sys.sigma_g = 0;
+sys.sigma_omega = 0;    % Rel. Standard deviation of local eigefrequencies
+sys.sigma_g = 0;        % Rel. Standard deviation of local clearances
 
 %% Excitation
-exc.type = 'harmonic';
-exc.k = 0;
-exc.wavedirection = 'forward';
+exc.type = 'harmonic';  % Excitation type 'harmonic' or 'sweep'
+exc.k = 0;              % Excitation wavenumber
+exc.wavedirection = 'forward'; % Direction of traveling wave excitation
 % Harmonic excitation
-exc.harmonic.r = 0;
+exc.harmonic.r = 1;     % Excitation Frequency
 % Sweep
 exc.sweep.r0 = 0;   % Start frequency
 exc.sweep.re = 0;   % End frequency
 exc.sweep.tau = 0;  % Sweep duration
-exc.sweep.r_gref = 0; % r to calculate reference amplitude
 
 
 %% Solver
-sol.alpha = 1;          % Only change if necassary
-sol.mode = 'smoreau';   % Only change if necassary
-sol.solver = 'JOR';     % Only change if necassary
-sol.maxiter = 1000;     % Only change if necassary
-sol.tol = 1e-4;         % Only change if necassary
+sol.alpha = 1;          % Scaling Parameter of prox solver in Moreau Code
+sol.solver = 'JOR';     % Solver type of inclusions ('JOR' or 'fsolve')
+sol.maxiter = 1000;     % Maximum number of prox iterations in Moreau sol
+sol.tol = 1e-4;         % Tolerance of prox solver
 sol.N_Tau = 300;        % Number of stationary excitation periods to simulate
 sol.N_P = 1000;         % Sample pseudo period with 1000 steps
 sol.N_Sample = 1000;    % Sample pseudo period with 1000 steps in post processing
-sol.N_Workers = 25;     % Maximum number of workers
+sol.N_Workers = 25;     % Maximum number of workers for paralles tasks
 
 %% Simulation Setups
 

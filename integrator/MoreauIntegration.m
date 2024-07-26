@@ -65,471 +65,224 @@ UBA = ua0;
 t = 0;
 saveindex = N_Save;
 k = 2;
+        
+% Symmetric moreau as derived in
+% 'Comparison of Moreau-type integrators based on the time finite
+% element discretization of the virtual action' - Capobianco et al., ENOC 2017
+% This paper uses a different (confusing) indexing
+% k-1 = beginning of timestep
+% k = midpoint
+% k+1 = end of timestep
 
-switch sol.mode
-    case 'moreau' % Classic moreau scheme
+% Set up matrices
+MC = M + 0.5*dt*C;       
+MC_inv = MC\eye(n);
+Ma_inv = Ma\eye(nA);
+MC_invM = MC_inv*M;
+for j = 1:N_transient
     
-        % Invert Mass Matrices
-        M_inv = M\eye(n);
-        Ma_inv = Ma\eye(nA);
-
-        for j = 1:N_transient
-            % Approximate Q at midpoint
-            QM = QB + 0.5*dt*UB; % Masses
-            QMA = QBA + 0.5*dt*UBA; % Absorbers
-            tM = t + 0.5*dt;
-            
-            % Forces on masses at midpoint
-            hM = ExcitationTime(tM,fhat,exc) - C*UB - K*QM;
-            
-            % Contact detection at midpoint (WN,WNA = const.)
-            gN = g + WN'*QM + WNA'*QMA;
-            IC = find(gN<=0); nC = length(IC);
-            
-            % Handle contacts
-            if nC>0
-                % Set up inclusion problem               
-                % Normalized force directions of active contacts
-                WN_active = WN(:,IC); WNA_active = WNA(:,IC);
-                % Contact velocity at beginning of timestep
-                
-                % Initialize contact efforts
-                P_prev = zeros(nC,1); % Cold start (all zero)
-
-                iter = 1;
-                converged = false;               
-                
-                % Delassu Matrix
-                G = WN_active' * M_inv * WN_active + WNA_active' * Ma_inv * WNA_active;
-                r = sol.alpha./diag(G);
-                
-                rWUB = eN*r.*(WN_active'*UB + WNA_active'*UBA);
-                UE = UB + M_inv*(hM*dt + WN_active*P_prev);
-                UEA = UBA + Ma_inv*(WNA_active*P_prev);
-                
-                while ~converged
-                    switch sol.solver
-                        case 'JOR'                        
-                            P = -min(-P_prev + rWUB + r.*(WN_active'*UE + WNA_active' * UEA),0);
-                            UE = UE + M_inv*WN_active*(P-P_prev);
-                            UEA = UEA + Ma_inv*WNA_active*(P-P_prev);
-                        case 'SOR'
-                            % Not implemented
-                        case 'fsolve'
-                            % Set up function, where x = [UE;UEA;PP]
-                            % UE = x(1:n); UEA = x((n+1):(n+nA)); PP = x((n+nA+1))
-                            nUE_start = n+1;
-                            nUE_end = n+nA;
-                            nPP_start = n+nA+1;
-                            nPP_end = n+nA+nC;
-                            f = @(x) [M*(x(1:n)-UB) - hM*dt - WN_active*x(nPP_start:nPP_end);...
-                                Ma*(x(nUE_start:nUE_end)-UBA) - WNA_active*x(nPP_start:nPP_end);...
-                                x(nPP_start:nPP_end) + min(-x(nPP_start:nPP_end) + rWUB +...
-                                r.*(WN_active'*x(1:n) + WNA_active' * x(nUE_start:nUE_end)),0)];
-                            options = optimoptions('fsolve','MaxIterations',sol.maxiter,'Display','off');
-                            [xout,~,exitflag,~] = fsolve(f,[UB;UBA;P_prev],options);
-                            UE = xout(1:n);
-                            UEA = xout(nUE_start:nUE_end);
-                            P = xout(nPP_start:nPP_end);
-                            if exitflag == 0 || exitflag == -2
-                                warning('No convergence in time step.')
-                            end
-                            P_prev = P;
-                        case 'newton'
-                            % Semi smooth Newton method
-                        otherwise
-                            error(['Unknown solver ' sol.solver '.']);
-                    end
-                    err = sum(abs(P-P_prev));
-                    P_prev = P;
-                    converged = err <= sol.tol;
-                    
-                    iter = iter+1;
-                    if iter > sol.maxiter
-                        converged = true;
-                        warning('No convergence in time step.')
-                    elseif any(isnan([UE;UEA]))
-                        error('NaN in prox iteration.')                  
-                    end
-                end
-                
-                %PP(IC,j+1) = P;
-                
-                %Sout.iter(j+1) = iter;
-                %Sout.nC(j+1) = nC;
-                %Sout.IC(IC,j+1) = 1;
-                
-            else
-                UE = UB + M_inv*(hM*dt);
-                UEA = UBA;
-            end
-            
-            t = t+dt;
-            QE = QM + 0.5*dt*UE;
-            QEA = QMA + 0.5*dt*UEA;
-            QB = QE;
-            QBA = QEA;
-            UB = UE;
-            UBA = UEA;         
-
-        end
+    % Approximate Q at midpoint
+    QM = QB + 0.5*dt*UB; % Masses
+    QMA = QBA + 0.5*dt*UBA; % Absorbers
+    tM = t + 0.5*dt;
+    
+    % Collective symmetric forces at midpoint
+    hM = ExcitationTime(tM,fhat,exc)-K*QM-0.5*C*UB;
+    
+    % Contact detection at midpoint (WN,WNA = const.)
+    gN = g + WN'*QM + WNA'*QMA;
+    IC = find(gN<=0); nC = length(IC);
+    
+    % Handle contacts
+    if nC>0
+        % Set up inclusion problem
         
-        Q(:,1) = QB;      % Initialize Displacement
-        QA(:,1)= QBA;     % Initialize Displacement Absorber
-        U(:,1) = UB;      % Initialize Velocity
-        UA(:,1) = UBA;    % Initialize Velocity Absorber
-        T(1) = t;         % Time
-
-        for j = 1:Nt
-            
-            % Approximate Q at midpoint
-            QM = QB + 0.5*dt*UB; % Masses
-            QMA = QBA + 0.5*dt*UBA; % Absorbers
-            tM = t + 0.5*dt;
-            
-            % Forces on masses at midpoint
-            hM = ExcitationTime(tM,fhat,exc) - C*UB - K*QM;
-            
-            % Contact detection at midpoint (WN,WNA = const.)
-            gN = g + WN'*QM + WNA'*QMA;
-            IC = find(gN<=0); nC = length(IC);
-            
-            % Handle contacts
-            if nC>0
-                % Set up inclusion problem               
-                % Normalized force directions of active contacts
-                WN_active = WN(:,IC); WNA_active = WNA(:,IC);
-                % Contact velocity at beginning of timestep
-                
-                % Initialize contact efforts
-                P_prev = zeros(nC,1); % Cold start (all zero)
-
-                
-                iter = 1;
-                converged = false;               
-                
-                % Delassu Matrix
-                G = WN_active' * M_inv * WN_active + WNA_active' * Ma_inv * WNA_active;
-                r = sol.alpha./diag(G);
-                
-                rWUB = eN*r.*(WN_active'*UB + WNA_active'*UBA);
-                UE = UB + M_inv*(hM*dt + WN_active*P_prev);
-                UEA = UBA + Ma_inv*(WNA_active*P_prev);
-                
-                while ~converged
-                    switch sol.solver
-                        case 'JOR'                        
-                            P = -min(-P_prev + rWUB + r.*(WN_active'*UE + WNA_active' * UEA),0);
-                            UE = UE + M_inv*WN_active*(P-P_prev);
-                            UEA = UEA + Ma_inv*WNA_active*(P-P_prev);
-                        case 'SOR'
-                            % Not implemented
-                        case 'fsolve'
-                            % Set up function, where x = [UE;UEA;PP]
-                            % UE = x(1:n); UEA = x((n+1):(n+nA)); PP = x((n+nA+1))
-                            nUE_start = n+1;
-                            nUE_end = n+nA;
-                            nPP_start = n+nA+1;
-                            nPP_end = n+nA+nC;
-                            f = @(x) [M*(x(1:n)-UB) - hM*dt - WN_active*x(nPP_start:nPP_end);...
-                                Ma*(x(nUE_start:nUE_end)-UBA) - WNA_active*x(nPP_start:nPP_end);...
-                                x(nPP_start:nPP_end) + min(-x(nPP_start:nPP_end) + rWUB +...
-                                r.*(WN_active'*x(1:n) + WNA_active' * x(nUE_start:nUE_end)),0)];
-                            options = optimoptions('fsolve','MaxIterations',sol.maxiter,'Display','off');
-                            [xout,~,exitflag,~] = fsolve(f,[UB;UBA;P_prev],options);
-                            UE = xout(1:n);
-                            UEA = xout(nUE_start:nUE_end);
-                            P = xout(nPP_start:nPP_end);
-                            if exitflag == 0 || exitflag == -2
-                                warning('No convergence in time step.')
-                            end
-                            P_prev = P;
-                        case 'newton'
-                            % Semi smooth Newton method
-                        otherwise
-                            error(['Unknown solver ' sol.solver '.']);
-                    end
-                    err = sum(abs(P-P_prev));
-                    P_prev = P;
-                    converged = err <= sol.tol;
-                    
-                    iter = iter+1;
-                    if iter > sol.maxiter
-                        converged = true;
-                        warning('No convergence in time step.')
-                    elseif any(isnan([UE;UEA]))
-                        error('NaN in prox iteration.')                  
-                    end
-                end
-                
-                %PP(IC,j+1) = P;
-                
-                %Sout.iter(j+1) = iter;
-                %Sout.nC(j+1) = nC;
-                %Sout.IC(IC,j+1) = 1;
-                
-            else
-                UE = UB + M_inv*(hM*dt);
-                UEA = UBA;
-            end
-            
-            t = t+dt;
-            QE = QM + 0.5*dt*UE;
-            QEA = QMA + 0.5*dt*UEA;
-            QB = QE;
-            QBA = QEA;
-            UB = UE;
-            UBA = UEA;
-            
-            if j ==  saveindex
-                Q(:,k) = QE;      % Initialize Displacement
-                QA(:,k)= QEA;     % Initialize Displacement Absorber
-                U(:,k) = UE;      % Initialize Velocity
-                UA(:,k) = UEA;    % Initialize Velocity Absorber
-                T(k) = t;         % Time
-                k = k+1;
-                saveindex = saveindex + N_Save;
-            end
-            
-        end
+        % Normalized force directions of active contacts
+        WN_active = WN(:,IC); WNA_active = WNA(:,IC);
+        % Contact velocity at beginning of timestep
         
-    case 'smoreau'
-        % Symmetric moreau as derived in
-        % 'Comparison of Moreau-type integrators based on the time finite
-        % element discretization of the virtual action' - Capobianco et al., ENOC 2017
-        % This paper uses a different (confusing) indexing
-        % k-1 = beginning of timestep
-        % k = midpoint
-        % k+1 = end of timestep
-        
-        % Set up matrices
-        MC = M + 0.5*dt*C;       
-        MC_inv = MC\eye(n);
-        Ma_inv = Ma\eye(nA);
-        MC_invM = MC_inv*M;
-        for j = 1:N_transient
-            
-            % Approximate Q at midpoint
-            QM = QB + 0.5*dt*UB; % Masses
-            QMA = QBA + 0.5*dt*UBA; % Absorbers
-            tM = t + 0.5*dt;
-            
-            % Collective symmetric forces at midpoint
-            hM = ExcitationTime(tM,fhat,exc)-K*QM-0.5*C*UB;
-            
-            % Contact detection at midpoint (WN,WNA = const.)
-            gN = g + WN'*QM + WNA'*QMA;
-            IC = find(gN<=0); nC = length(IC);
-            
-            % Handle contacts
-            if nC>0
-                % Set up inclusion problem
-                
-                % Normalized force directions of active contacts
-                WN_active = WN(:,IC); WNA_active = WNA(:,IC);
-                % Contact velocity at beginning of timestep
-                
-                % Initialize contact efforts
-                P_prev = zeros(nC,1); % Cold start (all zero)
+        % Initialize contact efforts
+        P_prev = zeros(nC,1); % Cold start (all zero)
 
-                
-                iter = 1;
-                converged = false;
-                
-                % Delassu Matrix
-                G = WN_active' * MC_inv * WN_active + WNA_active' * Ma_inv * WNA_active;
-                r = sol.alpha./diag(G);
-                
-                rWUB = eN*r.*(WN_active'*UB + WNA_active'*UBA);
-                UE = MC_invM*UB + MC_inv*(hM*dt+WN_active*P_prev);
-                UEA = UBA + Ma_inv*(WNA_active*P_prev);
-                
-                while ~converged
-                    switch sol.solver
-                        case 'JOR'
-                            P = -min(-P_prev + rWUB + r.*(WN_active'*UE + WNA_active' * UEA),0);
-                            UE = UE + MC_inv*WN_active*(P-P_prev);
-                            UEA = UEA + Ma_inv*WNA_active*(P-P_prev);
-                        case 'SOR'
-                            % Not implemented
-                        case 'fsolve'                            
-                            % Set up function, where x = [UE;UEA;PP]
-                            % UE = x(1:n); UEA = x((n+1):(n+nA)); PP = x((n+nA+1))
-                            nUE_start = n+1;
-                            nUE_end = n+nA;
-                            nPP_start = n+nA+1;
-                            nPP_end = n+nA+nC;
-                            f = @(x) [MC*x(1:n)-M*UB - hM*dt - WN_active*x(nPP_start:nPP_end);...
-                                Ma*(x(nUE_start:nUE_end)-UBA) - WNA_active*x(nPP_start:nPP_end);...
-                                x(nPP_start:nPP_end) + min(-x(nPP_start:nPP_end) + rWUB +...
-                                sol.rN*(WN_active'*x(1:n) + WNA_active' * x(nUE_start:nUE_end)),0)];
-                            options = optimoptions('fsolve','MaxIterations',sol.maxiter,'Display','off');
-                            [xout,~,exitflag,~] = fsolve(f,[UB;UBA;P_prev],options);
-                            UE = xout(1:n);
-                            UEA = xout(nUE_start:nUE_end);
-                            P = xout(nPP_start:nPP_end);
-                            if exitflag == 0 || exitflag == -2
-                                warning('No convergence in time step.')
-                            end
-                            P_prev = P;                               
-                        otherwise
-                            error(['Unknown solver ' sol.solver '.']);
-                    end
-                    err = sum(abs(P-P_prev));
-                    P_prev = P;
-                    converged = err <= sol.tol;
-                    
-                    iter = iter+1;
-                    if iter > sol.maxiter
-                        converged = true;
-                        warning('No convergence in time step.')
-                    elseif any(isnan([UE;UEA]))
-                        error('NaN in prox iteration.')
-                    end
-                end
-                
-                %PP(IC,j+1) = P;
-                
-                %Sout.iter(j+1) = iter;
-                %Sout.nC(j+1) = nC;
-                %Sout.IC(IC,j+1) = 1;
-                
-            else
-                UE = MC_invM*UB + MC_inv*hM*dt;
-                UEA = UBA;
-            end
-            
-            t = t+dt;
-            QE = QM + 0.5*dt*UE;
-            QEA = QMA + 0.5*dt*UEA;
-            QB = QE;
-            QBA = QEA;
-            UB = UE;
-            UBA = UEA;           
-        end
         
-        Q(:,1) = QB;      % Initialize Displacement
-        QA(:,1)= QBA;     % Initialize Displacement Absorber
-        U(:,1) = UB;      % Initialize Velocity
-        UA(:,1) = UBA;    % Initialize Velocity Absorber
-        T(1) = t;         % Time
-        for j = 1:Nt
-            
-            % Approximate Q at midpoint
-            QM = QB + 0.5*dt*UB; % Masses
-            QMA = QBA + 0.5*dt*UBA; % Absorbers
-            tM = t + 0.5*dt;
-            
-            % Collective symmetric forces at midpoint
-            hM = ExcitationTime(tM,fhat,exc)-K*QM-0.5*C*UB;
-            
-            % Contact detection at midpoint (WN,WNA = const.)
-            gN = g + WN'*QM + WNA'*QMA;
-            IC = find(gN<=0); nC = length(IC);
-            
-            % Handle contacts
-            if nC>0
-                % Set up inclusion problem
-                
-                % Normalized force directions of active contacts
-                WN_active = WN(:,IC); WNA_active = WNA(:,IC);
-                % Contact velocity at beginning of timestep
-                
-                % Initialize contact efforts
-                P_prev = zeros(nC,1); % Cold start (all zero)
-
-                
-                iter = 1;
-                converged = false;
-                
-                % Delassu Matrix
-                G = WN_active' * MC_inv * WN_active + WNA_active' * Ma_inv * WNA_active;
-                r = sol.alpha./diag(G);
-                
-                rWUB = eN*r.*(WN_active'*UB + WNA_active'*UBA);
-                UE = MC_invM*UB + MC_inv*(hM*dt+WN_active*P_prev);
-                UEA = UBA + Ma_inv*(WNA_active*P_prev);
-                
-                while ~converged
-                    switch sol.solver
-                        case 'JOR'
-                            P = -min(-P_prev + rWUB + r.*(WN_active'*UE + WNA_active' * UEA),0);
-                            UE = UE + MC_inv*WN_active*(P-P_prev);
-                            UEA = UEA + Ma_inv*WNA_active*(P-P_prev);
-                        case 'SOR'
-                            % Not implemented
-                        case 'fsolve'                            
-                            % Set up function, where x = [UE;UEA;PP]
-                            % UE = x(1:n); UEA = x((n+1):(n+nA)); PP = x((n+nA+1))
-                            nUE_start = n+1;
-                            nUE_end = n+nA;
-                            nPP_start = n+nA+1;
-                            nPP_end = n+nA+nC;
-                            f = @(x) [MC*x(1:n)-M*UB - hM*dt - WN_active*x(nPP_start:nPP_end);...
-                                Ma*(x(nUE_start:nUE_end)-UBA) - WNA_active*x(nPP_start:nPP_end);...
-                                x(nPP_start:nPP_end) + min(-x(nPP_start:nPP_end) + rWUB +...
-                                sol.rN*(WN_active'*x(1:n) + WNA_active' * x(nUE_start:nUE_end)),0)];
-                            options = optimoptions('fsolve','MaxIterations',sol.maxiter,'Display','off');
-                            [xout,~,exitflag,~] = fsolve(f,[UB;UBA;P_prev],options);
-                            UE = xout(1:n);
-                            UEA = xout(nUE_start:nUE_end);
-                            P = xout(nPP_start:nPP_end);
-                            if exitflag == 0 || exitflag == -2
-                                warning('No convergence in time step.')
-                            end
-                            P_prev = P;                               
-                        otherwise
-                            error(['Unknown solver ' sol.solver '.']);
-                    end
-                    err = sum(abs(P-P_prev));
-                    P_prev = P;
-                    converged = err <= sol.tol;
-                    
-                    iter = iter+1;
-                    if iter > sol.maxiter
-                        converged = true;
+        iter = 1;
+        converged = false;
+        
+        % Delassu Matrix
+        G = WN_active' * MC_inv * WN_active + ...
+            WNA_active' * Ma_inv * WNA_active;
+        r = sol.alpha./diag(G);
+        
+        rWUB = eN*r.*(WN_active'*UB + WNA_active'*UBA);
+        UE = MC_invM*UB + MC_inv*(hM*dt+WN_active*P_prev);
+        UEA = UBA + Ma_inv*(WNA_active*P_prev);
+        
+        while ~converged
+            switch sol.solver
+                case 'JOR'
+                    P = -min(-P_prev + rWUB + r.*(WN_active'*UE + WNA_active' * UEA),0);
+                    UE = UE + MC_inv*WN_active*(P-P_prev);
+                    UEA = UEA + Ma_inv*WNA_active*(P-P_prev);
+                case 'fsolve'                            
+                    % Set up function, where x = [UE;UEA;PP]
+                    % UE = x(1:n); UEA = x((n+1):(n+nA)); PP = x((n+nA+1))
+                    nUE_start = n+1;
+                    nUE_end = n+nA;
+                    nPP_start = n+nA+1;
+                    nPP_end = n+nA+nC;
+                    f = @(x) [MC*x(1:n)-M*UB - hM*dt - WN_active*x(nPP_start:nPP_end);...
+                        Ma*(x(nUE_start:nUE_end)-UBA) - WNA_active*x(nPP_start:nPP_end);...
+                        x(nPP_start:nPP_end) + min(-x(nPP_start:nPP_end) + rWUB +...
+                        sol.rN*(WN_active'*x(1:n) + WNA_active' * x(nUE_start:nUE_end)),0)];
+                    options = optimoptions('fsolve','MaxIterations',sol.maxiter,'Display','off');
+                    [xout,~,exitflag,~] = fsolve(f,[UB;UBA;P_prev],options);
+                    UE = xout(1:n);
+                    UEA = xout(nUE_start:nUE_end);
+                    P = xout(nPP_start:nPP_end);
+                    if exitflag == 0 || exitflag == -2
                         warning('No convergence in time step.')
-                    elseif any(isnan([UE;UEA]))
-                        error('NaN in prox iteration.')
                     end
-                end
-                
-                %PP(IC,j+1) = P;
-                
-                %Sout.iter(j+1) = iter;
-                %Sout.nC(j+1) = nC;
-                %Sout.IC(IC,j+1) = 1;
-                
-            else
-                UE = MC_invM*UB + MC_inv*hM*dt;
-                UEA = UBA;
+                    P_prev = P;                               
+                otherwise
+                    error(['Unknown solver ' sol.solver '.']);
             end
+            err = sum(abs(P-P_prev));
+            P_prev = P;
+            converged = err <= sol.tol;
             
-            t = t+dt;
-            QE = QM + 0.5*dt*UE;
-            QEA = QMA + 0.5*dt*UEA;
-            QB = QE;
-            QBA = QEA;
-            UB = UE;
-            UBA = UEA;
-            
-            if j ==  saveindex
-                Q(:,k) = QE;      % Initialize Displacement
-                QA(:,k)= QEA;     % Initialize Displacement Absorber
-                U(:,k) = UE;      % Initialize Velocity
-                UA(:,k) = UEA;    % Initialize Velocity Absorber
-                T(k) = t;         % Time
-                k = k+1;
-                saveindex = saveindex + N_Save;
+            iter = iter+1;
+            if iter > sol.maxiter
+                converged = true;
+                warning('No convergence in time step.')
+            elseif any(isnan([UE;UEA]))
+                error('NaN in prox iteration.')
             end
         end
         
-        
-        
-    otherwise
-        error('Mode should be ''moreau'' or ''smoreau''.')
-        
+    else
+        UE = MC_invM*UB + MC_inv*hM*dt;
+        UEA = UBA;
+    end
+    
+    t = t+dt;
+    QE = QM + 0.5*dt*UE;
+    QEA = QMA + 0.5*dt*UEA;
+    QB = QE;
+    QBA = QEA;
+    UB = UE;
+    UBA = UEA;           
 end
+
+Q(:,1) = QB;      % Initialize Displacement
+QA(:,1)= QBA;     % Initialize Displacement Absorber
+U(:,1) = UB;      % Initialize Velocity
+UA(:,1) = UBA;    % Initialize Velocity Absorber
+T(1) = t;         % Time
+for j = 1:Nt
+    
+    % Approximate Q at midpoint
+    QM = QB + 0.5*dt*UB; % Masses
+    QMA = QBA + 0.5*dt*UBA; % Absorbers
+    tM = t + 0.5*dt;
+    
+    % Collective symmetric forces at midpoint
+    hM = ExcitationTime(tM,fhat,exc)-K*QM-0.5*C*UB;
+    
+    % Contact detection at midpoint (WN,WNA = const.)
+    gN = g + WN'*QM + WNA'*QMA;
+    IC = find(gN<=0); nC = length(IC);
+    
+    % Handle contacts
+    if nC>0
+        % Set up inclusion problem
+        
+        % Normalized force directions of active contacts
+        WN_active = WN(:,IC); WNA_active = WNA(:,IC);
+        % Contact velocity at beginning of timestep
+        
+        % Initialize contact efforts
+        P_prev = zeros(nC,1); % Cold start (all zero)
+
+        
+        iter = 1;
+        converged = false;
+        
+        % Delassu Matrix
+        G = WN_active' * MC_inv * WN_active + ...
+            WNA_active' * Ma_inv * WNA_active;
+        r = sol.alpha./diag(G);
+        
+        rWUB = eN*r.*(WN_active'*UB + WNA_active'*UBA);
+        UE = MC_invM*UB + MC_inv*(hM*dt+WN_active*P_prev);
+        UEA = UBA + Ma_inv*(WNA_active*P_prev);
+        
+        while ~converged
+            switch sol.solver
+                case 'JOR'
+                    P = -min(-P_prev + rWUB + r.*(WN_active'*UE + WNA_active' * UEA),0);
+                    UE = UE + MC_inv*WN_active*(P-P_prev);
+                    UEA = UEA + Ma_inv*WNA_active*(P-P_prev);
+                case 'fsolve'                            
+                    % Set up function, where x = [UE;UEA;PP]
+                    % UE = x(1:n); UEA = x((n+1):(n+nA)); PP = x((n+nA+1))
+                    nUE_start = n+1;
+                    nUE_end = n+nA;
+                    nPP_start = n+nA+1;
+                    nPP_end = n+nA+nC;
+                    f = @(x) [MC*x(1:n)-M*UB - hM*dt - WN_active*x(nPP_start:nPP_end);...
+                        Ma*(x(nUE_start:nUE_end)-UBA) - WNA_active*x(nPP_start:nPP_end);...
+                        x(nPP_start:nPP_end) + min(-x(nPP_start:nPP_end) + rWUB +...
+                        sol.rN*(WN_active'*x(1:n) + WNA_active' * x(nUE_start:nUE_end)),0)];
+                    options = optimoptions('fsolve','MaxIterations',sol.maxiter,'Display','off');
+                    [xout,~,exitflag,~] = fsolve(f,[UB;UBA;P_prev],options);
+                    UE = xout(1:n);
+                    UEA = xout(nUE_start:nUE_end);
+                    P = xout(nPP_start:nPP_end);
+                    if exitflag == 0 || exitflag == -2
+                        warning('No convergence in time step.')
+                    end
+                    P_prev = P;                               
+                otherwise
+                    error(['Unknown solver ' sol.solver '.']);
+            end
+            err = sum(abs(P-P_prev));
+            P_prev = P;
+            converged = err <= sol.tol;
+            
+            iter = iter+1;
+            if iter > sol.maxiter
+                converged = true;
+                warning('No convergence in time step.')
+            elseif any(isnan([UE;UEA]))
+                error('NaN in prox iteration.')
+            end
+        end
+        
+        
+    else
+        UE = MC_invM*UB + MC_inv*hM*dt;
+        UEA = UBA;
+    end
+    
+    t = t+dt;
+    QE = QM + 0.5*dt*UE;
+    QEA = QMA + 0.5*dt*UEA;
+    QB = QE;
+    QBA = QEA;
+    UB = UE;
+    UBA = UEA;
+    
+    if j ==  saveindex
+        Q(:,k) = QE;      % Initialize Displacement
+        QA(:,k)= QEA;     % Initialize Displacement Absorber
+        U(:,k) = UE;      % Initialize Velocity
+        UA(:,k) = UEA;    % Initialize Velocity Absorber
+        T(k) = t;         % Time
+        k = k+1;
+        saveindex = saveindex + N_Save;
+    end
+end
+               
 end
 
 
