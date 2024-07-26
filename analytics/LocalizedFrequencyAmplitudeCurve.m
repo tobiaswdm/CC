@@ -1,3 +1,29 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% CC (pronounced Sisi) is a tool that performs numerical and/or
+% analytical analyses on a Cylic Chain of Oscialltors with Vibro-Impact
+% Nonlinear Energy Sinks (VI-NESs)
+%
+% The Code for CC was written by:
+% Tobias Weidemann - (C) 2024
+% University of Stuttgart, Germany
+% Institute of Aircraft Propulsion Systems
+%
+% Contact: tobias.weidemann@ila.uni-stuttgart.de
+%
+% Feel free to use, share and modify under the GPL-3.0 license.
+% CC is purely academic and comes with no warranty.
+% If you use CC for your own research, please refer to the paper:
+%
+% T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2024)
+% "Energy Transfer and Localization in a Forced Cyclic Chain of
+% Oscillators with Vibro-Impact Nonlinear Energy Sinks".
+% Manuscript submitted to Nonlinear Dynamics
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function [qhat_max,qhat_max_violated,qhat_localized,r] = ...
     LocalizedFrequencyAmplitudeCurve(c,sys,exc,disorder)
 %LOCALIZEDFREQUENCYAMPLITUDECURVE Determine the different parts of
