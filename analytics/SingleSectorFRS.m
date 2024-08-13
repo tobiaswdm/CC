@@ -41,7 +41,7 @@ switch disorder
                 2*sys.D*1i*sys.r_k(exc.k+1)*r + ....
                 sys.r_k(exc.k+1)^2).^-1),[1,Nxi]);
     case 'mistuned'
-        H = pageinv(-r_perm.^2 .* sys.M_mt + 1i*r_perm.*sys.C + sys.K_mt);
+        H = pageinv(-r_perm.^2 .* sys.M_mt + 1i*r_perm.*sys.C_mt + sys.K_mt);
         Hnn = repmat(squeeze(H(1,1,:)),[1 Nxi]);
         Q_lin = pagemtimes(H(1,:,:),exc.F);
         Q_nn_lin = repmat(squeeze(Q_lin),[1,Nxi]);

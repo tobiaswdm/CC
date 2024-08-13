@@ -1,7 +1,9 @@
 function [E] = SpatialEnergies(sys,sol,Q,U,UA,disorder)
 %SPATIALENERGIES Compute the Average spatial energies
 % over each period of oscillation
-%   Detailed explanation goes here
+%   Q - Displacemet in physical coordinates [N_s,N_tau]
+%   U - Velocity in physical coordinates [N_s,N_tau]
+%   UA - Velocity of Absorbers in physical coordinates [N_s,N_tau]
 
 movRMS = dsp.MovingRMS(sol.N_Sample);
 

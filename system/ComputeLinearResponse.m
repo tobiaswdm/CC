@@ -13,7 +13,7 @@ switch config % Fixed or removed absorbers
                 end
             case 'mistuned'
                 for i = 1:length(r)
-                    Q(:,i) = (-r(i)^2*sys.M_fixed_mt + 1i*r(i)*sys.C + sys.K_mt)\exc.F;
+                    Q(:,i) = (-r(i)^2*sys.M_fixed_mt + 1i*r(i)*sys.C_mt + sys.K_mt)\exc.F;
                 end
             otherwise
                 error('Case not defined.')
@@ -28,7 +28,7 @@ switch config % Fixed or removed absorbers
                 end
             case 'mistuned'
                 for i = 1:length(r)
-                    Q(:,i) = (-r(i)^2*sys.M_mt + 1i*r(i)*sys.C + sys.K_mt)\exc.F;
+                    Q(:,i) = (-r(i)^2*sys.M_mt + 1i*r(i)*sys.C_mt + sys.K_mt)\exc.F;
                 end
             otherwise
                 error('Case not defined.')

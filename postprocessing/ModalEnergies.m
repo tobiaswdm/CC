@@ -1,6 +1,9 @@
-function [E,E_avg] = ModalEnegies(sys,sol,ETA,CHI)
-%MODALENEGIES Determine the instantaneus modal energies E and their average
+function [E,E_avg] = ModalEnergies(sys,sol,ETA,CHI)
+%MODALENERGIES Determine the instantaneus modal energies E and their average
 % over time E_avg.
+%
+% ETA - Modal Displacements of tuned system modes [N_s, N_tau]
+% CHI - Modal Velocities of tuned system modes [N_s, N_tau]
 
 movRMS = dsp.MovingRMS(sol.N_Sample);
 

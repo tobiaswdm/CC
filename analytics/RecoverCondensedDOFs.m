@@ -40,7 +40,7 @@ switch disorder
         Pi(1,1,:) = sys.Gamma(1)*Pi(1,1,:).*exp(1i*Phase);
     case 'mistuned'
         % Transfer function matrix with removed absorbers
-        H = pageinv(-r.^2 .* sys.M_mt + 1i*r.*sys.C + sys.K_mt);
+        H = pageinv(-r.^2 .* sys.M_mt + 1i*r.*sys.C_mt + sys.K_mt);
         % Linear displacement with removed absorbers
         Q_lin = pagemtimes(H,exc.F);
         % Phase of nonlinear DOF

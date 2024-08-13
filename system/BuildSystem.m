@@ -181,11 +181,32 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
 
             % Compute new eigenfrequencies
             % Fixed absorbers
-            sys.r_k_mt = ...
-                sort(transpose(sqrt(eig(sys.K_mt,sys.M_fixed_mt))));
+            [Phi_mt,r_k_mt_sq] = eig(sys.K_mt,sys.M_fixed_mt);
+            [sys.r_k_mt,isort] = ...
+                sort(transpose(sqrt(diag(r_k_mt_sq))));
+     
             % Removed absorbers
             sys.r_k_noabs_mt = ...
                 sort(transpose(sqrt(eig(sys.K_mt,sys.M_mt))));
+
+            % Damping matrix
+            if sys.adjustC
+                % Mass-normalized Eigenvectors of system with fixed absorbers
+                Phi_mt = Phi_mt(:,isort);
+                Phi_mt = Phi_mt./repmat(sqrt( ...
+                    diag(Phi_mt'*sys.M_fixed_mt*Phi_mt)'),[sys.N_s,1]);
+                
+                % Inverse
+                Phi_mt_inv = Phi_mt\eye(sys.N_s);               
+                
+                % Damping Matrix in Physical Coordinates
+                sys.C_mt = Phi_mt_inv'*diag(2*sys.r_k_mt*sys.D)* Phi_mt_inv;
+                % Damping Matrix in Modal Coordinates of Tuned system
+                sys.beta_mt = sys.Phi' * sys.C_mt * sys.Phi;
+            else
+                sys.beta_mt = sys.beta;
+                sys.C_mt = sys.C;
+            end
 
         case 'mistuned_defined'
             if ~isfield(sys,'tuned_param_set')
@@ -251,14 +272,34 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
 
             end
             
-
             % Compute new eigenfrequencies
             % Fixed absorbers
-            sys.r_k_mt = ...
-                sort(transpose(sqrt(eig(sys.K_mt,sys.M_fixed_mt))));
+            [Phi_mt,r_k_mt_sq] = eig(sys.K_mt,sys.M_fixed_mt);
+            [sys.r_k_mt,isort] = ...
+                sort(transpose(sqrt(diag(r_k_mt_sq))));
+     
             % Removed absorbers
             sys.r_k_noabs_mt = ...
                 sort(transpose(sqrt(eig(sys.K_mt,sys.M_mt))));
+
+            % Damping matrix
+            if sys.adjustC
+                % Mass-normalized Eigenvectors of system with fixed absorbers
+                Phi_mt = Phi_mt(:,isort);
+                Phi_mt = Phi_mt./repmat(sqrt( ...
+                    diag(Phi_mt'*sys.M_fixed_mt*Phi_mt)'),[sys.N_s,1]);
+                
+                % Inverse
+                Phi_mt_inv = Phi_mt\eye(sys.N_s);               
+                
+                % Damping Matrix in Physical Coordinates
+                sys.C_mt = Phi_mt_inv'*diag(2*sys.r_k_mt*sys.D)* Phi_mt_inv;
+                % Damping Matrix in Modal Coordinates of Tuned system
+                sys.beta_mt = sys.Phi' * sys.C_mt * sys.Phi;
+            else
+                sys.beta_mt = sys.beta;
+                sys.C_mt = sys.C;
+            end
 
         otherwise
             error('Case not defined')

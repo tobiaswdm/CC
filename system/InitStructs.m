@@ -1,15 +1,19 @@
 %% System parameters
 % Tuned system
-sys.N_s = 10;           % Number of sectors
-sys.kappa_c = 0;        % Linear coupling strength
-sys.epsilon_a = 0.02;   % Mass ratio of VI-NES
-sys.D = 1e-3;           % Uniform Modal Damping Ratio
-sys.Gamma_Scale = 0;    % Clearance normalized by linear resonance amplitude
-sys.eN = 0.8;           % Restitution coefficient
+sys.N_s = 10;               % Number of sectors
+sys.kappa_c = 0;            % Linear coupling strength
+sys.epsilon_a = 0.02;       % Mass ratio of VI-NES
+sys.D = 1e-3;               % Uniform Modal Damping Ratio
+sys.Gamma_Scale = 0;        % Clearance normalized by linear resonance amplitude
+sys.eN = 0.8;               % Restitution coefficient
 
 % Mistuned system
-sys.sigma_omega = 0;    % Rel. Standard deviation of local eigefrequencies
-sys.sigma_g = 0;        % Rel. Standard deviation of local clearances
+sys.sigma_omega = 0;        % Rel. Standard deviation of local eigefrequencies
+sys.sigma_g = 0;            % Rel. Standard deviation of local clearances
+sys.adjustC = false;        % Set true if sys.D should also refer to
+                            % modes of the mistuned system and false if
+                            % damping matrix of tuned system should also be
+                            % used for the mistuned case
 
 %% Excitation
 exc.type = 'harmonic';  % Excitation type 'harmonic' or 'sweep'

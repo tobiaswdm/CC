@@ -28,7 +28,7 @@ switch disorder
     case 'mistuned'
 
         M = sys.mu_mt;
-        C = sys.beta;
+        C = sys.beta_mt;
         K = sys.kappa_mt;
         g = sys.Gamma_mt;
 

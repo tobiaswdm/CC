@@ -43,8 +43,8 @@ TAU = TAU - TAU(1);
 [qhat,qhat_std] = MeanAmplitude(Q(:,2:end),sol.N_Sample);
 
 % Modal energies
-[E_mod,E_mod_avg] = ModalEnegies(sys,sol,ETA,Chi);
-[E_mod_mt,~] = ModalEnegies(sys,sol_mt,ETA_mt,Chi_mt);
+[E_mod,E_mod_avg] = ModalEnergies(sys,sol,ETA,Chi);
+[E_mod_mt,~] = ModalEnergies(sys,sol_mt,ETA_mt,Chi_mt);
 
 % Spatial energies
 E = SpatialEnergies(sys,sol,Q,U,UA,'tuned');
