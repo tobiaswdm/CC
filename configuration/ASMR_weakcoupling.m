@@ -1,3 +1,9 @@
+% This configuration file starts a time simulation of a ASMR with weak
+% inter-sector coupling and generates the results shown in Fig. 15a in the 
+% paper T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2024)
+% "Energy Transfer and Localization in a Forced Cyclic Chain of
+% Oscillators with Vibro-Impact Nonlinear Energy Sinks".
+
 simulation = 'TimeSimulation';
 
 %% System parameters

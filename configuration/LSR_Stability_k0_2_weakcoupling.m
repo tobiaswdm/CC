@@ -1,3 +1,10 @@
+% This configuration file starts a time simulation of a stability analysis 
+% for a LSR with synchronization in a single sector and generates parts of 
+% the results shown in Fig. 19 of the paper
+% T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2024)
+% "Energy Transfer and Localization in a Forced Cyclic Chain of
+% Oscillators with Vibro-Impact Nonlinear Energy Sinks".
+
 simulation = 'SynchronizationSingleSectorStability';
 
 %% System parameters

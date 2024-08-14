@@ -1,6 +1,6 @@
-% This configuration file starts a time simulation of a ASMR with strong 
-% inter-sector coupling and generates the results shown in Fig. 15b in the 
-% paper T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2024)
+% This configuration file starts a time simulation of a ASMR and generates
+% the results shown in Fig. 14b in the paper
+% T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2024)
 % "Energy Transfer and Localization in a Forced Cyclic Chain of
 % Oscillators with Vibro-Impact Nonlinear Energy Sinks".
 
@@ -9,10 +9,10 @@ simulation = 'TimeSimulation';
 %% System parameters
 % Tuned system
 sys.N_s = 10;               % Number of sectors
-sys.kappa_c = 3;            % Linear coupling strength
+sys.kappa_c = 0.05;         % Linear coupling strength
 sys.epsilon_a = 0.02;       % Mass ratio of VI-NES
 sys.D = 1e-3;               % Uniform Modal Damping Ratio
-sys.Gamma_Scale = 0.4;      % Clearance normalized by linear resonance amplitude
+sys.Gamma_Scale = 0.43;     % Clearance normalized by linear resonance amplitude
 sys.eN = 0.8;               % Restitution coefficient
 
 % Mistuned system
@@ -25,7 +25,7 @@ sys.adjustC = false;        % Set true if sys.D should also refer to
 
 %% Excitation
 exc.type = 'harmonic';      % Excitation type 'harmonic' or 'sweep'
-exc.k = 3;                  % Excitation wavenumber
+exc.k = 2;                  % Excitation wavenumber
 exc.harmonic.r = sqrt(1+4*sys.kappa_c*sin(exc.k*pi/10)^2);
 
 % Type of mistuning - 'tuned', 'mistuned_defined' or 'mistuned'
