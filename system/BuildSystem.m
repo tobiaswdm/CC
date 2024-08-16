@@ -11,12 +11,21 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
             [sys.r_k,sys.r_k_noabs,~] = DispersionRelation(sys.k,sys);
 
             % Build tuned stiffness matrix
-            K = (1+2*sys.kappa_c)*eye(sys.N_s);
-            K = K - diag(sys.kappa_c*ones(1,sys.N_s-1),1) ...
-                - diag(sys.kappa_c*ones(1,sys.N_s-1),-1);
-            K(1,sys.N_s) =  - sys.kappa_c;
-            K(sys.N_s,1) =  - sys.kappa_c;
-            sys.K = K;
+            if sys.N_s>2
+                K = (1+2*sys.kappa_c)*eye(sys.N_s);
+                K = K - diag(sys.kappa_c*ones(1,sys.N_s-1),1) ...
+                    - diag(sys.kappa_c*ones(1,sys.N_s-1),-1);
+                K(1,sys.N_s) =  - sys.kappa_c;
+                K(sys.N_s,1) =  - sys.kappa_c;
+                sys.K = K;
+            elseif sys.N_s == 2
+                K = (1+sys.kappa_c)*eye(sys.N_s);
+                K(1,sys.N_s) =  - sys.kappa_c;
+                K(sys.N_s,1) =  - sys.kappa_c;
+            elseif sys.N_s == 1
+                K = 1;
+            end
+
         
             % Build tuned mass matrices
 
