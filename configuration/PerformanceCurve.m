@@ -1,10 +1,11 @@
 % This configuration file starts a time simulation of the performance
-% surface and generates the results shown in Fig. 15a-c in the 
+% curve and generates the results shown in Fig. 16-top-left in the 
 % paper T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2024)
 % "Energy Transfer and Localization in a Forced Cyclic Chain of
 % Oscillators with Vibro-Impact Nonlinear Energy Sinks".
-% In order to obtain all curves in Fig. 15b and c, the excitation
-% wavenumber needs to be adjusted successively
+% In order to obtain all curves in Fig. 16, exc.k and
+% simsetup.VariationCouplingAndClearance.Range_kappa_c
+% need to be adjusted accordingly
 
 simulation = 'VariationCouplingAndClearance';
 
@@ -25,15 +26,15 @@ sys.adjustC = false;        % Set true if sys.D should also refer to
 
 %% Excitation
 exc.type = 'harmonic';      % Excitation type 'harmonic' or 'sweep'
-exc.k = 0;                  % Excitation wavenumber
+exc.k = 1;                  % Excitation wavenumber
 
 % Parameters of nominal coupling
 % Range
-simsetup.VariationCouplingAndClearance.Range_kappa_c = [5e-3,3];
+simsetup.VariationCouplingAndClearance.Range_kappa_c = [5e-2,5e-2];
 % Scaling of discrete points in interval
-simsetup.VariationCouplingAndClearance.Scaling_kappa_c = 'logarithmic';
+simsetup.VariationCouplingAndClearance.Scaling_kappa_c = 'linear';
 % Number of discrete points in interval
-simsetup.VariationCouplingAndClearance.Number_kappa_c = 50;
+simsetup.VariationCouplingAndClearance.Number_kappa_c = 1;
 
 % Parameters of nominal clearance normalized by tuned resonance amplitude
 % Range

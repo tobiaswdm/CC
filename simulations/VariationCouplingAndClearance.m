@@ -9,6 +9,8 @@ qhat_tuned_std = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ..
                 simsetup.VariationCouplingAndClearance.Number_GammaScale);
 qhat_min_tuned = zeros(1,simsetup.VariationCouplingAndClearance.Number_kappa_c);
 Gamma_Scale_min_tuned = zeros(1,simsetup.VariationCouplingAndClearance.Number_kappa_c);
+Nsipp = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
+                simsetup.VariationCouplingAndClearance.Number_GammaScale);
 
 % Fixed absorber
 qhat_fixed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
@@ -90,7 +92,7 @@ for i = 1:simsetup.VariationCouplingAndClearance.Number_kappa_c
                            simsetup.VariationCouplingAndClearance.N_rSteps);
         
         % Resonance amplitude
-        [qhat_tuned(i,j), qhat_tuned_std(i,j), ~] = ....
+        [qhat_tuned(i,j), qhat_tuned_std(i,j), Nsipp(i,j)] = ....
         FindResonance(sys_loop,sol,exc_loop,r_steps,'tuned');
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -423,12 +425,20 @@ elseif (simsetup.VariationCouplingAndClearance.Number_GammaScale==1 && ...
 elseif (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
         simsetup.VariationCouplingAndClearance.Number_kappa_c==1)
     
+    % Get largest clearance with GSR
+    i_GSR = find(Nsipp>=1.99,1,'last');
+    
+    % Analytical Performance curve
+    [Gamma_scale_ana,q_scale_ana,~] = TunedBackbone(sys,'stable');
+    
     % Tuned system
     figure(1);
-    errorbar(Gamma_Scale,qhat_tuned,qhat_tuned_std,'LineWidth',1.5,'Color',color.ies)
+    xline(Gamma_Scale(i_GSR),'--k','LineWidth',1.5)
     hold on;
+    errorbar(Gamma_Scale,qhat_tuned,qhat_tuned_std,'LineWidth',1,'Color',color.ies)
     scatter(Gamma_Scale_min_tuned,qhat_min_tuned,50,'MarkerEdgeColor',color.show,...
         'MarkerFaceColor',color.show);
+    plot(Gamma_scale_ana,q_scale_ana,'LineWidth',1.5,'Color',color.analytics)
     title('Tuned system')
     box on;
     xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
