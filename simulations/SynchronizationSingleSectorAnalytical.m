@@ -39,8 +39,12 @@ set(gca,'YScale','log')
 axis tight;
 
 figure(3);
-contour(R,Xi,Gamma_Scale,10,'LineWidth',1.5)
+for i = 1:length(sys.r_k)
+    xline(sys.r_k(i),'--k',['$r_' num2str(i-1) '$'],'LineWidth',1.5, ...
+        'Interpreter','Latex','LabelOrientation','horizontal')
+end
 hold on;
+contour(R,Xi,Gamma_Scale,10,'LineWidth',1.5)
 h=colorbar;
 h.Label.Interpreter = 'latex';
 h.Label.String = "$\Gamma/\hat{q}_\mathrm{ref}$";

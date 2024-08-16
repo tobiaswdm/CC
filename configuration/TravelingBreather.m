@@ -36,4 +36,4 @@ simsetup.TimeSimulation.disorder = 'mistuned';
 % Cut transient response in the beginning?
 simsetup.TimeSimulation.cut_transient = true;
 % Initial conditions - 'random', 'zero' or 'localized'
-simsetup.TimeSimulation.initial_conditions = 'zero';
+simsetup.TimeSimulation.initial_conditions = 'random';
