@@ -210,6 +210,9 @@ save([savepath 'qhat_fixed_std.mat'],'qhat_fixed_std')
 if (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
     simsetup.VariationCouplingAndClearance.Number_kappa_c>1)
 
+    % Get optimum of analytical model
+    [~,~,Gamma_scale_ana_opt] = TunedBackbone(sys,'stable');
+
     [XX,YY] = meshgrid(Gamma_Scale,kappa_c);
 
     % Tuned system
@@ -325,7 +328,6 @@ if (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
     hold on;
     plot(kappa_c,qhat_min_tuned,'LineWidth',1.5,'Color',color.ies)
     box on;
-    colormap(1-pink)
     xlabel('$\kappa_\mathrm{c}$')
     ylabel('$\hat{q}_\mathrm{opt}/\hat{q}_\mathrm{ref}$')
     set(gca,'XScale','log')
@@ -337,9 +339,9 @@ if (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
     % Tuned system
     figure(7);
     hold on;
+    yline(Gamma_scale_ana_opt,'--','Color',color.analytics,'LineWidth',1.5)
     plot(kappa_c,Gamma_Scale_min_tuned,'LineWidth',1.5,'Color',color.ies)
     box on;
-    colormap(1-pink)
     xlabel('$\kappa_\mathrm{c}$')
     ylabel('$\Gamma_\mathrm{opt}/\hat{q}_\mathrm{ref}$')
     set(gca,'XScale','log')
@@ -486,8 +488,6 @@ elseif (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
     figure(4);
     plot(Gamma_Scale,qhat_fixed./qhat_tuned,'LineWidth',1.5,'Color',color.ies)
     hold on;
-    scatter(Gamma_Scale_min_fixed,qhat_min_fixed,50,'MarkerEdgeColor',color.show,...
-        'MarkerFaceColor',color.show);
     title('Amplification fixed absorber')
     box on;
     xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
@@ -502,8 +502,6 @@ elseif (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
     figure(5);
     plot(Gamma_Scale,qhat_removed./qhat_tuned,'LineWidth',1.5,'Color',color.ies)
     hold on;
-    scatter(Gamma_Scale_min_removed,qhat_min_removed,50,'MarkerEdgeColor',color.show,...
-        'MarkerFaceColor',color.show);
     title('Amplification removed absorber')
     box on;
     xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')

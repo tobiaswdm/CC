@@ -32,7 +32,7 @@ clc; close all; clearvars;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'PerformanceCurve';
+configuration = 'FollowBifurcationLSR';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,6 +109,9 @@ switch simulation
     case 'LinearMistuningAnalysis'
         fprintf('Performing Linear Mistuning Analysis using MCS... \n')
         LinearMistuningAnalysis;
+    case 'FollowBifurcationFRSofLSR'
+        fprintf('Following the first bifurcation point of the FRS of the LSR... \n')
+        FollowBifurcationFRSofLSR;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')

@@ -183,3 +183,25 @@ simsetup.LinearMistuningAnalysis.Range_kappa_c = [1e-4,3];
 simsetup.LinearMistuningAnalysis.Scaling_kappa_c = 'logarithmic';
 % Number of discrete points in interval
 simsetup.LinearMistuningAnalysis.Number_kappa_c = 10;
+
+% =========================================================================
+% Follow the first bifurcation point of the FRS of the LSR
+% =========================================================================
+
+% Parameters of clearance-normalized amplitude
+% Maximum of clearance normalized amplitude
+simsetup.FollowBifurcationFRSofLSR.xi_max = 20;
+% Number of samples of clearance normalized amplitude
+simsetup.FollowBifurcationFRSofLSR.Nxi = 1000;
+
+% Parameters of excitation frequency
+% Sampling range
+simsetup.FollowBifurcationFRSofLSR.r_range = [0.9 1.1];
+% Number of samples
+simsetup.FollowBifurcationFRSofLSR.Nr = 2000;
+
+% Parameters of nominal coupling
+% Range
+simsetup.FollowBifurcationFRSofLSR.kappac_range = [1e-4,3];
+% Number of discrete points in interval
+simsetup.FollowBifurcationFRSofLSR.Nkappac = 10;
