@@ -7,24 +7,24 @@ qhat_tuned = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
                 simsetup.VariationCouplingAndClearance.Number_GammaScale);
 qhat_tuned_std = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
                 simsetup.VariationCouplingAndClearance.Number_GammaScale);
-qhat_min_tuned = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c);
-Gamma_Scale_min_tuned = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c);
+qhat_min_tuned = zeros(1,simsetup.VariationCouplingAndClearance.Number_kappa_c);
+Gamma_Scale_min_tuned = zeros(1,simsetup.VariationCouplingAndClearance.Number_kappa_c);
 
 % Fixed absorber
 qhat_fixed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
                 simsetup.VariationCouplingAndClearance.Number_GammaScale);
 qhat_fixed_std = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
                 simsetup.VariationCouplingAndClearance.Number_GammaScale);
-qhat_min_fixed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c);
-Gamma_Scale_min_fixed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c);
+qhat_min_fixed = zeros(1,simsetup.VariationCouplingAndClearance.Number_kappa_c);
+Gamma_Scale_min_fixed = zeros(1,simsetup.VariationCouplingAndClearance.Number_kappa_c);
 
 % Removed absorber
 qhat_removed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
                     simsetup.VariationCouplingAndClearance.Number_GammaScale);
 qhat_removed_std = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
                     simsetup.VariationCouplingAndClearance.Number_GammaScale);
-qhat_min_removed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c);
-Gamma_Scale_min_removed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c);
+qhat_min_removed = zeros(1,simsetup.VariationCouplingAndClearance.Number_kappa_c);
+Gamma_Scale_min_removed = zeros(1,simsetup.VariationCouplingAndClearance.Number_kappa_c);
 
 % Determine couplings strengts
 switch simsetup.VariationCouplingAndClearance.Scaling_kappa_c
@@ -318,6 +318,33 @@ if (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
     zlim([-inf inf])
     savefig([savepath 'A_removed.fig'])
 
+    % Tuned system
+    figure(6);
+    hold on;
+    plot(kappa_c,qhat_min_tuned,'LineWidth',1.5,'Color',color.ies)
+    box on;
+    colormap(1-pink)
+    xlabel('$\kappa_\mathrm{c}$')
+    ylabel('$\hat{q}_\mathrm{opt}/\hat{q}_\mathrm{ref}$')
+    set(gca,'XScale','log')
+    xlim([simsetup.VariationCouplingAndClearance.Range_kappa_c(1),...
+         simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
+    ylim([-inf inf])
+    savefig([savepath 'qhat_min_tuned.fig'])
+    
+    % Tuned system
+    figure(7);
+    hold on;
+    plot(kappa_c,Gamma_Scale_min_tuned,'LineWidth',1.5,'Color',color.ies)
+    box on;
+    colormap(1-pink)
+    xlabel('$\kappa_\mathrm{c}$')
+    ylabel('$\Gamma_\mathrm{opt}/\hat{q}_\mathrm{ref}$')
+    set(gca,'XScale','log')
+    xlim([simsetup.VariationCouplingAndClearance.Range_kappa_c(1),...
+         simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
+    ylim([-inf inf])
+    savefig([savepath 'Gamma_Scale_min_tuned.fig'])
 elseif (simsetup.VariationCouplingAndClearance.Number_GammaScale==1 && ...
         simsetup.VariationCouplingAndClearance.Number_kappa_c>1)
 
@@ -390,6 +417,8 @@ elseif (simsetup.VariationCouplingAndClearance.Number_GammaScale==1 && ...
          simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
     ylim([-inf inf])
     savefig([savepath 'A_removed.fig'])
+
+    
 
 elseif (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
         simsetup.VariationCouplingAndClearance.Number_kappa_c==1)
