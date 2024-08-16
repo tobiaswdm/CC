@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % CC (pronounced Sisi) is a tool that performs numerical and/or
-% analytical analyses on a Cylic Chain of Oscialltors with Vibro-Impact
+% analytical analyses on a Cylic Chain of Oscillators with Vibro-Impact
 % Nonlinear Energy Sinks (VI-NESs)
 %
 % The Code for CC was written by:
@@ -32,7 +32,7 @@ clc; close all; clearvars;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'ASMR_weakcoupling';
+configuration = 'FRS_GSR';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -100,11 +100,11 @@ switch simulation
             ' sector... \n'])
         SynchronizationSingleSectorAnalytical;
     case 'SynchronizationSingleSectorStability'
-        fprintf(['Running stability analysis on localization in a' ...
+        fprintf(['Running stability analysis on LSR with synchronization in a' ...
             ' single sector... \n'])
         SynchronizationSingleSectorStability;
     case 'GSRStability'
-        fprintf('Running stability analysis of GSAPR... \n')
+        fprintf('Running stability analysis of GSR... \n')
         GSRStability;
     case 'LinearMistuningAnalysis'
         fprintf('Performing Linear Mistuning Analysis using MCS... \n')

@@ -216,11 +216,11 @@ ylabel('Sector $j$')
 
 % Averaged Sector Energies Mistuned
 figure(8)
-imagesc(exc.harmonic.r*TAU/2/pi,0:(sys.N_s-1),E_mt)
+imagesc(exc.harmonic.r*TAU/2/pi,0:(sys.N_s-1),E_mt./sum(E_mt,1))
 hold on;
 colormap(1-pink.^2)
 cb = colorbar(); 
-ylabel(cb,'$E_j^\ast (\tau) / E (\tau) $','Rotation',90,'Interpreter','latex')
+ylabel(cb,'$E_j^\ast (\tau) / E^\ast (\tau) $','Rotation',90,'Interpreter','latex')
 title('Averaged Sector Energies Mistuned')
 xlabel('$r\tau / (2 \pi)$')
 ylabel('Sector $j$')
