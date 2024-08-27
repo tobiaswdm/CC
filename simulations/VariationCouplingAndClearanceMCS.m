@@ -325,7 +325,7 @@ if sys.sigma_omega ~= 0
         'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
         s.Color = {color.ies};
         s.LineWidth = 0.1;
-        xlabel('$\hat{q}^\ast / \hat{q}_\mathrm{ref}$')
+        xlabel('$\mathrm{max}_j\left\{\hat{q}_j^\ast\right\} / \hat{q}_\mathrm{ref}$')
         ylabel('$A_\mathrm{ref}$')
         title(['\rho = ' num2str(round(1000*corr(squeeze(...
         A_ref(i_ind(i),j_ind(i),:)), ...
@@ -354,7 +354,7 @@ for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
     [E,x] = ecdf(squeeze(A(i_ind(i),j_ind(i),:)));
 
     figure(3)
-    nexttile
+    nexttile;
     hold on;
     colororder({color.ies;color.analytics})
     yyaxis right;
@@ -381,7 +381,7 @@ for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
     histogram(squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i)),...
     'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
     box on;
-    xlabel('$\hat{q}^\ast / \hat{q}_\mathrm{ref}$')
+    xlabel('$\mathrm{max}_j\left\{\hat{q}_j^\ast\right\} / \hat{q}_\mathrm{ref}$')
     ylabel('PDF')
     axis tight
 
@@ -417,13 +417,15 @@ savefig([savepath 'Resp_type_mt.fig'])
 
 % Colorscale
 if simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale==3
-    lstyleA = {'-+';':+';'--+'};
-    lstyleq = {'-+';':+';'--+'};
+    lstyleA = {'-o';':x';'--diamond'};
+    lstyleq = {'-o';':x';'--diamond'};
+    msize = [6,8,6];
 else
     lstyleA = repmat({'-o';'--o';':o'}, ...
         [simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale 1]);
     lstyleq = repmat({'-o';'--o';':o'}, ...
         [simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale 1]);
+    msize = 6*ones(simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,1);
 end
 
 figure(6)
@@ -432,23 +434,26 @@ colororder({color.analytics;color.ies})
 for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale
     yyaxis left;
     plot(kappa_c,A_95(:,i),lstyleA{i},'LineWidth',1.5,'Color',color.analytics, ...
-        'MarkerFaceColor',color.analytics)
+        'MarkerFaceColor', color.analytics, 'MarkerSize',msize(i))
     box on;
     yyaxis right;
     plot(kappa_c,(A_95(:,i).*qhat_tuned(:,i))./qref ...
-        ,lstyleq{i},'LineWidth',1.5,'Color',color.ies,'HandleVisibility','off')
+        ,lstyleq{i},'LineWidth',1.5,'Color',color.ies, ...
+        'MarkerFaceColor',color.ies,'HandleVisibility','off', ...
+        'MarkerSize',msize(i))
 end
 set(gca,'XScale','log')
 xlabel('$\kappa_\mathrm{c}$')
 if simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale==3
-    legend('$\Gamma_\mathrm{APR}$','$\Gamma_\mathrm{opt}$', ...
+    legend('$\Gamma_\mathrm{GSR}$','$\Gamma_\mathrm{OPT}$', ...
         '$\Gamma_\mathrm{SMR}$')
 end
 yyaxis left
 ylabel('$A_{95}$')
 axis tight;
 yyaxis right
-ylabel('$(\hat{q}^\ast / \hat{q}_\mathrm{ref})_{95}$')
+ylabel(['$\left[ \mathrm{max}_j \left\{ \hat{q}_j^\ast \right\} ' ...
+    '/ \hat{q}_\mathrm{ref} \right]_{95}$'])
 axis tight;
 savefig([savepath 'A_95.fig'])
 
@@ -458,23 +463,26 @@ colororder({color.analytics;color.ies})
 for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale
     yyaxis left;
     plot(kappa_c,A_max(:,i),lstyleA{i},'LineWidth',1.5,'Color',color.analytics, ...
-        'MarkerFaceColor',color.analytics)
+        'MarkerFaceColor',color.analytics,'MarkerSize',msize(i))
     box on;
     yyaxis right;
     plot(kappa_c,A_max(:,i).*qhat_tuned(:,i)./qref ...
-        ,lstyleq{i},'LineWidth',1.5,'Color',color.ies,'HandleVisibility','off')
+        ,lstyleq{i},'LineWidth',1.5,'Color',color.ies, ...
+        'MarkerFaceColor',color.ies,'HandleVisibility','off', ...
+        'MarkerSize',msize(i))
 end
 set(gca,'XScale','log')
 xlabel('$\kappa_\mathrm{c}$')
 if simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale==3
-    legend('$\Gamma_\mathrm{APR}$','$\Gamma_\mathrm{opt}$', ...
+    legend('$\Gamma_\mathrm{GSR}$','$\Gamma_\mathrm{OPT}$', ...
         '$\Gamma_\mathrm{SMR}$')
 end
 yyaxis left
 ylabel('$A_\mathrm{max}$')
 axis tight;
 yyaxis right
-ylabel('$(\hat{q}^\ast / \hat{q}_\mathrm{ref})_\mathrm{max}$')
+ylabel(['$\mathrm{max}_\mathrm{MCS} \left\{ \mathrm{max}_j \left\{ \hat{q}_j^\ast \right\} ' ...
+    '/ \hat{q}_\mathrm{ref} \right\}$'])
 axis tight;
 savefig([savepath 'A_max.fig'])
 

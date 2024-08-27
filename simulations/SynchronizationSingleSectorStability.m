@@ -334,7 +334,6 @@ if any(~isnan(qhat_practically_stable_t))
     %[xi_max_t,i_max_t] = max(qhat_practically_stable_t/sys.Gamma(1));
     % Extract highest practically stable amplitude
     [xi_max_t,i_max_t] = min(qhat_practically_stable_t/sys.Gamma(1));
-    i_max_t = i_max_t+8;
     xi_max_t = qhat_practically_stable_t(i_max_t)/sys.Gamma(1);
     exc.harmonic.r = r_num_t(i_max_t);
 
@@ -371,7 +370,7 @@ if any(~isnan(qhat_practically_stable_t))
 
 
     % Average modal energies tuned system
-    [E_mod,E_mod_avg] = ModalEnegies(sys,sol,ETA,Chi);
+    [E_mod,E_mod_avg] = ModalEnergies(sys,sol,ETA,Chi);
 
     figure(8)
     bar(0:floor(sys.N_s/2),E_mod_avg/sum(E_mod_avg),...

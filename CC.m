@@ -32,7 +32,7 @@ clc; close all; clearvars;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'FollowBifurcationLSR';
+configuration = 'VariationCouplingAndClearanceMCS_combinedmist_absmalf_k0_3';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -61,9 +61,7 @@ addpath('.\system\')        % Path for system functions
 addpath('.\simulations\')   % Path for simulation cases
 addpath('.\integrator\')    % Path for Time integration schemes
 addpath('.\postprocessing\')% Path for Post processings
-addpath('.\statistics\')    % Path for Statistics
 addpath('.\analytics\')     % Path for Analytical methods
-addpath('.\harmonic_balance\')     % Path for HB
 fprintf('Initializing data structures... \n')
 InitStructs;
 
