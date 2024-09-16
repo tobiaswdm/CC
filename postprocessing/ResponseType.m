@@ -10,19 +10,19 @@ function type = ResponseType(nsipp)
 type = nan(1,size(nsipp,2));
 
 % GSR
-index = min(nsipp,[],1)>=1.98; % All sectors in 1:1 resonance
+index = min(nsipp,[],1)>=1.99; % All sectors in 1:1 resonance
 type(index) = 0;
 
 % LSR
 % At least 1 sector in 1:1 resonance and at least 1 sector
 % not in 1:1 resonance
-index = max(nsipp,[],1)>=1.98 & ...
-        min(nsipp,[],1)<1.98;
+index = max(nsipp,[],1)>=1.99 & ...
+        min(nsipp,[],1)<1.99;
 type(index) = 1;
 
 % SMR
 % No sector in 1:1 rsonance but impacts in all sectors
-index = max(nsipp,[],1)<1.98 & ...
+index = max(nsipp,[],1)<1.99 & ...
         min(nsipp,[],1)>0;
 type(index) = 2;
 

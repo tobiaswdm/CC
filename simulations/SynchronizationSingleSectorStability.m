@@ -253,6 +253,12 @@ if sys.sigma_g ~= 0 || sys.sigma_omega ~= 0
     % Determine mistuned FRS
     [Gamma_Scale_mt,~,~] = ...
         SingleSectorFRS(xi,r,sys_mt,exc_mt,'mistuned');
+
+    % Save mistuning configuration
+    delta_omega = sys_mt.delta_omega;
+    delta_g = sys_mt.delta_g;
+    save([savepath 'delta_omega_example.mat'], 'delta_omega')
+    save([savepath 'delta_g_example.mat'], 'delta_g')
     
     % Get Level curves at clearance
     c = contourc(r,xi,Gamma_Scale_mt',...
@@ -478,49 +484,52 @@ if any(~isnan(qhat_practically_stable_t))
 end
 
 % Plot PDF of maximum amplitude
-[E,x] = ecdf(qhat_practically_stable_max_mt/sys.qref);
-
-figure(13)
-hold on;
-colororder({color.ies;color.analytics})
-yyaxis right;
-stairs(x,E,'--k','LineWidth',1.5)
-ylabel('CDF')
-yyaxis left;
-histogram(qhat_practically_stable_max_mt/sys.qref,...
-'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
-box on;
-xlabel('$\hat{q}^\ast / \hat{q}_\mathrm{ref}$')
-ylabel('PDF')
-axis tight
-savefig([savepath 'qhat_max_pdf.fig'])
-
- % Determine performance of tuned system with absorber
-
-% Frequency range for stepping
-r_range = [sys.r_k(exc.k+1), sys.r_k_noabs(exc.k+1)];
-r_range = simsetup.SynchronizationSingleSectorStability.r_scale.*r_range;
-r_steps = linspace(r_range(1),r_range(2),...
-                   simsetup.SynchronizationSingleSectorStability.N_rSteps);
-
-% Resonance amplitude tuned system
-[qhat_res_tuned, ~, ~] = ....
-FindResonance(sys,sol,exc,r_steps,'tuned');
-
-[E,x] = ecdf(qhat_practically_stable_max_mt/qhat_res_tuned);
-
-figure(14)
-hold on;
-colororder({color.ies;color.analytics})
-yyaxis right;
-stairs(x,E,'--k','LineWidth',1.5)
-ylabel('CDF')
-yyaxis left;
-histogram(qhat_practically_stable_max_mt/qhat_res_tuned,...
-'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
-box on;
-xlabel('$A$')
-ylabel('PDF')
-axis tight
-savefig([savepath 'A_max_pdf.fig'])
-
+if any(~isnan(qhat_practically_stable_max_mt)) && ...
+        simsetup.SynchronizationSingleSectorStability.N_MCS~=0
+    
+    [E,x] = ecdf(qhat_practically_stable_max_mt/sys.qref);
+    
+    figure(13)
+    hold on;
+    colororder({color.ies;color.analytics})
+    yyaxis right;
+    stairs(x,E,'--k','LineWidth',1.5)
+    ylabel('CDF')
+    yyaxis left;
+    histogram(qhat_practically_stable_max_mt/sys.qref,...
+    'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
+    box on;
+    xlabel('$\hat{q}^\ast / \hat{q}_\mathrm{ref}$')
+    ylabel('PDF')
+    axis tight
+    savefig([savepath 'qhat_max_pdf.fig'])
+    
+     % Determine performance of tuned system with absorber
+    
+    % Frequency range for stepping
+    r_range = [sys.r_k(exc.k+1), sys.r_k_noabs(exc.k+1)];
+    r_range = simsetup.SynchronizationSingleSectorStability.r_scale.*r_range;
+    r_steps = linspace(r_range(1),r_range(2),...
+                       simsetup.SynchronizationSingleSectorStability.N_rSteps);
+    
+    % Resonance amplitude tuned system
+    [qhat_res_tuned, ~, ~] = ....
+    FindResonance(sys,sol,exc,r_steps,'tuned');
+    
+    [E,x] = ecdf(qhat_practically_stable_max_mt/qhat_res_tuned);
+    
+    figure(14)
+    hold on;
+    colororder({color.ies;color.analytics})
+    yyaxis right;
+    stairs(x,E,'--k','LineWidth',1.5)
+    ylabel('CDF')
+    yyaxis left;
+    histogram(qhat_practically_stable_max_mt/qhat_res_tuned,...
+    'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
+    box on;
+    xlabel('$A$')
+    ylabel('PDF')
+    axis tight
+    savefig([savepath 'A_max_pdf.fig'])
+end

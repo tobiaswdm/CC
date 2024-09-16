@@ -32,7 +32,7 @@ clc; close all; clearvars;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'VariationCouplingAndClearanceMCS_combinedmist_absmalf_k0_3';
+configuration = 'VariationCouplingAndClearanceMCS_combinedmist_k0_0_highsigma';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -68,11 +68,15 @@ InitStructs;
 % Randomize Seed
 rng("shuffle");
 
-% Create path to save data and figures
-savepath = ['.\data\' configuration '\'];
-savepath_backup = ['.\data\' configuration '\backup\'];
-[~,~] = mkdir(savepath);
-[~,~] = mkdir(savepath_backup);
+if isfile(['.\configuration\' configuration '.m']) 
+    % Create path to save data and figures
+    savepath = ['.\data\' configuration '\'];
+    savepath_backup = ['.\data\' configuration '\backup\'];
+    [~,~] = mkdir(savepath);
+    [~,~] = mkdir(savepath_backup);
+else
+    error('Configuration doesn''t exist.')
+end
 
 % Load configuration file
 fprintf('Loading configuration... \n')
