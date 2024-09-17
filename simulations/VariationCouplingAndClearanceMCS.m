@@ -19,6 +19,18 @@ if sys.sigma_omega ~= 0
                      simsetup.VariationCouplingAndClearanceMCS.N_MCS);
     delta_omega_Aref_max = zeros(...
         sys.N_s,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c);
+    
+    % Inverse Participation Ratio
+    IPR_ref = zeros(...
+        simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale, ...
+              simsetup.VariationCouplingAndClearanceMCS.N_MCS);
+
+    % Localization Factor
+    LF_ref = zeros(...
+        simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale, ...
+              simsetup.VariationCouplingAndClearanceMCS.N_MCS);
 
 end
 
@@ -33,6 +45,17 @@ delta_omega_A = zeros(sys.N_s,simsetup.VariationCouplingAndClearanceMCS.Number_k
                  simsetup.VariationCouplingAndClearanceMCS.N_MCS);
 delta_omega_A_max = zeros(sys.N_s,simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
                  simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale);
+% Inverse Participation Ratio
+IPR = zeros(...
+    simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
+    simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale, ...
+          simsetup.VariationCouplingAndClearanceMCS.N_MCS);
+
+% Localization Factor
+LF = zeros(...
+    simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c, ...
+    simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale, ...
+          simsetup.VariationCouplingAndClearanceMCS.N_MCS);
 
 % 95% quantile Estimate 
 A_95 = zeros(...
@@ -160,11 +183,16 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
             % Frequency response function of max amplitude
             r_lin = linspace(0.99*sys_mt.r_k_mt(1),...
                                1.01*sys_mt.r_k_mt(end),12000);
-            q = max(abs(ComputeLinearResponse(r_lin,sys_mt,exc,...
-                                        'mistuned','fixed_absorbers')),[],1);
+            qall =  abs(ComputeLinearResponse(r_lin,sys_mt,exc,...
+                                        'mistuned','fixed_absorbers'));
+
             % Extract overall maximum and corresponding frequency
-            [q_max,i_max] = max(q,[],2);
+            [q_max,i_max] = max(max(qall,[],1),[],2);
             r_range = r_lin(i_max);
+
+            % Localization measures
+            [IPR_ref(i,j,k),LF_ref(i,j,k)] = LocalizationMeasures( ...
+                qall(:,i_max),sys_mt);
             
             % Store linear amplitude magnification only for first
             % nominal clearance (only depends on coupling in linear case)
@@ -194,11 +222,13 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
                        simsetup.VariationCouplingAndClearanceMCS.N_rSteps);
 
             % Determine resonance amplitude
-            [qhat_mt_temp, qhat_mt_std_temp, N_sipp_mt_temp] = ....
+            [qhat_mt_temp, qhat_mt_std_temp, N_sipp_mt_temp, IPR_temp, LF_temp] = ....
             FindResonance(sys_mt,sol,exc,r_steps,'mistuned');
             qhat_mt(i,j,k) = qhat_mt_temp;
             qhat_mt_std(i,j,k) = qhat_mt_std_temp;
             N_sipp_mt(:,i,j,k) = N_sipp_mt_temp;
+            IPR(i,j,k) = IPR_temp;
+            LF(i,j,k) = LF_temp;
 
             % If absorber malfunction: Check if impact occured in
             % malfunctioning sector
@@ -269,6 +299,8 @@ end
 % Save data
 save([savepath 'A.mat'],'A')
 save([savepath 'A_max.mat'],'A_max')
+save([savepath 'LF.mat'],'LF')
+save([savepath 'IPR.mat'],'IPR')
 save([savepath 'A_95.mat'],'A_95')
 save([savepath 'delta_omega_A_max.mat'],'delta_omega_A_max')
 save([savepath 'Resp_type_mt.mat'],'Resp_type_mt')
@@ -290,11 +322,21 @@ if sys.sigma_omega ~= 0
     save([savepath 'A_ref_max.mat'],'A_ref_max')
     save([savepath 'A_ref_95.mat'],'A_ref_95')
     save([savepath 'delta_omega_Aref_max.mat'],'delta_omega_Aref_max')
+    save([savepath 'LF_ref.mat'],'LF_ref')
+    save([savepath 'IPR_ref.mat'],'IPR_ref')
 
     figure(1)
     tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
             simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
     figure(2)
+    tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+            simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+
+    figure(3)
+    tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+            simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+
+    figure(4)
     tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
             simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
     
@@ -312,7 +354,7 @@ if sys.sigma_omega ~= 0
         s.LineWidth = 0.1;
         xlabel('$A$')
         ylabel('$A_\mathrm{ref}$')
-        title(['\rho = ' num2str(round(1000*corr(squeeze(...
+        title(['PCC = ' num2str(round(1000*corr(squeeze(...
         A_ref(i_ind(i),j_ind(i),:)), ...
         squeeze(A(i_ind(i),j_ind(i),:))))/1000)])
 
@@ -324,12 +366,34 @@ if sys.sigma_omega ~= 0
             ,squeeze(A_ref(i_ind(i),j_ind(i),:)),...
         'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
         s.Color = {color.ies};
-        s.LineWidth = 0.1;
         xlabel('$\mathrm{max}_j\left\{\hat{q}_j^\ast\right\} / \hat{q}_\mathrm{ref}$')
         ylabel('$A_\mathrm{ref}$')
-        title(['\rho = ' num2str(round(1000*corr(squeeze(...
+        title(['PCC = ' num2str(round(1000*corr(squeeze(...
         A_ref(i_ind(i),j_ind(i),:)), ...
         squeeze(qhat_mt(i_ind(i),j_ind(i),:))))/1000)])
+
+        figure(4)
+        nexttile
+        s=scatterhistogram(squeeze(IPR(i_ind(i),j_ind(i),:)), ...
+                        squeeze(IPR_ref(i_ind(i),j_ind(i),:)),...
+        'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
+        s.Color = {color.ies};
+        xlabel('$\mathrm{IPR}$')
+        ylabel('$\mathrm{IPR}_\mathrm{ref}$')
+        title(['PCC = ' num2str(round(1000*corr(squeeze(IPR(i_ind(i),j_ind(i),:)), ...
+        squeeze(IPR_ref(i_ind(i),j_ind(i),:))))/1000)])
+
+
+        figure(5)
+        nexttile
+        s=scatterhistogram(squeeze(LF(i_ind(i),j_ind(i),:)), ...
+                        squeeze(LF_ref(i_ind(i),j_ind(i),:)),...
+        'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
+        s.Color = {color.ies};
+        xlabel('$\mathrm{LF}$')
+        ylabel('$\mathrm{LF}_\mathrm{ref}$')
+        title(['PCC = ' num2str(round(1000*corr(squeeze(LF(i_ind(i),j_ind(i),:)), ...
+        squeeze(LF_ref(i_ind(i),j_ind(i),:))))/1000)])
     end
 
     figure(1)
@@ -338,13 +402,25 @@ if sys.sigma_omega ~= 0
     figure(2)
     savefig([savepath 'qhat_A_ref_relation.fig'])
 
+    figure(3)
+    savefig([savepath 'IPR_relation.fig'])
+
+    figure(4)
+    savefig([savepath 'LF_relation.fig'])
+
 end
 
 
-figure(3)
+figure(5)
 tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
         simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
-figure(4)
+figure(6)
+tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+figure(7)
+tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+figure(8)
 tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
         simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
 
@@ -353,7 +429,7 @@ for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
     
     [E,x] = ecdf(squeeze(A(i_ind(i),j_ind(i),:)));
 
-    figure(3)
+    figure(5)
     nexttile;
     hold on;
     colororder({color.ies;color.analytics})
@@ -370,7 +446,7 @@ for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
     
     [E,x] = ecdf(squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i)));
 
-    figure(4)
+    figure(6)
     nexttile
     hold on;
     colororder({color.ies;color.analytics})
@@ -385,18 +461,55 @@ for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
     ylabel('PDF')
     axis tight
 
+    [E,x] = ecdf(squeeze(IPR(i_ind(i),j_ind(i),:)));
+
+    figure(7)
+    nexttile
+    hold on;
+    colororder({color.ies;color.analytics})
+    yyaxis right;
+    stairs(x,E,'--k','LineWidth',1.5)
+    ylabel('CDF')
+    yyaxis left;
+    histogram(squeeze(IPR(i_ind(i),j_ind(i),:)),...
+    'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
+    box on;
+    xlabel('$\mathrm{IPR}$')
+    ylabel('PDF')
+    axis tight
+
+    [E,x] = ecdf(squeeze(LF(i_ind(i),j_ind(i),:)));
+
+    figure(8)
+    nexttile
+    hold on;
+    colororder({color.ies;color.analytics})
+    yyaxis right;
+    stairs(x,E,'--k','LineWidth',1.5)
+    ylabel('CDF')
+    yyaxis left;
+    histogram(squeeze(LF(i_ind(i),j_ind(i),:)),...
+    'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
+    box on;
+    xlabel('$\mathrm{LF}$')
+    ylabel('PDF')
+    axis tight
+
 end
 
 
-figure(3)
+figure(5)
 savefig([savepath 'A_PDF.fig'])
-
-figure(4)
+figure(6)
 savefig([savepath 'qhat_PDF.fig'])
+figure(7)
+savefig([savepath 'IPR_PDF.fig'])
+figure(8)
+savefig([savepath 'LF_PDF.fig'])
 
 
 % Plot response types
-figure(5)
+figure(9)
 tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
         simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
 for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
@@ -428,7 +541,7 @@ else
     msize = 6*ones(simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,1);
 end
 
-figure(6)
+figure(10)
 hold on;
 colororder({color.analytics;color.ies})
 for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale
@@ -457,7 +570,7 @@ ylabel(['$\left[ \mathrm{max}_j \left\{ \hat{q}_j^\ast \right\} ' ...
 axis tight;
 savefig([savepath 'A_95.fig'])
 
-figure(7)
+figure(11)
 hold on;
 colororder({color.analytics;color.ies})
 for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale

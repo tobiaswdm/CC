@@ -1,4 +1,5 @@
-function [Q_mean, Q_std, N_SIPP] = FindResonance(sys,sol,exc,r_steps,disorder)
+function [Q_mean, Q_std, N_SIPP, varargout] = ...
+                     FindResonance(sys,sol,exc,r_steps,disorder)
 
 L = length(r_steps);
 Q_mean = zeros(1,L);
@@ -38,6 +39,7 @@ for j = 1:L
         case 'mistuned'
             [Q_mean(j),kmax] = max(ampmean);
             Q_std(j) = ampstd(kmax);
+            [varargout{1},varargout{2}] = LocalizationMeasures(ampmean,sys);
         otherwise
             error('Case not defined.')
     end

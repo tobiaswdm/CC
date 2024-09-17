@@ -73,7 +73,7 @@ c = CoarsenContour(c,...
 % Study asymptotic and practical stability of tuned system
 [qhat_practically_stable_t,qhat_stable_t,qhat_unstable_t, ... 
 qhatsynch_practically_stable_t,qhatsynch_stable_t,qhatsynch_unstable_t, ...
-r_num_t] = StabilityAnalysisLSR(c,sys,sol,exc,'tuned',true,true);
+IPR_t,LF_t,r_num_t] = StabilityAnalysisLSR(c,sys,sol,exc,'tuned',true,true);
 
 % Get maximum practically stable amplitude in tuned case
 if ~isempty(qhat_practically_stable_t)
@@ -125,15 +125,25 @@ k = 0;
 qhat_practically_stable_max_mt = nan(1, ...
     simsetup.SynchronizationSingleSectorStability.N_MCS);
 
+% Cell Arrays for amplitudes, frequencies and loc measures
+qhat_practically_stable = cell(1, ...
+    simsetup.SynchronizationSingleSectorStability.N_MCS);
+r_num = cell(1, simsetup.SynchronizationSingleSectorStability.N_MCS);
+LF = cell(1, simsetup.SynchronizationSingleSectorStability.N_MCS);
+IPR = cell(1, simsetup.SynchronizationSingleSectorStability.N_MCS);
+
 
 for i = 1:simsetup.SynchronizationSingleSectorStability.N_MCS
 
     disp(['Testing mistuned system ' num2str(i) ' of '...
         num2str(simsetup.SynchronizationSingleSectorStability.N_MCS)])
     
-    % Intialize cell array fro practically stable amplitudes and freqs.
+    % Intialize cell array for practically stable amplitudes and freqs.
     qhat_practically_stable_array = cell(1,sys.N_s);
     r_num_array = cell(1,sys.N_s);
+    % Intialize cell array for localization measures
+    LF_array = cell(1,sys.N_s);
+    IPR_array = cell(1,sys.N_s);
     % Maximum practically stable amplitude from circular shifts
     qhat_practically_stable_max = zeros(1,sys.N_s);
     
@@ -166,9 +176,9 @@ for i = 1:simsetup.SynchronizationSingleSectorStability.N_MCS
             simsetup.SynchronizationSingleSectorStability.stepsize);
     
         % Study only practical stability of mistuned system
-        [qhat_practically_stable_array{j},~,~,~,~,~,r_num_array{j}] =...
-            StabilityAnalysisLSR(c,sys_mt,sol,exc_mt,'mistuned',...
-            false,true);
+        [qhat_practically_stable_array{j},~,~,~,~,~,IPR_array{j},LF_array{j},...
+            r_num_array{j}] =StabilityAnalysisLSR(c,sys_mt,sol,exc_mt, ...
+            'mistuned',false,true);
         
         % Extract maximum
         if isempty(qhat_practically_stable_array{j})
@@ -188,7 +198,7 @@ for i = 1:simsetup.SynchronizationSingleSectorStability.N_MCS
         % Increase count
         k = k+1;
 
-        % Extract shift config with maximum pract. stbale amplitude
+        % Extract shift config with maximum pract. stable amplitude
         [qhat_practically_stable_max_mt(i),j_max] = ...
         max(qhat_practically_stable_max);
     else
@@ -197,25 +207,38 @@ for i = 1:simsetup.SynchronizationSingleSectorStability.N_MCS
     end
     
     % Pick largest practically stable amplitudes
-    qhat_practically_stable = qhat_practically_stable_array{j_max};
-    r_num = r_num_array{j_max};
-    
-    % Scatter practically stable solutions
-    figure(4);
-    hold on;
-    if i == 1
-        scatter(r_num,qhat_practically_stable/sys.qref,20,'square',...
-        'MarkerFaceColor',color.background,'MarkerEdgeColor','k',...
-        'MarkerFaceAlpha',0.8,'MarkerEdgeAlpha',0,...
-        'Displayname','Pract. Mistuned')
-    else
-        scatter(r_num,qhat_practically_stable/sys.qref,20,'square',...
-        'MarkerFaceColor',color.background,'MarkerEdgeColor','k',...
-        'MarkerFaceAlpha',0.8,'MarkerEdgeAlpha',0,......
-        'HandleVisibility','off')
-    end
-
+    qhat_practically_stable{i} = qhat_practically_stable_array{j_max};
+    r_num{i} = r_num_array{j_max};
+    LF{i} = LF_array{j_max};
+    IPR{i} = IPR_array{j_max};
 end
+
+% Convert to matrices
+qhat_practically_stable = cell2mat(qhat_practically_stable);
+r_num = cell2mat(r_num);
+switch simsetup.SynchronizationSingleSectorStability.LocalizationMeasure
+    case 'LF'
+        locmeasure = cell2mat(LF);
+    case 'IPR'
+        locmeasure = cell2mat(IPR);
+end
+
+
+figure(4);
+hold on;
+scatter(r_num,qhat_practically_stable/sys.qref,20,locmeasure,'filled',...
+'MarkerFaceAlpha',0.8,'MarkerEdgeAlpha',0,...
+'Displayname','Pract. Mistuned','Marker','square')
+colormap(flipud(gray).^0.8);
+cb = colorbar();
+switch simsetup.SynchronizationSingleSectorStability.LocalizationMeasure
+    case 'LF'
+        ylabel(cb,'LF','Rotation',90,'Interpreter','latex')
+    case 'IPR'
+        ylabel(cb,'IPR','Rotation',90,'Interpreter','latex')
+end
+
+
 
 % In how many mistuned cases were practically stable solutions found?
 prac_stab_ratio = k/simsetup.SynchronizationSingleSectorStability.N_MCS;
@@ -273,7 +296,7 @@ if sys.sigma_g ~= 0 || sys.sigma_omega ~= 0
         simsetup.SynchronizationSingleSectorStability.stepsize);
     
     % Study asymptotic and practical stability of mistuned system
-    [qhat_practically_stable,qhat_stable,qhat_unstable,~,~,~,r_num] =...
+    [qhat_practically_stable,qhat_stable,qhat_unstable,~,~,~,~,~,r_num] =...
         StabilityAnalysisLSR(c,sys_mt,sol,exc_mt,'mistuned',true,true);
     
     % Plot FRF

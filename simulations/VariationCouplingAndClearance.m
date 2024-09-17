@@ -17,6 +17,10 @@ qhat_fixed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
                 simsetup.VariationCouplingAndClearance.Number_GammaScale);
 qhat_fixed_std = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
                 simsetup.VariationCouplingAndClearance.Number_GammaScale);
+IPR_fixed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
+                simsetup.VariationCouplingAndClearance.Number_GammaScale);
+LF_fixed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
+                simsetup.VariationCouplingAndClearance.Number_GammaScale);
 qhat_min_fixed = zeros(1,simsetup.VariationCouplingAndClearance.Number_kappa_c);
 Gamma_Scale_min_fixed = zeros(1,simsetup.VariationCouplingAndClearance.Number_kappa_c);
 
@@ -25,6 +29,10 @@ qhat_removed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
                     simsetup.VariationCouplingAndClearance.Number_GammaScale);
 qhat_removed_std = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
                     simsetup.VariationCouplingAndClearance.Number_GammaScale);
+IPR_removed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
+                simsetup.VariationCouplingAndClearance.Number_GammaScale);
+LF_removed = zeros(simsetup.VariationCouplingAndClearance.Number_kappa_c, ...
+                simsetup.VariationCouplingAndClearance.Number_GammaScale);
 qhat_min_removed = zeros(1,simsetup.VariationCouplingAndClearance.Number_kappa_c);
 Gamma_Scale_min_removed = zeros(1,simsetup.VariationCouplingAndClearance.Number_kappa_c);
 
@@ -128,7 +136,8 @@ for i = 1:simsetup.VariationCouplingAndClearance.Number_kappa_c
 
 
         % Resonance amplitude
-        [qhat_removed(i,j), qhat_removed_std(i,j), nsipp] = ....
+        [qhat_removed(i,j), qhat_removed_std(i,j), nsipp, ...
+            IPR_removed(i,j), LF_removed(i,j)] = ....
         FindResonance(sys_mt,sol,exc_mt,r_steps,'mistuned');
 
         if nsipp(1) ~= 0
@@ -169,7 +178,8 @@ for i = 1:simsetup.VariationCouplingAndClearance.Number_kappa_c
                    simsetup.VariationCouplingAndClearance.N_rSteps);
 
         % Resonance amplitude
-        [qhat_fixed(i,j), qhat_fixed_std(i,j), nsipp] = ....
+        [qhat_fixed(i,j), qhat_fixed_std(i,j), nsipp, ...
+            IPR_fixed(i,j), LF_fixed(i,j)] = ....
         FindResonance(sys_mt,sol,exc_mt,r_steps,'mistuned');
 
         if nsipp(1) ~= 0
@@ -205,6 +215,10 @@ save([savepath 'qhat_removed.mat'],'qhat_removed')
 save([savepath 'qhat_removed_std.mat'],'qhat_removed_std')
 save([savepath 'qhat_fixed.mat'],'qhat_fixed')
 save([savepath 'qhat_fixed_std.mat'],'qhat_fixed_std')
+save([savepath 'IPR_fixed.mat'],'IPR_fixed')
+save([savepath 'LF_fixed.mat'],'LF_fixed')
+save([savepath 'IPR_removed.mat'],'IPR_removed')
+save([savepath 'LF_removed.mat'],'LF_removed')
 
 
 if (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
@@ -349,6 +363,85 @@ if (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
          simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
     ylim([-inf inf])
     savefig([savepath 'Gamma_Scale_min_tuned.fig'])
+
+
+    % LF Removed absorber
+    figure(8);
+    surf(XX,YY,LF_removed,'EdgeAlpha',0)
+    hold on;
+    title('LF removed absorber')
+    box on;
+    colormap(1-pink)
+    xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+    ylabel('$\kappa_\mathrm{c}$')
+    zlabel('$\mathrm{LF}$')
+    set(gca,'XScale','log')
+    set(gca,'YScale','log')
+    xlim([simsetup.VariationCouplingAndClearance.Range_GammaScale(1),...
+         simsetup.VariationCouplingAndClearance.Range_GammaScale(2)])
+    ylim([simsetup.VariationCouplingAndClearance.Range_kappa_c(1),...
+         simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
+    zlim([-inf inf])
+    savefig([savepath 'LF_removed.fig'])
+
+    % LF Fixed absorber
+    figure(9);
+    surf(XX,YY,LF_fixed,'EdgeAlpha',0)
+    hold on;
+    title('LF fixed absorber')
+    box on;
+    colormap(1-pink)
+    xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+    ylabel('$\kappa_\mathrm{c}$')
+    zlabel('$\mathrm{LF}$')
+    set(gca,'XScale','log')
+    set(gca,'YScale','log')
+    xlim([simsetup.VariationCouplingAndClearance.Range_GammaScale(1),...
+         simsetup.VariationCouplingAndClearance.Range_GammaScale(2)])
+    ylim([simsetup.VariationCouplingAndClearance.Range_kappa_c(1),...
+         simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
+    zlim([-inf inf])
+    savefig([savepath 'LF_fixed.fig'])
+
+    % IPR Removed absorber
+    figure(9);
+    surf(XX,YY,IPR_removed,'EdgeAlpha',0)
+    hold on;
+    title('IPR removed absorber')
+    box on;
+    colormap(1-pink)
+    xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+    ylabel('$\kappa_\mathrm{c}$')
+    zlabel('$\mathrm{IPR}$')
+    set(gca,'XScale','log')
+    set(gca,'YScale','log')
+    xlim([simsetup.VariationCouplingAndClearance.Range_GammaScale(1),...
+         simsetup.VariationCouplingAndClearance.Range_GammaScale(2)])
+    ylim([simsetup.VariationCouplingAndClearance.Range_kappa_c(1),...
+         simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
+    zlim([-inf inf])
+    savefig([savepath 'IPR_removed.fig'])
+
+    % LF Fixed absorber
+    figure(10);
+    surf(XX,YY,IPR_fixed,'EdgeAlpha',0)
+    hold on;
+    title('IPR fixed absorber')
+    box on;
+    colormap(1-pink)
+    xlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+    ylabel('$\kappa_\mathrm{c}$')
+    zlabel('$\mathrm{IPR}$')
+    set(gca,'XScale','log')
+    set(gca,'YScale','log')
+    xlim([simsetup.VariationCouplingAndClearance.Range_GammaScale(1),...
+         simsetup.VariationCouplingAndClearance.Range_GammaScale(2)])
+    ylim([simsetup.VariationCouplingAndClearance.Range_kappa_c(1),...
+         simsetup.VariationCouplingAndClearance.Range_kappa_c(2)])
+    zlim([-inf inf])
+    savefig([savepath 'IPR_fixed.fig'])
+
+
 elseif (simsetup.VariationCouplingAndClearance.Number_GammaScale==1 && ...
         simsetup.VariationCouplingAndClearance.Number_kappa_c>1)
 

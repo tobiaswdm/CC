@@ -1,5 +1,5 @@
 function [qhatmax_practically_stable,qhatmax_stable,qhatmax_unstable, ... 
-    qhat_practically_stable,qhat_stable,qhat_unstable,r] =...
+    qhat_practically_stable,qhat_stable,qhat_unstable,IPR,LF,r] =...
     StabilityAnalysisLSR(c,sys,sol,exc,disorder,stability,practical_stability)
 %STABILITYANALYSIS Study stability along contour plot
 %
@@ -26,6 +26,9 @@ qhatmax_unstable = nan(1,length(r));
 qhat_practically_stable = nan(1,length(r));
 qhat_stable = nan(1,length(r));
 qhat_unstable = nan(1,length(r));
+% Localization Measures
+LF = nan(1,length(r));
+IPR = nan(1,length(r));
 
 % Only evaluate final 50 Periods
 sol.N_Tau = 300;
@@ -135,11 +138,14 @@ parfor (i = 1:length(r), sol.N_Workers)
                 % Check if solution diverged
                 if N_SIPP(1) >= 1.99 && ... % Sector in 1:1 resonance
                     all(N_SIPP(2:end)<1.99) && ... % No 1:1 remaining secs
-                    xi_dev<=0.3 % Relative deviation of amplitude max 50%
+                    xi_dev<=0.3 % Relative deviation of amplitude max 30%
                     
                     % Amplitude
                     qhatmax_practically_stable(i) = max(qhat);
                     qhat_practically_stable(i) = qhat(1);
+
+                    % Localization measures
+                    [IPR(i),LF(i)] = LocalizationMeasures(qhat,sys_loop);
 
                     % Set stability back to NaN as practical stability
                     % is the stronger condition

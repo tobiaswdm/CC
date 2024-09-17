@@ -153,6 +153,8 @@ simsetup.SynchronizationSingleSectorStability.stepsize = 200;
 simsetup.SynchronizationSingleSectorStability.r_scale = [0.98 1.03];
 % Steps in frequency stepping interval
 simsetup.SynchronizationSingleSectorStability.N_rSteps = 50;
+% Localization Measure 'LF' or 'IPR'
+simsetup.SynchronizationSingleSectorStability.LocalizationMeasure = 'LF';
 
 % =========================================================================
 % Numerical stability analysis of GSR
