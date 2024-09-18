@@ -32,7 +32,7 @@ clc; close all; clearvars;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'LSR_eigenfreqmist_GammaOpt_k0_0';
+configuration = 'test_timeint';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -41,11 +41,10 @@ disp(' ')
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 disp('%%%%%%%%%%%%%%% ....Starting Simulation with CC.... %%%%%%%%%%%%%%%')
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-disp(' ')
-disp('Code written by Tobias Weidemann.')
-disp('Feel free to use, share and modify under the GPL-3.0 license.')
-disp('CCOO is purely academic and comes with no warranty.')
-disp(' ')
+disp('-------------------------------------------------------------------')
+disp('---------------- Code written by Tobias Weidemann  ----------------')
+disp('-- Feel free to use, share and modify under the GPL-3.0 license  --')
+disp('-------------------------------------------------------------------')
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 disp('%%%%%%%%%%%%%%% ....Starting Simulation with CC.... %%%%%%%%%%%%%%%')
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
@@ -57,11 +56,11 @@ addpath('.\configuration\') % Path for config files
 addpath('.\style\')         % Path for style functions
 
 DefaultStyle;
-addpath('.\system\')        % Path for system functions
-addpath('.\simulations\')   % Path for simulation cases
-addpath('.\integrator\')    % Path for Time integration schemes
-addpath('.\postprocessing\')% Path for Post processings
-addpath('.\analytics\')     % Path for Analytical methods
+addpath('.\system\')            % Path for system functions
+addpath('.\simulations\')       % Path for simulation cases
+addpath('.\integrator\')        % Path for Time integration schemes
+addpath('.\postprocessing\')    % Path for Post processings
+addpath('.\analytics\')         % Path for Analytical methods
 fprintf('Initializing data structures... \n')
 InitStructs;
 

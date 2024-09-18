@@ -87,10 +87,10 @@ figure(4);
 hold on;
 plot(r,q_fixed/sys.qref,...
     'LineWidth',.5,'Color',color.reference,'DisplayName', ...
-    'Fixed abs.')
+    'Fixed VI-NESs T')
 plot(r,q_removed/sys.qref,'-.',...
     'LineWidth',.5,'Color',color.reference,'DisplayName', ...
-    'Removed abs.')
+    'Removed VI-NESs T')
 if simsetup.SynchronizationSingleSectorStability.N_MCS == 0
     plot(r_plot,qhat_syn/sys.qref,'--',...
             'LineWidth',1.5,'Color',color.background,'DisplayName', ...
@@ -104,10 +104,10 @@ if simsetup.SynchronizationSingleSectorStability.N_MCS == 0
 else
     plot(r_plot,qhat_max/sys.qref,...
             'LineWidth',1.5,'Color',color.ies,'DisplayName', ...
-            'Tuned')
+            'LSR Analytical T')
     plot(r_plot,qhat_max_violated/sys.qref,':',...
             'LineWidth',1.5,'Color',color.show,'DisplayName', ...
-            'Tuned - Viol. kin. constr.')
+            'Viol. kin. constr. T')
 end
 set(gca,'YScale','log')
 axis tight;
@@ -213,6 +213,11 @@ for i = 1:simsetup.SynchronizationSingleSectorStability.N_MCS
     IPR{i} = IPR_array{j_max};
 end
 
+save([savepath 'r_num.mat'],'r_num')
+save([savepath 'qhat_practically_stable.mat'],'qhat_practically_stable')
+save([savepath 'IPR.mat'],'IPR')
+save([savepath 'LF.mat'],'LF')
+
 % Convert to matrices
 qhat_practically_stable = cell2mat(qhat_practically_stable);
 r_num = cell2mat(r_num);
@@ -223,12 +228,15 @@ switch simsetup.SynchronizationSingleSectorStability.LocalizationMeasure
         locmeasure = cell2mat(IPR);
 end
 
+save([savepath 'r_num.mat'],'r_num')
+save([savepath 'r_num.mat'],'r_num')
+
 
 figure(4);
 hold on;
 scatter(r_num,qhat_practically_stable/sys.qref,20,locmeasure,'filled',...
-'MarkerFaceAlpha',0.8,'MarkerEdgeAlpha',0,...
-'Displayname','Pract. Mistuned','Marker','square')
+'MarkerFaceAlpha',1,'MarkerEdgeAlpha',0,...
+'Displayname','Pract. Stable MT','Marker','square')
 colormap(flipud(gray).^0.8);
 cb = colorbar();
 switch simsetup.SynchronizationSingleSectorStability.LocalizationMeasure
@@ -258,12 +266,12 @@ if simsetup.SynchronizationSingleSectorStability.N_MCS == 0
         'Displayname','Pract. Stable')
 else
     scatter(r_num_t,qhat_unstable_t/sys.qref,20,'MarkerFaceColor',color.show,...
-    'MarkerEdgeColor','k','Displayname','Unstable')
+    'MarkerEdgeColor','k','Displayname','Unstable T')
     scatter(r_num_t,qhat_stable_t/sys.qref,20,'MarkerFaceColor',myColors('cyan'),...
-        'MarkerEdgeColor','k','Displayname','Stable')
+        'MarkerEdgeColor','k','Displayname','Stable T')
     scatter(r_num_t,qhat_practically_stable_t/sys.qref,40,'pentagram',...
         'MarkerFaceColor',myColors('green'),'MarkerEdgeColor','k',...
-        'Displayname','Pract. Stable')
+        'Displayname','Pract. Stable T')
 end
 legend;
 savefig([savepath 'frequency_amplitude_stability.fig'])
@@ -522,7 +530,7 @@ if any(~isnan(qhat_practically_stable_max_mt)) && ...
     histogram(qhat_practically_stable_max_mt/sys.qref,...
     'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
     box on;
-    xlabel('$\hat{q}^\ast / \hat{q}_\mathrm{ref}$')
+    xlabel('$\mathrm{max}_r \left\{ \hat{q}^\ast / \hat{q}_\mathrm{ref} \right\}$')
     ylabel('PDF')
     axis tight
     savefig([savepath 'qhat_max_pdf.fig'])

@@ -50,6 +50,13 @@ TAU = TAU - TAU(1);
 E = SpatialEnergies(sys,sol,Q,U,UA,'tuned');
 E_mt = SpatialEnergies(sys,sol,Q_mt,U_mt,UA_mt,'mistuned');
 
+% Supplied and Dissipated Energies
+[Esupp,Ediss_host,Ediss_VI] = SuppliedAndDissipatedEnergies( ...
+            U,UA,TAU,'tuned',exc,sys,sol);
+
+[Esupp_mt,Ediss_host_mt,Ediss_VI_mt] = SuppliedAndDissipatedEnergies( ...
+            U_mt,UA_mt,TAU,'mistuned',exc,sys,sol);
+
 % Hilbert transform
 %QH = exp(-1i*(exc.harmonic.r*TAU+(0:(sys.N_s-1))' *2*pi*exc.k/sys.N_s))...
 %    .*transpose(hilbert(Q'));
@@ -381,3 +388,22 @@ xlim([0 35])
 xlabel('$r\tau / (2 \pi)$')
 ylabel('$q_{\mathrm{a},0}$')
 legend
+
+figure(17)
+tiledlayout(1,2)
+nexttile; hold on; box on;
+bar([1 2],[Ediss_host,Ediss_VI]/Esupp,'FaceColor',color.ies)
+ylabel('$E_\mathrm{diss}/E_\mathrm{supp}$')
+xticks([1 2])
+xticklabels({'Modal','VI-NESs'})
+title('Tuned')
+axis tight;
+nexttile; hold on; box on;
+bar([1 2],[Ediss_host_mt,Ediss_VI_mt]/Esupp_mt,'FaceColor',color.ies)
+ylabel('$E_\mathrm{diss}/E_\mathrm{supp}$')
+xticks([1 2])
+xticklabels({'Modal','VI-NESs'})
+title('Tuned')
+axis tight;
+
+

@@ -339,13 +339,12 @@ if sys.sigma_omega ~= 0
     figure(4)
     tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
             simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+
     
     for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
              simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
         
         figure(1)
-        %subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
-        %    simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
         nexttile
         s=scatterhistogram(squeeze(A(i_ind(i),j_ind(i),:)), ...
             squeeze(A_ref(i_ind(i),j_ind(i),:)),...
@@ -359,8 +358,6 @@ if sys.sigma_omega ~= 0
         squeeze(A(i_ind(i),j_ind(i),:))))/1000)])
 
         figure(2)
-        %subplot(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
-        %    simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale,i)
         nexttile
         s=scatterhistogram(squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i)) ...
             ,squeeze(A_ref(i_ind(i),j_ind(i),:)),...
@@ -372,7 +369,7 @@ if sys.sigma_omega ~= 0
         A_ref(i_ind(i),j_ind(i),:)), ...
         squeeze(qhat_mt(i_ind(i),j_ind(i),:))))/1000)])
 
-        figure(4)
+        figure(3)
         nexttile
         s=scatterhistogram(squeeze(IPR(i_ind(i),j_ind(i),:)), ...
                         squeeze(IPR_ref(i_ind(i),j_ind(i),:)),...
@@ -384,7 +381,7 @@ if sys.sigma_omega ~= 0
         squeeze(IPR_ref(i_ind(i),j_ind(i),:))))/1000)])
 
 
-        figure(5)
+        figure(4)
         nexttile
         s=scatterhistogram(squeeze(LF(i_ind(i),j_ind(i),:)), ...
                         squeeze(LF_ref(i_ind(i),j_ind(i),:)),...
@@ -598,6 +595,89 @@ ylabel(['$\mathrm{max}_\mathrm{MCS} \left\{ \mathrm{max}_j \left\{ \hat{q}_j^\as
     '/ \hat{q}_\mathrm{ref} \right\}$'])
 axis tight;
 savefig([savepath 'A_max.fig'])
+
+figure(13)
+tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+
+figure(14)
+tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+
+figure(15)
+tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+
+figure(16)
+tiledlayout(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c,...
+        simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+
+for i = 1:(simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c*...
+             simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)
+        
+    figure(13)
+    nexttile
+    s=scatterhistogram(squeeze(A(i_ind(i),j_ind(i),:)), ...
+        squeeze(IPR(i_ind(i),j_ind(i),:)),...
+    'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
+    s.Color = {color.ies};
+    s.LineWidth = 0.1;
+    xlabel('$A$')
+    ylabel('$\mathrm{IPR}$')
+    title(['PCC = ' num2str(round(1000*corr(squeeze( ...
+        IPR(i_ind(i),j_ind(i),:)), ...
+    squeeze(A(i_ind(i),j_ind(i),:))))/1000)])
+
+    figure(14)
+    nexttile
+    s=scatterhistogram(squeeze(A(i_ind(i),j_ind(i),:)), ...
+        squeeze(LF(i_ind(i),j_ind(i),:)),...
+    'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
+    s.Color = {color.ies};
+    s.LineWidth = 0.1;
+    xlabel('$A$')
+    ylabel('$\mathrm{LF}$')
+    title(['PCC = ' num2str(round(1000*corr(squeeze( ...
+        LF(i_ind(i),j_ind(i),:)), ...
+    squeeze(A(i_ind(i),j_ind(i),:))))/1000)])
+
+    figure(15)
+    nexttile
+    s=scatterhistogram(squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i)), ...
+        squeeze(IPR(i_ind(i),j_ind(i),:)),...
+    'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
+    s.Color = {color.ies};
+    s.LineWidth = 0.1;
+    xlabel('$\mathrm{max}_j\left\{\hat{q}_j^\ast\right\} / \hat{q}_\mathrm{ref}$')
+    ylabel('$\mathrm{IPR}$')
+    title(['PCC = ' num2str(round(1000*corr(squeeze( ...
+        IPR(i_ind(i),j_ind(i),:)), ...
+    squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i))))/1000)])
+
+    figure(16)
+    nexttile
+    s=scatterhistogram(squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i)), ...
+        squeeze(LF(i_ind(i),j_ind(i),:)),...
+    'HistogramDisplayStyle','bar','MarkerSize',1,'LineStyle','none');
+    s.Color = {color.ies};
+    s.LineWidth = 0.1;
+    xlabel('$\mathrm{max}_j\left\{\hat{q}_j^\ast\right\} / \hat{q}_\mathrm{ref}$')
+    ylabel('$\mathrm{LF}$')
+    title(['PCC = ' num2str(round(1000*corr(squeeze( ...
+        LF(i_ind(i),j_ind(i),:)), ...
+    squeeze(qhat_mt(i_ind(i),j_ind(i),:))/qref(i_ind(i))))/1000)])
+
+        
+end
+figure(13)
+savefig([savepath 'A_IPR_relation.fig'])
+figure(14)
+savefig([savepath 'A_LF_relation.fig'])
+figure(15)
+savefig([savepath 'qhat_IPR_relation.fig'])
+figure(16)
+savefig([savepath 'qhat_LF_relation.fig'])
+
 
 
 function parsave(savepath_backup,i,j,k,qhat_tuned, qhat_tuned_std, N_sipp_tuned, qhat_mt, qhat_std_mt, N_sipp_mt)
