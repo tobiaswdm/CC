@@ -215,6 +215,7 @@ end
 
 save([savepath 'r_num.mat'],'r_num')
 save([savepath 'qhat_practically_stable.mat'],'qhat_practically_stable')
+save([savepath 'qhat_practically_stable_max_mt.mat'],'qhat_practically_stable_max_mt')
 save([savepath 'IPR.mat'],'IPR')
 save([savepath 'LF.mat'],'LF')
 
@@ -227,9 +228,6 @@ switch simsetup.SynchronizationSingleSectorStability.LocalizationMeasure
     case 'IPR'
         locmeasure = cell2mat(IPR);
 end
-
-save([savepath 'r_num.mat'],'r_num')
-save([savepath 'r_num.mat'],'r_num')
 
 
 figure(4);
