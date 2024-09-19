@@ -6,6 +6,12 @@
 % Draw Dispersion Diagram
 DrawDispersion(sys,color,savepath);
 
+% Number of LSRs
+[N_LSR_tuned,N_LSR_mistuned] = NumberOfLSRs(sys.N_s);
+disp(['There are ' num2str(N_LSR_tuned) ' coexisiting LSRs in the tuned ' ...
+    'system and ' num2str(N_LSR_mistuned) ' coexisiting LSRs in the ' ...
+    'mistuned system.'])
+
 %% Compute tuned manifold
 
 % Auxilliary Variable

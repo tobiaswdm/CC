@@ -403,7 +403,7 @@ bar([1 2],[Ediss_host_mt,Ediss_VI_mt]/Esupp_mt,'FaceColor',color.ies)
 ylabel('$E_\mathrm{diss}/E_\mathrm{supp}$')
 xticks([1 2])
 xticklabels({'Modal','VI-NESs'})
-title('Tuned')
+title('Mistuned')
 axis tight;
 
 
