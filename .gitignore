@@ -1,3 +1,5 @@
 # Matlab data and figures
 *.mat
 *.fig
+# Shell
+*.sh

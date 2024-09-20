@@ -127,17 +127,39 @@ ylabel('$\hat{q}/\hat{q}_\mathrm{ref}$')
 % Count if practically stable solutions were found
 k = 0;
 
-% Save maximum practically stable clearance
+% Save maximum practically stable amplitude
 qhat_practically_stable_max_mt = nan(1, ...
     simsetup.SynchronizationSingleSectorStability.N_MCS);
+% Save IPR of maximum practically stable amplitude
+IPR_practically_stable_max_mt = nan(1, ...
+    simsetup.SynchronizationSingleSectorStability.N_MCS);
+% Save LF of maximum practically stable amplitude
+LF_practically_stable_max_mt = nan(1, ...
+    simsetup.SynchronizationSingleSectorStability.N_MCS);
+if sys.sigma_omega ~= 0
+% Save corresponding frequency of maximum practically stable amplitude
+    r_practically_stable_max_mt = nan(1, ...
+        simsetup.SynchronizationSingleSectorStability.N_MCS);
+% Save local eigenfrequency mistuning of sector with largest practically
+% stable amplitude during LSR
+    delta_omega_practically_stable_max = nan(1, ...
+        simsetup.SynchronizationSingleSectorStability.N_MCS);
+% Check if sector with largest practically stable amplitude during LSR also
+% has the lowest local eigenfrequency for the mistuning pattern
+    isminfreq_practically_stable_max = nan(1, ...
+        simsetup.SynchronizationSingleSectorStability.N_MCS);
+end
 
-% Cell Arrays for amplitudes, frequencies and loc measures
+% Cell Arrays for amplitudes, frequencies and localization measures
 qhat_practically_stable = cell(1, ...
     simsetup.SynchronizationSingleSectorStability.N_MCS);
 r_num = cell(1, simsetup.SynchronizationSingleSectorStability.N_MCS);
 LF = cell(1, simsetup.SynchronizationSingleSectorStability.N_MCS);
 IPR = cell(1, simsetup.SynchronizationSingleSectorStability.N_MCS);
 
+% Store if specific LSR has practically stable solution
+ispracticallystable = false(sys.N_s, ...
+    simsetup.SynchronizationSingleSectorStability.N_MCS);
 
 for i = 1:simsetup.SynchronizationSingleSectorStability.N_MCS
 
@@ -152,6 +174,10 @@ for i = 1:simsetup.SynchronizationSingleSectorStability.N_MCS
     IPR_array = cell(1,sys.N_s);
     % Maximum practically stable amplitude from circular shifts
     qhat_practically_stable_max = zeros(1,sys.N_s);
+    r_practically_stable_max = zeros(1,sys.N_s);
+    % Localization measures of maximum amplitude
+    IPR_practically_stable_max = zeros(1,sys.N_s);
+    LF_practically_stable_max = zeros(1,sys.N_s);
     
     % Loop through circular shifts of mistuning patterns
     % This is equivalent as shifting the localized sector j=0,...,(Ns-1)
@@ -190,26 +216,60 @@ for i = 1:simsetup.SynchronizationSingleSectorStability.N_MCS
         if isempty(qhat_practically_stable_array{j})
             % No solution found
             qhat_practically_stable_max(j) = NaN;
+            r_practically_stable_max(j) = NaN;
+            IPR_practically_stable_max(j) = NaN;
+            LF_practically_stable_max(j) = NaN;
         else
             % Extract maximum
-            qhat_practically_stable_max(j) = ...
+            [qhat_practically_stable_max(j),imax] = ...
                 max(qhat_practically_stable_array{j});
+            r_practically_stable_max(j) = r_num_array{j}(imax);
+            IPR_practically_stable_max(j) = IPR_array{j}(imax);
+            LF_practically_stable_max(j) = LF_array{j}(imax);
+
+            % Save that practically stable solution was found
+            ispracticallystable(j,i) = true;
         end
         
 
     end
     
-    % Practicaly stable solution found?
+    % Practically stable solution found?
     if any(~isnan(qhat_practically_stable_max))
+
+        % Apply circular shift to obtain initial configuration
+        sys_mt.delta_omega = circshift(sys_mt.delta_omega,1,1);
+
         % Increase count
         k = k+1;
 
-        % Extract shift config with maximum pract. stable amplitude
+        % Extract shift config with maximum pract. stable amplitude and
+        % corresponding measures
         [qhat_practically_stable_max_mt(i),j_max] = ...
         max(qhat_practically_stable_max);
+        if sys_mt.sigma_omega ~= 0
+            r_practically_stable_max_mt(i) = ...
+                    r_practically_stable_max(j_max);
+            delta_omega_practically_stable_max(i) = ...
+                    sys_mt.delta_omega(j_max);
+            isminfreq_practically_stable_max(i) = ...
+                    sys_mt.delta_omega(j_max) == ...
+                    min(sys_mt.delta_omega);
+            IPR_practically_stable_max_mt(i) = ...
+                    IPR_practically_stable_max(j_max);
+            LF_practically_stable_max_mt(i) = ...
+                    LF_practically_stable_max(j_max);
+        end
     else
         j_max  = 1;
         qhat_practically_stable_max_mt(i) = NaN;
+        if sys_mt.sigma_omega ~= 0
+            r_practically_stable_max_mt(i) = NaN;
+            delta_omega_practically_stable_max(i) = NaN;
+            isminfreq_practically_stable_max(i) = NaN;
+            IPR_practically_stable_max_mt(i) = NaN;
+            LF_practically_stable_max_mt(i) = NaN;
+        end
     end
     
     % Pick largest practically stable amplitudes
@@ -220,8 +280,14 @@ for i = 1:simsetup.SynchronizationSingleSectorStability.N_MCS
 end
 
 save([savepath 'r_num.mat'],'r_num')
-save([savepath 'qhat_practically_stable.mat'],'qhat_practically_stable')
-save([savepath 'qhat_practically_stable_max_mt.mat'],'qhat_practically_stable_max_mt')
+save([savepath 'qhat_practically_stable.mat'], ...
+    'qhat_practically_stable')
+save([savepath 'qhat_practically_stable_max_mt.mat'], ...
+    'qhat_practically_stable_max_mt')
+save([savepath 'IPR_practically_stable_max_mt.mat'], ...
+    'IPR_practically_stable_max_mt')
+save([savepath 'LF_practically_stable_max_mt.mat'], ...
+    'LF_practically_stable_max_mt')
 save([savepath 'IPR.mat'],'IPR')
 save([savepath 'LF.mat'],'LF')
 
@@ -257,6 +323,15 @@ prac_stab_ratio = k/simsetup.SynchronizationSingleSectorStability.N_MCS;
 save([savepath 'prac_stab_ratio.mat'],'prac_stab_ratio')
 disp(['Practically stable solutions found in ' ...
     num2str(100*prac_stab_ratio) ' percent of the mistuned cases.'])
+
+% In how many mistuned cases were practically stable solutions found under
+% consdieration of different synchronized sectors for same mistuning pattern?
+prac_stab_ratio_total = sum(ispracticallystable,'all')/...
+                  numel(ispracticallystable);
+save([savepath 'prac_stab_prac_stab_ratio_total.mat'],'prac_stab_ratio_total')
+disp(['Practically stable solutions found in ' ...
+    num2str(100*prac_stab_ratio_total) ' percent of the mistuned cases and' ...
+    ' synchronized sectors.'])
 
 figure(4)
 hold on;
@@ -375,7 +450,6 @@ if any(~isnan(qhat_practically_stable_t))
     %[xi_max_t,i_max_t] = max(qhat_practically_stable_t/sys.Gamma(1));
     % Extract highest practically stable amplitude
     [xi_max_t,i_max_t] = min(qhat_practically_stable_t/sys.Gamma(1));
-    xi_max_t = qhat_practically_stable_t(i_max_t)/sys.Gamma(1);
     exc.harmonic.r = r_num_t(i_max_t);
 
     % Get initial conditions for time simulation
@@ -567,4 +641,58 @@ if any(~isnan(qhat_practically_stable_max_mt)) && ...
     ylabel('PDF')
     axis tight
     savefig([savepath 'A_max_pdf.fig'])
+end
+
+% Plot correlation between frequency of highest practically stable
+% amplitude and local eigenfrequency mistuning
+if sys.sigma_omega ~= 0
+    
+    save([savepath 'r_practically_stable_max_mt.mat'], ...
+        'r_practically_stable_max_mt')
+    save([savepath 'delta_omega_practically_stable_max.mat'], ...
+        'delta_omega_practically_stable_max')
+    save([savepath 'isminfreq_practically_stable_max.mat'], ...
+        'isminfreq_practically_stable_max')
+
+    figure(15);
+    hold on; box on;
+    switch simsetup.SynchronizationSingleSectorStability.LocalizationMeasure
+        case 'LF'
+            scatter(r_practically_stable_max_mt, ...
+            delta_omega_practically_stable_max, ...
+            20,LF_practically_stable_max_mt,'filled',...
+            'MarkerFaceAlpha',1,'MarkerEdgeAlpha',0,...
+            'Displayname','Pract. Stable MT','Marker','square')
+            colormap(flipud(gray).^0.8);
+            cb = colorbar();
+            ylabel(cb,'LF','Rotation',90,'Interpreter','latex')
+        case 'IPR'
+            scatter(r_practically_stable_max_mt, ...
+            delta_omega_practically_stable_max, ...
+            20,IPR_practically_stable_max_mt,'filled',...
+            'MarkerFaceAlpha',1,'MarkerEdgeAlpha',0,...
+            'Displayname','Pract. Stable MT','Marker','square')
+            colormap(flipud(gray).^0.8);
+            cb = colorbar();
+            ylabel(cb,'IPR','Rotation',90,'Interpreter','latex')
+    end
+    xlabel('$r$')
+    ylabel('$\delta_{\omega,j}$')
+    title(['PCC = ' num2str(round(1000*corr(r_practically_stable_max_mt',...
+        delta_omega_practically_stable_max'))/1000)], ...
+        'Interpreter','none')
+    savefig([savepath 'r_practically_stable_max_mt.fig'])
+    
+    figure(16);
+    hold on; box on;
+    histogram(isminfreq_practically_stable_max,'FaceColor',color.ies, ...
+        'EdgeColor','k','Normalization','probability')
+    title('Highest amplitude in softest sector?')
+    ylabel('Probability')
+    xticks([0 1])
+    xticklabels({'No','Yes'})
+    axis tight;
+    ylim([0 1])
+    savefig([savepath 'isminfreq_practically_stable_max.fig'])
+
 end
