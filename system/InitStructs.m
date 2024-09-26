@@ -35,7 +35,7 @@ sol.tol = 1e-4;         % Tolerance of prox solver
 sol.N_Tau = 300;        % Number of stationary excitation periods to simulate
 sol.N_P = 1000;         % Sample pseudo period with 1000 steps
 sol.N_Sample = 1000;    % Sample pseudo period with 1000 steps in post processing
-sol.N_Workers = 25;     % Maximum number of workers for paralles tasks
+sol.N_Workers = 1000;   % Maximum number of workers for paralles tasks
 
 %% Simulation Setups
 

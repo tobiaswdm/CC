@@ -6,6 +6,11 @@ Q_mean = zeros(1,L);
 Q_std = zeros(1,L);
 N_SIPP = zeros(sys.N_s,L);
 
+if strcmp(disorder,'mistuned')
+    LF = zeros(1,L);
+    IPR = zeros(1,L);
+end
+
 % Set first excitation frequency
 exc.harmonic.r = r_steps(1);
 sol = ConfigureIntegrator(sol,sys,exc,'random',true,disorder);
@@ -39,7 +44,7 @@ for j = 1:L
         case 'mistuned'
             [Q_mean(j),kmax] = max(ampmean);
             Q_std(j) = ampstd(kmax);
-            [varargout{1},varargout{2}] = LocalizationMeasures(ampmean,sys);
+            [IPR(j),LF(j)] = LocalizationMeasures(ampmean,sys);
         otherwise
             error('Case not defined.')
     end
@@ -59,6 +64,8 @@ switch disorder
         N_SIPP = mean(N_SIPP(:,i));
     case 'mistuned'
         N_SIPP = N_SIPP(:,i);
+        varargout{1} = IPR(i);
+        varargout{2} = LF(i);
     otherwise
         error('Case not defined.')
 end

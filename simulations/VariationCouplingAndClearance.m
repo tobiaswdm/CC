@@ -404,7 +404,7 @@ if (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
     savefig([savepath 'LF_fixed.fig'])
 
     % IPR Removed absorber
-    figure(9);
+    figure(10);
     surf(XX,YY,IPR_removed,'EdgeAlpha',0)
     hold on;
     title('IPR removed absorber')
@@ -423,7 +423,7 @@ if (simsetup.VariationCouplingAndClearance.Number_GammaScale>1 && ...
     savefig([savepath 'IPR_removed.fig'])
 
     % LF Fixed absorber
-    figure(10);
+    figure(11);
     surf(XX,YY,IPR_fixed,'EdgeAlpha',0)
     hold on;
     title('IPR fixed absorber')

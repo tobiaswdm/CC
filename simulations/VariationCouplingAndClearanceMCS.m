@@ -139,34 +139,34 @@ for i = 1:simsetup.VariationCouplingAndClearanceMCS.Number_kappa_c
         disp(['Clearance ' num2str(j) ' of ' ...
         num2str(simsetup.VariationCouplingAndClearanceMCS.Number_GammaScale)])
 
-    % Set nominal clearance
-    sys.Gamma_Scale = Gamma_Scale(j);
-
-    % Build nominal system
-    [sys,exc] = BuildSystem(sys,exc,'tuned');
-    qref(i) = sys.qref;
-
-    % Determine performance of tuned system with absorber
-
-    % Frequency range for stepping
-    r_range = [sys.r_k(exc.k+1), sys.r_k_noabs(exc.k+1)];
-    r_range = simsetup.VariationCouplingAndClearanceMCS.r_scale.*r_range;
-    r_steps = linspace(r_range(1),r_range(2),...
-                       simsetup.VariationCouplingAndClearanceMCS.N_rSteps);
+        % Set nominal clearance
+        sys.Gamma_Scale = Gamma_Scale(j);
     
-    % Resonance amplitude
-    [qhat_tuned(i,j), qhat_tuned_std(i,j), N_sipp_tuned(i,j)] = ....
-    FindResonance(sys,sol,exc,r_steps,'tuned');
+        % Build nominal system
+        [sys,exc] = BuildSystem(sys,exc,'tuned');
+        qref(i) = sys.qref;
     
-    % Response type
-    if N_sipp_tuned(i,j)>=1.98
-        Resp_type_tuned(i,j) = 0; % GSR
-    else
-        Resp_type_tuned(i,j) = 2; % SMR
-    end
-
+        % Determine performance of tuned system with absorber
     
-    disp('Starting MCS loop')
+        % Frequency range for stepping
+        r_range = [sys.r_k(exc.k+1), sys.r_k_noabs(exc.k+1)];
+        r_range = simsetup.VariationCouplingAndClearanceMCS.r_scale.*r_range;
+        r_steps = linspace(r_range(1),r_range(2),...
+                           simsetup.VariationCouplingAndClearanceMCS.N_rSteps);
+        
+        % Resonance amplitude
+        [qhat_tuned(i,j), qhat_tuned_std(i,j), N_sipp_tuned(i,j)] = ....
+        FindResonance(sys,sol,exc,r_steps,'tuned');
+        
+        % Response type
+        if N_sipp_tuned(i,j)>=1.98
+            Resp_type_tuned(i,j) = 0; % GSR
+        else
+            Resp_type_tuned(i,j) = 2; % SMR
+        end
+    
+        
+        disp('Starting MCS loop')
         parfor (k = 1:simsetup.VariationCouplingAndClearanceMCS.N_MCS,...
                 sol.N_Workers)
 
