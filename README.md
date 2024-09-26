@@ -6,7 +6,7 @@ All simulations are started from the `CC.m` file that reads in the specfied conf
 
 **If you are using CC for your own studies, please refer to the paper:**
 
-T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2024). "Energy Transfer and Localization in a Forced Cyclic Chain of Oscillators with Vibro-Impact Nonlinear Energy Sinks". Manuscript submitted to _Nonlinear Dynamics_
+T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2024). "Energy Transfer and Localization in a Forced Cyclic Chain of Oscillators with Vibro-Impact Nonlinear Energy Sinks". Manuscript submitted to _Nonlinear Dynamics_. Preprint available on Research Square. doi: [10.21203/rs.3.rs-4691661/v1](https://doi.org/10.21203/rs.3.rs-4691661/v1 )
 
 In case of any questions, feel free to contact me at: tobias.weidemann@ila.uni-stuttgart.de
 
