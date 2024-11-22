@@ -50,6 +50,20 @@ parfor (i = 1:length(r), sol.N_Workers)
         exc_loop.harmonic.r = r(i);
 
         if stability
+            
+            %
+            [stable,qhat] = SlowFlowStability('LSR', ...
+                sys_loop, ...
+                exc_loop, ...
+                xi(i),r(i),disorder);
+
+            if stable
+                qhat_stable(i) = qhat(1);
+                qhatmax_stable(i) = max(qhat);               
+            end
+            %}
+
+            %{
             % Get initial conditions
             [sol_loop.q0,sol_loop.u0,sol_loop.qa0,sol_loop.ua0] = ...
                 LocalizedInitialConditions(sys_loop,exc_loop,xi(i),r(i),...
@@ -85,12 +99,13 @@ parfor (i = 1:length(r), sol.N_Workers)
             % Check if solution diverged
             if N_SIPP(1) >= 1.99 && ... % Sector in 1:1 resonance
                 all(N_SIPP(2:end)==0) && ... % No impacts in remaining secs
-                xi_dev<=0.3 % Relative deviation of amplitude max 50%
+                xi_dev<=0.3 % Relative deviation of amplitude max 30%
                 
                 qhat_stable(i) = qhat(1);
                 qhatmax_stable(i) = max(qhat);
                 
             end
+            %}
 
         end
 

@@ -11,7 +11,9 @@ box on;
 title('Dispersion Diagram')
 xlabel('Wavenumber - $k$')
 ylabel('Eigenfrequency ratio - $r_k$')
-xlim([0 floor(sys.N_s/2)])
+if sys.N_s>1
+    xlim([0 floor(sys.N_s/2)])
+end
 ylim([0.99 1.01*sys.r_k(end)])
 if ~isempty(savepath)
     savefig([savepath 'dispersion_diagram.fig'])

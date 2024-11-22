@@ -3,7 +3,6 @@ function [AMEAN,ASTD] = MeanAmplitude(x,NP)
     % x - Reponse
 
     % AMEAN - mean amplitude of excitation period
-    % AMAX - maximum value of signal in x
     % SPEC - complex FFT of the signal
         
     % Take maximum value

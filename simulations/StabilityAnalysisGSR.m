@@ -37,6 +37,31 @@ parfor (i = 1:length(r), sol.N_Workers)
     exc_loop.harmonic.r = r(i);
     
     if ~isnan(xi(i))
+        
+        %
+        [stable,qhat] = SlowFlowStability('GSR', ...
+                sys_loop, ...
+                exc_loop, ...
+                xi(i),r(i),'tuned');
+
+            if stable
+                qhat_stable(i) = qhat(1);
+            else
+                qhat_unstable(i) = qhat(1);
+
+                % Return which criteria were responsible
+                % for stability loss
+
+                qhat_unstable_synchloss(i) = qhat(1);
+
+                qhat_unstable_amplitudedev(i) = qhat(1);
+
+                qhat_unstable_modulation(i) = qhat(1);
+
+            end
+        %}
+
+        %{
         qhat_ana = xi(i)*sys.Gamma(1);
         % Get initial conditions
         [sol_loop.q0,sol_loop.u0,sol_loop.qa0,sol_loop.ua0] = ...
@@ -91,6 +116,7 @@ parfor (i = 1:length(r), sol.N_Workers)
             end
 
         end
+        %}
 
     end
              

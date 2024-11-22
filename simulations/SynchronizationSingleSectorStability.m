@@ -676,8 +676,8 @@ if sys.sigma_omega ~= 0
             cb = colorbar();
             ylabel(cb,'IPR','Rotation',90,'Interpreter','latex')
     end
-    xlabel('$r$')
-    ylabel('$\delta_{\omega,j}$')
+    xlabel('$r_\mathrm{max}$')
+    ylabel('$\delta_{r,j}$')
     title(['PCC = ' num2str(round(1000*corr( ...
         r_practically_stable_max_mt(~isnan( ...
         delta_omega_practically_stable_max))',...
