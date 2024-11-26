@@ -39,4 +39,4 @@ simsetup.SynchronizationSingleSectorStability.Nr = 2000;
 % Number of Mistuning realizations for frequency amplitude curves
 simsetup.SynchronizationSingleSectorStability.N_MCS = 0;
 % Take every stepsize-th point of contour for stability analysis
-simsetup.SynchronizationSingleSectorStability.stepsize = 150;
+simsetup.SynchronizationSingleSectorStability.stepsize = 160;

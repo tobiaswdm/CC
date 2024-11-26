@@ -67,20 +67,20 @@ set(gca,'YScale','log')
 axis tight;
 
 % Get Level curves at clearance
-c = contourc(r,xi,Gamma_Scale',[sys.Gamma_Scale sys.Gamma_Scale]);
+c_t = contourc(r,xi,Gamma_Scale',[sys.Gamma_Scale sys.Gamma_Scale]);
 
 % Determine max amplitude FRF
 [qhat_max,qhat_max_violated,qhat_syn,r_plot] = ...
-    LocalizedFrequencyAmplitudeCurve(c,sys,exc,'single','tuned');
+    LocalizedFrequencyAmplitudeCurve(c_t,sys,exc,'single','tuned');
 
 % Coarsen contour for stability analysis
-c = CoarsenContour(c,...
+c_t = CoarsenContour(c_t,...
     simsetup.SynchronizationSingleSectorStability.stepsize);
 
 % Study asymptotic and practical stability of tuned system
 [qhat_practically_stable_t,qhat_stable_t,qhat_unstable_t, ... 
 qhatsynch_practically_stable_t,qhatsynch_stable_t,qhatsynch_unstable_t, ...
-IPR_t,LF_t,r_num_t] = StabilityAnalysisLSR(c,sys,sol,exc, ...
+IPR_t,LF_t,r_num_t] = StabilityAnalysisLSR(c_t,sys,sol,exc, ...
                                             'single','tuned',true,true);
 
 % Get maximum practically stable amplitude in tuned case
@@ -394,7 +394,7 @@ if (sys.sigma_g ~= 0 || sys.sigma_omega ~= 0) || ...
     
     % Study asymptotic and practical stability of mistuned system
     [qhat_practically_stable,qhat_stable,qhat_unstable,~,~,~,~,~,r_num] =...
-        StabilityAnalysisLSR(c,sys_mt,sol,exc_mt,'mistuned',true,true);
+        StabilityAnalysisLSR(c,sys_mt,sol,exc_mt,'single','mistuned',true,true);
     
     % Plot FRF
     figure(5);
@@ -457,9 +457,8 @@ end
 if any(~isnan(qhat_practically_stable_t))
     
     % Extract highest practically stable amplitude
-    %[xi_max_t,i_max_t] = max(qhat_practically_stable_t/sys.Gamma(1));
-    % Extract highest practically stable amplitude
-    [xi_max_t,i_max_t] = min(qhat_practically_stable_t/sys.Gamma(1));
+    [~,i_max_t] = max(qhat_practically_stable_t/sys.Gamma(1));
+    xi_max_t = c_t(2,i_max_t+1);
     exc.harmonic.r = r_num_t(i_max_t);
 
     % Get initial conditions for time simulation
