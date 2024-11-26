@@ -9,12 +9,21 @@ rho = (2/pi) * (1-sys.eN) / (1+sys.eN);
 theta_k0 = 2*pi*exc.k/sys.N_s;
 
 switch solution
-    case 'LSR'
-        [Q,~,~] = RecoverCondensedDOFs(sys,exc,r,xi,disorder);
+    case 'LSR_single'
+        [Q,~,~] = RecoverCondensedDOFs(sys,exc,r,xi,'single',disorder);
 
         % Assign Synchronized Sectors
         syn_sectors    = eye(sys.N_s,1);
-        
+    case 'LSR_opposing'
+        [Q,~,~] = RecoverCondensedDOFs(sys,exc,r,xi,'opposing');
+
+        if strcmp(disorder,'mistuned')
+            error('Mistuned GSR not implemented.')
+        end
+
+        % Assign Synchronized Sectors
+        syn_sectors             = eye(sys.N_s,1);
+        syn_sectors(sys.N_s/2)  = 1;
     case 'GSR'
 
         if strcmp(disorder,'mistuned')

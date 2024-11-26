@@ -24,13 +24,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [ETA0,CHI0,QA0,UA0] = LocalizedInitialConditions(sys,exc,xi,r,disorder,stability)
+function [ETA0,CHI0,QA0,UA0] = LocalizedInitialConditions(sys,exc,xi,r, ...
+    pattern,disorder,stability)
 %LOCALIZEDINITIALCONDITIONS Return initial conditions of HB solution
 %
 % xi -scalar clearance normalized amplitude
 % r - scalar excitation frequency
+% pattern - 'single' or 'opposing'
 
-[Q,theta,expDelta] = RecoverCondensedDOFs(sys,exc,r,xi,disorder);
+[Q,theta,expDelta] = RecoverCondensedDOFs(sys,exc,r,xi,pattern,disorder);
 
 % expDelta = exp(-1i*Delta) -> negative sign
 Delta = -angle(expDelta);
@@ -69,19 +71,62 @@ index = 0<=wrapToPi(angle(Q(1,:))-Delta) & ...
 UA0(1,index) = -qadot;
 UA0(1,~index) = qadot;
 
-if strcmp(stability,'practical_stability')
-    % Assign same initial velocity as oscillator
-    % in non localized sector
-    UA0(2:end,:) = sys.Phi(2:end,:)*CHI0;
+% repeeat for possible opposing sector
+if strcmp(pattern,'opposing')
+    QA0(sys.N_s/2,:) = 2*qahat*asin(cos(angle(Q(sys.N_s/2,:))-Delta))/pi;
 
-    % Place absorber at cavity wall
-    switch disorder
-        case 'tuned'
-            QA0(2:end) = sys.Gamma(3:2:end) + ...
-                sys.Phi(2:end,:)*ETA0;
-        case 'mistuned'
-            QA0(2:end) = sys.Gamma_mt(3:2:end) + ...
-                sys.Phi(2:end,:)*ETA0;
+    index = 0<=wrapToPi(angle(Q(sys.N_s/2,:))-Delta) & ...
+    wrapToPi(angle(Q(sys.N_s/2,:))-Delta)<=pi;
+
+    % Assign velocities
+    UA0(sys.N_s/2,index) = -qadot;
+    UA0(sys.N_s/2,~index) = qadot;
+end
+
+if strcmp(stability,'practical_stability')
+    switch pattern
+        case 'single'
+
+            % Assign same initial velocity as oscillator
+            % in non localized sector
+            UA0(2:end,:) = sys.Phi(2:end,:)*CHI0;
+        
+            % Place absorber at cavity wall
+            switch disorder
+                case 'tuned'
+                    QA0(2:end,:) = sys.Gamma(3:2:end) + ...
+                        sys.Phi(2:end,:)*ETA0;
+                case 'mistuned'
+                    QA0(2:end,:) = sys.Gamma_mt(3:2:end) + ...
+                        sys.Phi(2:end,:)*ETA0;
+            end
+
+        case 'opposing'
+            % Non-synchronized sectors
+            non_synchronzized = true(1,sys.N_s);
+            non_synchronzized([1,sys.N_s]) = false;
+          
+            % Assign same initial velocity as oscillator
+            % in non localized sector
+            UA0(non_synchronzized,:) = sys.Phi(non_synchronzized,:)*...
+                                           CHI0;
+
+            if rem(exc.k,2)~=0
+                QA0(non_synchronzized,:) = sys.Gamma_Scale*sys.qref + ...
+                                           sys.Phi(non_synchronzized,:) ...
+                                            *ETA0;
+            else
+                QA0(non_synchronzized(1:(sys.N_s/2)),:) = ...
+                    sys.Gamma_Scale*sys.qref + ...
+                    sys.Phi(non_synchronzized(1:(sys.N_s/2)),:) ...
+                    *ETA0;
+                QA0(non_synchronzized(1:(sys.N_s/2))+sys.N_s/2,:) = ...
+                    -sys.Gamma_Scale*sys.qref + ...
+                    sys.Phi(non_synchronzized(1:(sys.N_s/2))+sys.N_s/2,:) ...
+                    *ETA0;
+            end
+
+
     end
 end
 

@@ -27,16 +27,24 @@ r = linspace(simsetup.SynchronizationSingleSectorAnalytical.r_range(1),...
 
 % Plot
 figure(2);
-surf(R,Xi,Gamma_Scale,'EdgeAlpha',0)
-hold on;
+surf(R,Xi,Gamma_Scale,'LineStyle','none')
+hold on; box on;
+contour3(R,Xi,Gamma_Scale,4,'LineWidth',1,'Color',color.analytics)
+for i = 1:length(sys.r_k)
+    xline(sys.r_k(i),'--k','LineWidth',1.5,'Color',[1 1 1])
+end
+hold off;
 title('Tuned System')
-box on;
-colormap turbo
+colormap(jet)
 xlabel('$r$')
 ylabel('$\xi$')
 zlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+h=colorbar;
+h.Label.Interpreter = 'latex';
+h.Label.String = "$\Gamma/\hat{q}_\mathrm{ref}$";
 set(gca,'YScale','log')
 axis tight;
+view([0 90])
 
 figure(3);
 for i = 1:length(sys.r_k)
@@ -126,7 +134,8 @@ for i = 1:simsetup.SynchronizationSingleSectorAnalytical.N_MCS
 
     % Recover maximum amplitude
     [qhat_max,~,~,r_plot] = ...
-        LocalizedFrequencyAmplitudeCurve(c,sys_mt,exc_mt,'mistuned');
+        LocalizedFrequencyAmplitudeCurve(c,sys_mt,exc_mt,'single', ...
+        'mistuned');
 
     figure(7);
     hold on;
@@ -164,7 +173,7 @@ title(['$\Gamma / \hat{q}_\mathrm{ref} = ' num2str(sys.Gamma_Scale) '$'])
 
 % Recover maximum amplitude
 [qhat_max,qhat_max_violated,~,r_plot] = ...
-    LocalizedFrequencyAmplitudeCurve(c,sys,exc,'tuned');
+    LocalizedFrequencyAmplitudeCurve(c,sys,exc,'single','tuned');
 
 figure(7)
 hold on;

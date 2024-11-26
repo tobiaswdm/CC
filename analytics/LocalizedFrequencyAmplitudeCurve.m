@@ -25,10 +25,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [qhat_max,qhat_max_violated,qhat_localized,r] = ...
-    LocalizedFrequencyAmplitudeCurve(c,sys,exc,disorder)
+    LocalizedFrequencyAmplitudeCurve(c,sys,exc,pattern,disorder)
 %LOCALIZEDFREQUENCYAMPLITUDECURVE Determine the different parts of
 % localized frequency amplitude curve from contour estimation c
 % c - contour of FRS
+% pattern 'single' or 'opposing'
 
 % Find beginning of level curves in c
 c(2,floor(c(2,:))==c(2,:)) = NaN;
@@ -43,22 +44,32 @@ xi = c(2,2:end);
 indices = ~isnan(xi);
 
 % Recover real-valued amplitudes of all sectors
-[qhat,~,~] = RecoverCondensedDOFs(sys,exc,r(indices),xi(indices),disorder);
+[qhat,~,~] = RecoverCondensedDOFs(sys,exc,r(indices),xi(indices),pattern, ...
+    disorder);
 qhat = abs(qhat);
 
 % Maximum amplitudes
 qhat_max = nan(1,length(r));
 qhat_max(indices) = max(qhat,[],1);
 
+% Which sectors are non-synchronized
+switch pattern
+    case 'single'
+        non_synchronized = 2:sys.N_s;
+    case 'opposing'
+        non_synchronized = 1:sys.N_s;
+        non_synchronized(1,sys.N_s/2) = [];
+end
+
 % Index of points that fulfill kinematic constraint
 qhat_max_check = true(1,length(r));
 switch disorder
     case 'tuned'
-        qhat_max_check(indices) = all(qhat(2:end,:)<...
+        qhat_max_check(indices) = all(qhat(non_synchronized,:)<...
             (sys.Gamma_Scale*sys.qref),1);
         qhat_localized = sys.Gamma(1)*xi;
     case 'mistuned'
-        qhat_max_check(indices) = all(qhat(2:end,:)<...
+        qhat_max_check(indices) = all(qhat(non_synchronized,:)<...
             sys.Gamma_mt(3:2:end),1);
         qhat_localized = sys.Gamma_mt(1)*xi;
     otherwise

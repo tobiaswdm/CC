@@ -70,7 +70,7 @@ c = contourc(r,xi,Gamma_Scale',[sys.Gamma_Scale sys.Gamma_Scale]);
 
 % Determine max amplitude FRF
 [qhat_max,qhat_max_violated,qhat_syn,r_plot] = ...
-    LocalizedFrequencyAmplitudeCurve(c,sys,exc,'tuned');
+    LocalizedFrequencyAmplitudeCurve(c,sys,exc,'single','tuned');
 
 % Coarsen contour for stability analysis
 c = CoarsenContour(c,...
@@ -207,10 +207,10 @@ for i = 1:simsetup.SynchronizationSingleSectorStability.N_MCS
         c = CoarsenContour(c,...
             simsetup.SynchronizationSingleSectorStability.stepsize);
     
-        % Study only practical stability of mistuned system
+        % Study only practical stability
         [qhat_practically_stable_array{j},~,~,~,~,~,IPR_array{j},LF_array{j},...
             r_num_array{j}] =StabilityAnalysisLSR(c,sys_mt,sol,exc_mt, ...
-            'mistuned',false,true);
+            'mistuned',true,true);
         
         % Extract maximum
         if isempty(qhat_practically_stable_array{j})
@@ -302,18 +302,20 @@ switch simsetup.SynchronizationSingleSectorStability.LocalizationMeasure
 end
 
 
-figure(4);
-hold on;
-scatter(r_num,qhat_practically_stable/sys.qref,20,locmeasure,'filled',...
-'MarkerFaceAlpha',1,'MarkerEdgeAlpha',0,...
-'Displayname','Pract. Stable MT','Marker','square')
-colormap(flipud(gray).^0.8);
-cb = colorbar();
-switch simsetup.SynchronizationSingleSectorStability.LocalizationMeasure
-    case 'LF'
-        ylabel(cb,'LF','Rotation',90,'Interpreter','latex')
-    case 'IPR'
-        ylabel(cb,'IPR','Rotation',90,'Interpreter','latex')
+if simsetup.SynchronizationSingleSectorStability.N_MCS>0
+    figure(4);
+    hold on;
+    scatter(r_num,qhat_practically_stable/sys.qref,20,locmeasure,'filled',...
+    'MarkerFaceAlpha',1,'MarkerEdgeAlpha',0,...
+    'Displayname','Pract. Stable MT','Marker','square')
+    colormap(flipud(gray).^0.8);
+    cb = colorbar();
+    switch simsetup.SynchronizationSingleSectorStability.LocalizationMeasure
+        case 'LF'
+            ylabel(cb,'LF','Rotation',90,'Interpreter','latex')
+        case 'IPR'
+            ylabel(cb,'IPR','Rotation',90,'Interpreter','latex')
+    end
 end
 
 
@@ -357,9 +359,15 @@ savefig([savepath 'frequency_amplitude_stability.fig'])
 
 %% Show example of full mistuned FRF and stability
 
-if sys.sigma_g ~= 0 || sys.sigma_omega ~= 0
+if (sys.sigma_g ~= 0 || sys.sigma_omega ~= 0) || ...
+    (isfield(sys,'delta_g') || isfield(sys,'delta__omega'))    
+
     % Build mistuned system
-    [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
+    if isfield(sys,'delta_g') && isfield(sys,'delta_omega')
+        [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned_defined');
+    else
+        [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
+    end
     % Determine mistuned FRS
     [Gamma_Scale_mt,~,~] = ...
         SingleSectorFRS(xi,r,sys_mt,exc_mt,'mistuned');
@@ -376,7 +384,7 @@ if sys.sigma_g ~= 0 || sys.sigma_omega ~= 0
     
     % Determine max amplitude FRF
     [qhat_max,qhat_max_violated,qhat_localized,r_plot] = ...
-        LocalizedFrequencyAmplitudeCurve(c,sys_mt,exc_mt,'mistuned');
+        LocalizedFrequencyAmplitudeCurve(c,sys_mt,exc_mt,'single','mistuned');
     
     % Coarsen contour for stability analysis
     c = CoarsenContour(c,...
@@ -505,7 +513,8 @@ if any(~isnan(qhat_practically_stable_t))
     % Phase space tuned system
     % Get analytical HB approximation
     [Qana,~,~] = ...
-        RecoverCondensedDOFs(sys,exc,exc.harmonic.r,xi_max_t,'tuned');
+        RecoverCondensedDOFs(sys,exc,exc.harmonic.r,xi_max_t, ...
+        'single','tuned');
     G = sys.Gamma(1);
 
     expirTau = exp(1i*linspace(0,2*pi,sol.N_Sample));
