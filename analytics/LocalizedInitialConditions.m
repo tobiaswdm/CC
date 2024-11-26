@@ -73,14 +73,14 @@ UA0(1,~index) = qadot;
 
 % repeeat for possible opposing sector
 if strcmp(pattern,'opposing')
-    QA0(sys.N_s/2,:) = 2*qahat*asin(cos(angle(Q(sys.N_s/2,:))-Delta))/pi;
+    QA0(sys.N_s/2+1,:) = 2*qahat*asin(cos(angle(Q(sys.N_s/2+1,:))-Delta))/pi;
 
-    index = 0<=wrapToPi(angle(Q(sys.N_s/2,:))-Delta) & ...
-    wrapToPi(angle(Q(sys.N_s/2,:))-Delta)<=pi;
+    index = 0<=wrapToPi(angle(Q(sys.N_s/2+1,:))-Delta) & ...
+    wrapToPi(angle(Q(sys.N_s/2+1,:))-Delta)<=pi;
 
     % Assign velocities
-    UA0(sys.N_s/2,index) = -qadot;
-    UA0(sys.N_s/2,~index) = qadot;
+    UA0(sys.N_s/2+1,index) = -qadot;
+    UA0(sys.N_s/2+1,~index) = qadot;
 end
 
 if strcmp(stability,'practical_stability')
@@ -104,7 +104,7 @@ if strcmp(stability,'practical_stability')
         case 'opposing'
             % Non-synchronized sectors
             non_synchronzized = true(1,sys.N_s);
-            non_synchronzized([1,sys.N_s]) = false;
+            non_synchronzized([1,sys.N_s/2 + 1]) = false;
           
             % Assign same initial velocity as oscillator
             % in non localized sector
@@ -116,14 +116,12 @@ if strcmp(stability,'practical_stability')
                                            sys.Phi(non_synchronzized,:) ...
                                             *ETA0;
             else
-                QA0(non_synchronzized(1:(sys.N_s/2)),:) = ...
+                QA0(2:(sys.N_s/2),:) = ...
                     sys.Gamma_Scale*sys.qref + ...
-                    sys.Phi(non_synchronzized(1:(sys.N_s/2)),:) ...
-                    *ETA0;
-                QA0(non_synchronzized(1:(sys.N_s/2))+sys.N_s/2,:) = ...
+                    sys.Phi(2:(sys.N_s/2),:)*ETA0;
+                QA0((sys.N_s/2 +1):sys.N_s,:) = ...
                     -sys.Gamma_Scale*sys.qref + ...
-                    sys.Phi(non_synchronzized(1:(sys.N_s/2))+sys.N_s/2,:) ...
-                    *ETA0;
+                    sys.Phi((sys.N_s/2 +1):sys.N_s,:)*ETA0;
             end
 
 

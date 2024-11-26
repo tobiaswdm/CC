@@ -207,3 +207,18 @@ simsetup.FollowBifurcationFRSofLSR.Nr = 2000;
 simsetup.FollowBifurcationFRSofLSR.kappac_range = [1e-4,3];
 % Number of discrete points in interval
 simsetup.FollowBifurcationFRSofLSR.Nkappac = 10;
+
+% =========================================================================
+% Numerical stability analysis of Synchronization in opposing sectors
+% =========================================================================
+
+% Maximum of clearance normalized amplitude
+simsetup.SynchronizationOpposingSectorsStability.xi_max = 20;
+% Number of samples of clearance normalized amplitude
+simsetup.SynchronizationOpposingSectorsStability.Nxi = 1000;
+% Range of excitaiton frequencies
+simsetup.SynchronizationOpposingSectorsStability.r_range = [0.9 1.1];
+% Number of samples of excitation frequencies
+simsetup.SynchronizationOpposingSectorsStability.Nr = 1000;
+% Take every stepsize-th point of contour for stability analysis
+simsetup.SynchronizationOpposingSectorsStability.stepsize = 200;

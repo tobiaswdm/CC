@@ -32,7 +32,7 @@ clc; close all; clearvars;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'LSR_Stability_Example';
+configuration = 'LSR_Opposing_k0_2';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -113,6 +113,10 @@ switch simulation
     case 'FollowBifurcationFRSofLSR'
         fprintf('Following the first bifurcation point of the FRS of the LSR... \n')
         FollowBifurcationFRSofLSR;
+    case 'SynchronizationOpposingSectorsStability'
+        fprintf(['Running stability analysis on LSR with synchronization in ' ...
+            'two opposing sectors... \n'])
+        SynchronizationOpposingSectorsStability;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')

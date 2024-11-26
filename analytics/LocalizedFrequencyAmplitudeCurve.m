@@ -58,7 +58,7 @@ switch pattern
         non_synchronized = 2:sys.N_s;
     case 'opposing'
         non_synchronized = 1:sys.N_s;
-        non_synchronized(1,sys.N_s/2) = [];
+        non_synchronized([1,sys.N_s/2+1]) = [];
 end
 
 % Index of points that fulfill kinematic constraint

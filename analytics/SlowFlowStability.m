@@ -23,7 +23,7 @@ switch solution
 
         % Assign Synchronized Sectors
         syn_sectors             = eye(sys.N_s,1);
-        syn_sectors(sys.N_s/2)  = 1;
+        syn_sectors(sys.N_s/2+1)  = 1;
     case 'GSR'
 
         if strcmp(disorder,'mistuned')

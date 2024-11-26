@@ -12,7 +12,7 @@ disp(['There are ' num2str(N_LSR_tuned) ' coexisiting LSRs in the tuned ' ...
     'system and ' num2str(N_LSR_mistuned) ' coexisiting LSRs in the ' ...
     'mistuned system.'])
 
-%% Compute tuned manifold
+%% Compute tuned FRS
 
 % Auxilliary Variable
 rho = (2/pi) * (1-sys.eN) / (1+sys.eN);
@@ -49,6 +49,7 @@ ylabel('$\xi$')
 zlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
 set(gca,'YScale','log')
 axis tight;
+
 
 % Plot Level Curves
 figure(3);
@@ -615,9 +616,14 @@ if any(~isnan(qhat_practically_stable_max_mt)) && ...
     stairs(x,E,'--k','LineWidth',1.5)
     ylabel('CDF')
     yyaxis left;
+    hold on; box on;
     histogram(qhat_practically_stable_max_mt/sys.qref,...
     'Normalization','pdf','FaceColor',color.ies,'LineStyle','none');
-    box on;
+    if ~isempty(qhat_practically_stable_t)
+        xline(qhat_practically_stable_max_t/sys.qref,'Alpha',1,'Color', ...
+            color.show)
+    end
+    hold off;
     xlabel('$\mathrm{max}_r \left\{ \hat{q}^\ast / \hat{q}_\mathrm{ref} \right\}$')
     ylabel('PDF')
     axis tight

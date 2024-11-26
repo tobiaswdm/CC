@@ -78,7 +78,7 @@ switch pattern
         end
 
         % Linear transfer function matrix
-        H = pageinv(-r_perm.^2 .* sys.mu(k,k) + 1i*r_perm.*sys.beta(k,k) ...
+        H = pageinv(-r.^2 .* sys.mu(k,k) + 1i*r.*sys.beta(k,k) ...
             + sys.kappa(k,k));
 
         % Linear displacement with removed absorbers
@@ -93,12 +93,12 @@ switch pattern
         Phase = angle(Q_lin(1,1,:)./(xi + 2*H(1,1,:).*Pi(1,1,:)));
         
         % Fourier Coefficient contact forces
-        Pi(1,1,:) = sys.Gamma_mt(1)*Pi(1,1,:).*exp(1i*Phase);
+        Pi(1,1,:) = sys.Gamma(1)*Pi(1,1,:).*exp(1i*Phase);
 
         if rem(exc.k,2)~=0
-            Pi(sys.N_s/2,1,:) = -Pi(1,1,:);
+            Pi(sys.N_s/2+1,1,:) = -Pi(1,1,:);
         else
-            Pi(sys.N_s/2,1,:) = Pi(1,1,:);
+            Pi(sys.N_s/2+1,1,:) = Pi(1,1,:);
         end
 
     otherwise

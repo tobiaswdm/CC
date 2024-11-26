@@ -34,9 +34,6 @@ IPR = nan(1,length(r));
 sol.N_Tau = 300;
 
 parfor (i = 1:length(r), sol.N_Workers)
-    
-    % Set xi_dev to avoid temporary variable warning
-    xi_dev = inf;
 
     % Only consider cases where kinematic constraint is fulfilled
     if ~isnan(qhat_max_ana(i))
@@ -92,23 +89,11 @@ parfor (i = 1:length(r), sol.N_Workers)
                 N_SIPP = CountImpacts(UA,sol_loop.N_Tau,'average');
                 
                 switch pattern
-                    case 'single'
-                        % Determine relative deviation of amplitude in localized sector
-                        switch disorder
-                            case 'tuned'
-                                xi_dev = abs((qhat(1)/sys_loop.Gamma(1)- ...
-                                    xi(i))/xi(i));
-                            case 'mistuned'
-                                xi_dev = abs((qhat(1)/sys_loop.Gamma_mt(1)- ...
-                                    xi(i))/xi(i));
-                            otherwise
-                                error('Case not defined.')
-                        end
+                    case 'single'                       
         
                         % Check if solution diverged
                         if N_SIPP(1) >= 1.99 && ... % Sector in 1:1 resonance
-                            all(N_SIPP(2:end)<1.99) && ... % No 1:1 remaining secs
-                            xi_dev<=0.3 % Relative deviation of amplitude max 30%
+                            all(N_SIPP(2:end)<1.99) % No 1:1 remaining secs
                             
                             % Amplitude
                             qhatmax_practically_stable(i) = max(qhat);
@@ -124,24 +109,15 @@ parfor (i = 1:length(r), sol.N_Workers)
                             qhatmax_stable(i) = NaN;
                         end
                     case 'opposing'
-                        synchronized_sectors = [1,sys.N_s/2];
+                        synchronized_sectors = [1,sys.N_s/2+1];
                         non_synchronized_sectors = 1:sys.N_s;
-                        non_synchronized_sectors([1,sys.N_s/2]) = [];
-
-                        % Determine relative deviation of amplitude in localized sector
-                        xi_dev = max( ...
-                            abs( ...
-                            (qhat(synchronized_sectors)/ ...
-                            sys_loop.Gamma(1)- ...
-                            xi(i))/xi(i)));
+                        non_synchronized_sectors([1,sys.N_s/2+1]) = [];
         
                         % Check if solution diverged
                         if  ... % Sectors in 1:1 resonance
                             all(N_SIPP(synchronized_sectors) >= 1.99) && ...
                             ... % No 1:1 resonance in remaining secs
-                            all(N_SIPP(non_synchronized_sectors)<1.99) && ...
-                            ... % Relative deviation of amplitude max 30%
-                            xi_dev<=0.3
+                            all(N_SIPP(non_synchronized_sectors)<1.99)
                             
                             % Amplitude
                             qhatmax_practically_stable(i) = max(qhat);

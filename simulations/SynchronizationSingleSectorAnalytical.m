@@ -23,7 +23,7 @@ r = linspace(simsetup.SynchronizationSingleSectorAnalytical.r_range(1),...
     simsetup.SynchronizationSingleSectorAnalytical.Nr);
 
 % FRS
-[Gamma_Scale,Xi,R] = SingleSectorFRS(xi,r,sys,exc,'tuned');
+[Gamma_Scale,Xi,R] = SingleSectorFRS(xi,r,sys,exc);
 
 % Plot
 figure(2);
