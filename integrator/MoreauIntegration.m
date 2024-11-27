@@ -298,7 +298,10 @@ switch exc.type
     case 'harmonic' % Harmonic excitation
         f_out = real(F*exp(1i*exc.harmonic.r*t));
     case 'sweep'
-        f_out = real(F*exp(1i*(exc.sweep.r0 + (exc.sweep.re-exc.sweep.r0)/exc.sweep.tau*t)*t));
+        f_out = real(F*exp(1i*(exc.sweep.r0 + ...
+            0.5*(exc.sweep.re-exc.sweep.r0)/exc.sweep.tau*t)*t));
+    case 'transient'
+        f_out = 0*F;
     otherwise
         error('Excitation not defined.')
 end

@@ -14,6 +14,7 @@ sys.N_s = 10;               % Number of sectors
 sys.epsilon_a = 0.02;       % Mass ratio of VI-NES
 sys.D = 1e-3;               % Uniform Modal Damping Ratio
 sys.eN = 0.8;               % Restitution coefficient
+sys.Gamma_Scale = 0.33;     % Normalized clearance
 
 %% Excitation
 exc.k = 0;                  % Excitation wavenumber
@@ -22,16 +23,18 @@ exc.k = 0;                  % Excitation wavenumber
 % Maximum of clearance normalized amplitude
 simsetup.FollowBifurcationFRSofLSR.xi_max = 20;
 % Number of samples of clearance normalized amplitude
-simsetup.FollowBifurcationFRSofLSR.Nxi = 1000;
+simsetup.FollowBifurcationFRSofLSR.Nxi = 4000;
 
 % Parameters of excitation frequency
 % Sampling range
 simsetup.FollowBifurcationFRSofLSR.r_range = [0.9 1.1];
 % Number of samples
-simsetup.FollowBifurcationFRSofLSR.Nr = 2000;
+simsetup.FollowBifurcationFRSofLSR.Nr = 3000;
 
 % Parameters of nominal coupling
 % Range
 simsetup.FollowBifurcationFRSofLSR.kappac_range = [1e-3,1];
 % Number of discrete points in interval
 simsetup.FollowBifurcationFRSofLSR.Nkappac = 50;
+% Step Size for stability of frequency amplitude curve
+simsetup.FollowBifurcationFRSofLSR.stepsize = 1;

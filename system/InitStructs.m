@@ -195,6 +195,8 @@ simsetup.LinearMistuningAnalysis.Number_kappa_c = 10;
 simsetup.FollowBifurcationFRSofLSR.xi_max = 20;
 % Number of samples of clearance normalized amplitude
 simsetup.FollowBifurcationFRSofLSR.Nxi = 1000;
+% Step Size for stability of frequency amplitude curve
+simsetup.FollowBifurcationFRSofLSR.stepsize = 50;
 
 % Parameters of excitation frequency
 % Sampling range
