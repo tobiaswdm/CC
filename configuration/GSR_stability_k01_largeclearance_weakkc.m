@@ -38,7 +38,7 @@ simsetup.GSRStability.Nxi = 1000;
 simsetup.GSRStability.r_range = [0.96 1.03]*...
     sqrt(1+4*sys.kappa_c*sin(exc.k*pi/10)^2);
 % Number of samples of excitation frequencies
-simsetup.GSRStability.Nr = 1000;
+simsetup.GSRStability.Nr = 1001;
 % Take every stepsize-th point of contour for stability analysis
 simsetup.GSRStability.stepsize = 60;
 

@@ -32,7 +32,7 @@ clc; close all; clearvars;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'FollowBifurcationLSR';
+configuration = 'LSR_Stability_k0_2_weakcoupling';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -117,6 +117,9 @@ switch simulation
         fprintf(['Running stability analysis on LSR with synchronization in ' ...
             'two opposing sectors... \n'])
         SynchronizationOpposingSectorsStability;
+    case 'BackBoneStability'
+        fprintf('Running stability analysis along Backbone of GSR... \n')
+        BackBoneStability;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')

@@ -23,9 +23,6 @@ qhat_unstable = nan(1,length(r));
 qhat_unstable_synchloss = nan(1,length(r));
 qhat_unstable_modulation = nan(1,length(r));
 
-% Only evaluate final 300 Periods
-sol.N_Tau = 300;
-
 parfor (i = 1:length(r), sol.N_Workers)
     
     sol_loop = sol;
@@ -34,6 +31,23 @@ parfor (i = 1:length(r), sol.N_Workers)
 
     % Initialize excitaiton structure
     exc_loop.harmonic.r = r(i);
+    
+    if (sys_loop.kappa_c == 0) || ...
+       (exc_loop.k == 0 || exc_loop.k == sys_loop.N_s/2)
+
+        % Choose half of the group velocity period or at least 300 periods
+        sol_loop.N_Tau = 300;
+
+    else
+
+        % Evaluate as many periods as determined by group velocity
+        [~,~,R_g] = DispersionRelation(exc_loop.k,sys_loop);
+
+        % Choose half of the group velocity period or at least 300 periods
+        sol_loop.N_Tau = max(ceil(exc_loop.harmonic.r/R_g/2),300);
+
+    end
+
     
     if ~isnan(xi(i))
         

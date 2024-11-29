@@ -10,7 +10,7 @@ simulation = 'SynchronizationSingleSectorStability';
 %% System parameters
 % Tuned system
 sys.N_s = 10;               % Number of sectors
-sys.kappa_c = 0.006;        % Linear coupling strength
+sys.kappa_c = 0.002;        % Linear coupling strength
 sys.epsilon_a = 0.02;       % Mass ratio of VI-NES
 sys.D = 1e-3;               % Uniform Modal Damping Ratio
 sys.Gamma_Scale = 0.33;     % Clearance normalized by linear resonance amplitude

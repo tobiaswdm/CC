@@ -43,10 +43,9 @@ Gamma_scale_bb = 2*sys.D./abs((-(1-sys.epsilon_a)*varpi_bb.^2 + ...
 
 % Plot FRS
 figure(2);
-surf(R/sys.r_k(exc.k+1),Xi,Gamma_Scale,'LineStyle','none',...
-    'DisplayName','FRS')
+imagesc(r/sys.r_k(exc.k+1),xi,Gamma_Scale')
 hold on; box on;
-contour3(R/sys.r_k(exc.k+1),Xi,Gamma_Scale,4,'Color',color.analytics,...
+contour(R/sys.r_k(exc.k+1),Xi,Gamma_Scale,4,'Color',color.analytics,...
     'LineWidth',1.5)
 plot3(varpi_bb,xi,Gamma_scale_bb,'--','LineWidth',3,...
     'DisplayName','Backbone','Color',[1 1 1])
@@ -61,9 +60,8 @@ axis tight;
 h=colorbar;
 h.Label.Interpreter = 'latex';
 h.Label.String = "$\Gamma/\hat{q}_\mathrm{ref}$";
-set(gca,'YScale','log')
+set(gca,'YDir','normal')
 axis tight;
-view([0 90])
 
 % Plot Level Curves
 figure(3);

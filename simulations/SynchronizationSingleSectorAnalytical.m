@@ -23,11 +23,11 @@ r = linspace(simsetup.SynchronizationSingleSectorAnalytical.r_range(1),...
     simsetup.SynchronizationSingleSectorAnalytical.Nr);
 
 % FRS
-[Gamma_Scale,Xi,R] = SingleSectorFRS(xi,r,sys,exc);
+[Gamma_Scale,Xi,R] = SingleSectorFRS(xi,r,sys,exc,'tuned');
 
 % Plot
 figure(2);
-surf(R,Xi,Gamma_Scale,'LineStyle','none')
+imagesc(r,xi,Gamma_Scale')
 hold on; box on;
 contour3(R,Xi,Gamma_Scale,4,'LineWidth',1,'Color',color.analytics)
 for i = 1:length(sys.r_k)
@@ -42,9 +42,10 @@ zlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
 h=colorbar;
 h.Label.Interpreter = 'latex';
 h.Label.String = "$\Gamma/\hat{q}_\mathrm{ref}$";
+set(gca,'YDir','normal')
 set(gca,'YScale','log')
 axis tight;
-view([0 90])
+%view([0 90])
 
 figure(3);
 for i = 1:length(sys.r_k)

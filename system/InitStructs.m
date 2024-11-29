@@ -224,3 +224,14 @@ simsetup.SynchronizationOpposingSectorsStability.r_range = [0.9 1.1];
 simsetup.SynchronizationOpposingSectorsStability.Nr = 1000;
 % Take every stepsize-th point of contour for stability analysis
 simsetup.SynchronizationOpposingSectorsStability.stepsize = 200;
+
+% =========================================================================
+% Stability Analysis along Backbone of GSR
+% =========================================================================
+
+% Range of inter-sector coupling strengths
+simsetup.BackBoneStability.kappac_range = [10^-3, 10^-1];
+% Number of inter-sector coupling strengths
+simsetup.BackBoneStability.Nkappac = 20;
+% Number of clearance-normlaized amplitudes
+simsetup.BackBoneStability.Nxi = 30;

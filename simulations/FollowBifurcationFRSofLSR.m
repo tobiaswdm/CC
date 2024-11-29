@@ -105,7 +105,8 @@ for i=1:simsetup.FollowBifurcationFRSofLSR.Nkappac
             % Locally asymptotically stable solutions found?
             if any(~isnan(qhat_practically_stable))
                 
-                MaximumAmplitude(i) = max(qhat_practically_stable);
+                MaximumAmplitude(i) = max(qhat_practically_stable)/ ...
+                    sys.qref;
                 
             end
         end
@@ -114,6 +115,10 @@ end
 
 % Get optimum clearance
 [~,~,Gamma_opt] = TunedBackbone(sys,'stable');
+
+save([savepath 'MaximumAmplitude.mat'],'MaximumAmplitude')
+save([savepath 'GammaScaleBif.mat'],'GammaScaleBif')
+save([savepath 'kappa_c.mat'],'kappa_c')
 
 
 figure(1);
@@ -130,7 +135,7 @@ savefig([savepath 'GammaScaleBif.fig'])
 
 figure(2);
 hold on;
-plot(kappa_c,MaximumAmplitude/sys.qref,'LineWidth',1.5,'Color',color.ies)
+plot(kappa_c,MaximumAmplitude,'LineWidth',1.5,'Color',color.ies)
 box on;
 axis tight;
 xlabel('$\kappa_\mathrm{c}$')
