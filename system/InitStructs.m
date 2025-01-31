@@ -235,3 +235,21 @@ simsetup.BackBoneStability.kappac_range = [10^-3, 10^-1];
 simsetup.BackBoneStability.Nkappac = 20;
 % Number of clearance-normlaized amplitudes
 simsetup.BackBoneStability.Nxi = 30;
+
+% =========================================================================
+% Find Coexisting Solutions by Randomizing Initial Conditions
+% =========================================================================
+
+% Number of Randomized Initial Conditions that are tested
+simsetup.FindCoexisitingSolutions.N_MCS = 1e4;
+
+% =========================================================================
+% Since-Frequency Stepping around Resonance
+% =========================================================================
+
+% Frequency range relative to lowest and highest eigenfrequency
+simsetup.FrequencyStepping.r_range = [0.99 1.01];
+% Number of frequency steps
+simsetup.FrequencyStepping.N_r = 50;
+% Tuned or Mistuned System
+simsetup.FrequencyStepping.disorder = 'mistuned';

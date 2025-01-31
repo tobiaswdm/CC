@@ -17,7 +17,6 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
                     - diag(sys.kappa_c*ones(1,sys.N_s-1),-1);
                 K(1,sys.N_s) =  - sys.kappa_c;
                 K(sys.N_s,1) =  - sys.kappa_c;
-                sys.K = K;
             elseif sys.N_s == 2
                 K = (1+sys.kappa_c)*eye(sys.N_s);
                 K(1,sys.N_s) =  - sys.kappa_c;
@@ -25,7 +24,7 @@ function [sys,exc] = BuildSystem(sys,exc,disorder)
             elseif sys.N_s == 1
                 K = 1;
             end
-
+            sys.K=K;
         
             % Build tuned mass matrices
 

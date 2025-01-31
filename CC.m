@@ -1,9 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% CC (pronounced Sisi) is a tool that performs numerical and/or
-% analytical analyses on a Cylic Chain of Oscillators with Vibro-Impact
-% Nonlinear Energy Sinks (VI-NESs)
+% CC (pronounced Sisi) performs numerical and/or analytical analyses on a 
+% Cylic Chain of Oscillators with Vibro-Impact Nonlinear Energy Sinks
 %
 % The Code for CC was written by:
 % Tobias Weidemann - (C) 2024
@@ -16,10 +15,10 @@
 % CC is purely academic and comes with no warranty.
 % If you use CC for your own research, please refer to the paper:
 %
-% T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2024)
-% "Energy Transfer and Localization in a Forced Cyclic Chain of
-% Oscillators with Vibro-Impact Nonlinear Energy Sinks".
-% Manuscript submitted to Nonlinear Dynamics
+% T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2025)
+% "Energy transfer and localization in a forced cyclic chain of
+% oscillators with vibro-impact nonlinear energy sinks".
+% Nonlinear Dynamics. doi: https://doi.org/10.1007/s11071-025-10928-4
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32,7 +31,7 @@ clc; close all; clearvars;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'LSR_Stability_k0_2_weakcoupling';
+configuration = 'test_timeint';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,7 +51,7 @@ disp(' ')
 
 %% Add system paths
 fprintf('Adding folder paths... \n')
-addpath('.\configuration\') % Path for config files
+addpath(genpath('.\configuration\')) % Path for config files
 addpath('.\style\')         % Path for style functions
 
 DefaultStyle;
@@ -120,6 +119,15 @@ switch simulation
     case 'BackBoneStability'
         fprintf('Running stability analysis along Backbone of GSR... \n')
         BackBoneStability;
+    case 'SlowFlowTimeSimulation'
+        fprintf('Running Slow Flow Simulation... \n')
+        SlowFlowTimeSimulation;
+    case 'FindCoexistingSolutions'
+        fprintf('Finding coexisiting solutions by varying initial conditions... \n')
+        FindCoexistingSolutions;
+    case 'FrequencyStepping'
+        fprintf('Determining Frequency-Amplitude curve through sine-stepping... \n')
+        FrequencyStepping;
     otherwise
         fprintf('Oops... How did we end up here? \n')
         error('Simulation not defined')

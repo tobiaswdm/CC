@@ -67,21 +67,44 @@ axis tight;
 
 %% Compute example of mistuned manifold
 
-[sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
+if isfield(sys,'delta_omega') || isfield(sys,'delta_g')
+    [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned_defined');
+else
+    [sys_mt,exc_mt] = BuildSystem(sys,exc,'mistuned');
+end
+
 [Gamma_Scale_mt,Xi,R] = SingleSectorFRS(xi,r,sys_mt,exc_mt,'mistuned');
 
 % Plot
 figure(4);
-surf(R,Xi,Gamma_Scale_mt,'EdgeAlpha',0)
-hold on;
-title('Example mistuned System')
-box on;
-colormap turbo
+imagesc(r,xi,Gamma_Scale_mt')
+hold on; box on;
+contour3(R,Xi,Gamma_Scale_mt,4,'LineWidth',1,'Color',color.analytics)
+hold off;
+title('Mistuned System')
+colormap(jet)
 xlabel('$r$')
 ylabel('$\xi$')
-zlabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+h=colorbar;
+h.Label.Interpreter = 'latex';
+h.Label.String = "$\Gamma(1+\delta_{\Gamma,s})/\hat{q}_\mathrm{ref}$";
+set(gca,'YDir','normal')
 set(gca,'YScale','log')
 axis tight;
+
+% Adjust color scale based on mistuned system?
+if any(sys.sigma_omega ~= 0) || any(sys.sigma_g ~= 0)
+    max_Gamma_tuned = max(Gamma_Scale,[],'all');
+    max_Gamma_mistuned = max(Gamma_Scale_mt,[],'all');
+    max_Gamma = max(max_Gamma_tuned,max_Gamma_mistuned);
+
+    min_Gamma_tuned = min(Gamma_Scale,[],'all');
+    min_Gamma_mistuned = min(Gamma_Scale_mt,[],'all');
+    min_Gamma = min(min_Gamma_tuned,min_Gamma_mistuned);
+
+    figure(2); clim([min_Gamma max_Gamma])
+    figure(4); clim([min_Gamma max_Gamma])
+end
 
 figure(5);
 contour(R,Xi,Gamma_Scale_mt,10,'LineWidth',1.5)

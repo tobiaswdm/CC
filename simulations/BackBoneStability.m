@@ -9,11 +9,16 @@ qhat_unstable_synchloss = zeros(simsetup.BackBoneStability.Nkappac, ...
     simsetup.BackBoneStability.Nxi);
 qhat_unstable_modulation = zeros(simsetup.BackBoneStability.Nkappac, ...
     simsetup.BackBoneStability.Nxi);
+lambda_real = zeros(simsetup.BackBoneStability.Nkappac, ...
+    simsetup.BackBoneStability.Nxi);
+lambda_imag = zeros(simsetup.BackBoneStability.Nkappac, ...
+    simsetup.BackBoneStability.Nxi);
 
 % Samples of coupling strength
 kappa_c = logspace(log10(simsetup.BackBoneStability.kappac_range(1)), ...
                   log10(simsetup.BackBoneStability.kappac_range(2)), ...
                   simsetup.BackBoneStability.Nkappac);
+
 
 %% Determine Backbone
 
@@ -25,7 +30,7 @@ xi = logspace(log10(min(q_scale)/Gamma_opt),log10(5.1),...
               simsetup.BackBoneStability.Nxi);
 
 % Auxiliary variable
-rho = (2/pi)*(1-sys.e_N)/(sys.e_N+1);
+rho = (2/pi)*(1-sys.eN)/(sys.eN+1);
 % Backbone
 theta = (1+sqrt((1+rho^2)*xi.^2 - rho^2))/(1+rho^2);
 varpi_bb = sqrt(xi./((1-sys.epsilon_a)*xi + ...
@@ -59,8 +64,13 @@ for i = 1:simsetup.BackBoneStability.Nkappac
         
         % Stability Analysis
         [qhat_practically_stable(i,j),qhat_stable(i,j),qhat_unstable(i,j),~, ...
-        qhat_unstable_synchloss(i,j), qhat_unstable_modulation(i,j)] = ...
+        qhat_unstable_synchloss(i,j), qhat_unstable_modulation(i,j), ...
+        lambda] = ...
         StabilityAnalysisGSR(c,sys_temp,sol,exc_temp);
+        
+        % Real and imaginary part of leading eigenvalue
+        lambda_real(i,j) = real(lambda);
+        lambda_imag(i,j) = imag(lambda);
     end
 
     kc_plot = sys.kappa_c*ones(1,simsetup.BackBoneStability.Nxi);
@@ -170,6 +180,24 @@ for i = 1:simsetup.BackBoneStability.Nkappac
         ylabel('$\Gamma / \hat{q}_\mathrm{ref}$')
         title('Breather Candidates')
 
+        figure(5)
+        hold on; box on;
+        scatter(kc_plot(~isnan(qhat_unstable(i,:))), ...
+            Gamma_scale_bb(~isnan(qhat_unstable(i,:))),20, ...
+            'MarkerFaceColor',color.show,...
+            'MarkerEdgeColor','k','Displayname','Unstable')
+        scatter(kc_plot(~isnan(qhat_stable(i,:))), ...
+            Gamma_scale_bb(~isnan(qhat_stable(i,:))), ...
+            20,'MarkerFaceColor',myColors('cyan'),...
+            'MarkerEdgeColor','k','Displayname','L. A. Stable')
+        scatter(kc_plot(~isnan(qhat_practically_stable(i,:))), ...
+            Gamma_scale_bb(~isnan(qhat_practically_stable(i,:))), ...
+            20,'MarkerFaceColor',myColors('cyan'), ...
+            'MarkerEdgeColor','k','HandleVisibility','off')
+        set(gca,'YScale','log','XScale','log')
+        xlabel('$\kappa_\mathrm{c}$')
+        ylabel('$\Gamma / \hat{q}_\mathrm{ref}$')
+
        
 
     else
@@ -266,10 +294,71 @@ for i = 1:simsetup.BackBoneStability.Nkappac
         ylabel('$\Gamma / \hat{q}_\mathrm{ref}$')
         title('Breather Candidates')
 
+        figure(5)
+        hold on;
+        scatter(kc_plot(~isnan(qhat_unstable(i,:))), ...
+            Gamma_scale_bb(~isnan(qhat_unstable(i,:))),20, ...
+            'MarkerFaceColor',color.show,...
+            'MarkerEdgeColor','k','HandleVisibility','off')
+        scatter(kc_plot(~isnan(qhat_stable(i,:))), ...
+            Gamma_scale_bb(~isnan(qhat_stable(i,:))), ...
+            20,'MarkerFaceColor',myColors('cyan'),...
+            'MarkerEdgeColor','k','HandleVisibility','off')
+        scatter(kc_plot(~isnan(qhat_practically_stable(i,:))), ...
+            Gamma_scale_bb(~isnan(qhat_practically_stable(i,:))), ...
+            20,'MarkerFaceColor',myColors('cyan'), ...
+            'MarkerEdgeColor','k','HandleVisibility','off')
+
     end
 
 
 end
+
+[KK,GG] = meshgrid(kappa_c,Gamma_scale_bb);
+
+% Leading Ev
+figure(6);
+tiledlayout(1,2)
+ax1=nexttile;
+hold on;
+surf(KK,GG,lambda_real','LineStyle','none')
+xlabel('$\kappa_\mathrm{c}$')
+ylabel('$\Gamma / \hat{q}_\mathrm{ref}$')
+title('Real of leading EV')
+colormap(ax1,redblue)
+xlabel('$\kappa_\mathrm{c}$')
+ylabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+h1=colorbar(ax1);
+h1.Label.Interpreter = 'latex';
+h1.Label.String = "Re - Leading EV";
+clim(ax1,max(abs(lambda_real),[],'all')*[-1 1])
+set(gca,'YDir','normal')
+set(gca,'XScale','log')
+set(gca,'YScale','log')
+axis tight;
+view([0 90])
+hold off
+ax2=nexttile;
+hold on;
+surf(KK,GG,lambda_imag','LineStyle','none')
+xlabel('$\kappa_\mathrm{c}$')
+ylabel('$\Gamma / \hat{q}_\mathrm{ref}$')
+title('Imag of leading EV')
+colormap(ax2,plasma)
+xlabel('$\kappa_\mathrm{c}$')
+ylabel('$\Gamma/\hat{q}_\mathrm{ref}$')
+h2=colorbar(ax2);
+h2.Label.Interpreter = 'latex';
+h2.Label.String = "Im - Leading EV";
+%clim(ax2,[min(abs(lambda_imag),[],'all'),max(abs(lambda_imag),[],'all')])
+set(ax2,'ColorScale','linear')
+set(gca,'YDir','normal')
+set(gca,'XScale','log')
+set(gca,'YScale','log')
+axis tight;
+view([0 90])
+hold off;
+savefig([savepath 'leading_EV.fig'])
 
 %% Save data 
 
@@ -282,6 +371,8 @@ figure(3)
 savefig([savepath 'modulation.fig'])
 figure(4)
 savefig([savepath 'breather.fig'])
+figure(5)
+savefig([savepath 'backbone_pure_stability.fig'])
 
 % Data
 save([savepath 'xi.mat'],'xi')

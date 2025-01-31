@@ -76,7 +76,7 @@ if strcmp(pattern,'opposing')
     QA0(sys.N_s/2+1,:) = 2*qahat*asin(cos(angle(Q(sys.N_s/2+1,:))-Delta))/pi;
 
     index = 0<=wrapToPi(angle(Q(sys.N_s/2+1,:))-Delta) & ...
-    wrapToPi(angle(Q(sys.N_s/2+1,:))-Delta)<=pi;
+    wrapToPi(angle(Q(sys.N_s/2+1,:))-Delta)<pi;
 
     % Assign velocities
     UA0(sys.N_s/2+1,index) = -qadot;

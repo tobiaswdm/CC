@@ -26,7 +26,7 @@ for j = 1:L
     sol = ConfigureIntegrator(sol,sys,exc,'no change',false,disorder);
     
     % Additional waittime for absorber malfunction
-    % due to light damping of linear respnse in single sector
+    % due to light damping of linear response in single sector
     if isfield(sys,'absorber_malfunction')
         sol.NP_trans = 300*sol.N_P;
     end

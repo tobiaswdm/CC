@@ -367,7 +367,7 @@ plot(2*pi*fpsd,Sqaqa/2/pi,'-.','LineWidth',1,'Color',color.iesabsorber, ...
 ylabel('$S_{q_\mathrm{a} q_\mathrm{a}}$')
 set(gca,'YScale','log')
 axis tight;
-ylim(2) = 1000;
+%ylim(2) = 1000;
 xlim([0.9 1.05*sys.r_k(end)])
 legend;
 nexttile
