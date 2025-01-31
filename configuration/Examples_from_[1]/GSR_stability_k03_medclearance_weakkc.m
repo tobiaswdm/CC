@@ -1,9 +1,10 @@
 % This configuration file starts a stability analysis of the GSR for a
-% clearance that is smaller than the bifurcation point of the FRS and generates
-% the results shown in Fig. 7a-left and Fig.7 b of the paper T. Weidemann, 
-% L. A. Bergman, A. F. Vakakis, M. Krack. (2024) "Energy Transfer and 
-% Localization in a Forced Cyclic Chain of Oscillators with Vibro-Impact 
-% Nonlinear Energy Sinks".
+% clearance that is close to the bifurcation point of the FRS and generates
+% the results shown in Fig. 8-bottom-left of the paper 
+% T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2025)
+% "Energy transfer and localization in a forced cyclic chain of
+% oscillators with vibro-impact nonlinear energy sinks".
+% doi: https://doi.org/10.1007/s11071-025-10928-4
 
 simulation = 'GSRStability';
 
@@ -27,9 +28,9 @@ sys.adjustC = false;        % Set true if sys.D should also refer to
 
 %% Excitation
 exc.type = 'harmonic';      % Excitation type 'harmonic' or 'sweep'
-exc.k = 1;                  % Excitation wavenumber
+exc.k = 3;                  % Excitation wavenumber
 
-
+%% Simulation Setup
 % Maximum of clearance normalized amplitude
 simsetup.GSRStability.xi_max = 20;
 % Number of samples of clearance normalized amplitude

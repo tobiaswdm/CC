@@ -1,9 +1,11 @@
 % This configuration file tracks the bifurcation point of the first
 % resonance branch of the LSR with a synchroniztation in one sector and
 % generates the results shown in Fig. 18 in the paper
-% T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2024)
-% "Energy Transfer and Localization in a Forced Cyclic Chain of
-% Oscillators with Vibro-Impact Nonlinear Energy Sinks".
+% T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2025)
+% "Energy transfer and localization in a forced cyclic chain of
+% oscillators with vibro-impact nonlinear energy sinks".
+% doi: https://doi.org/10.1007/s11071-025-10928-4
+%
 % For all wavenumbers, exc.k needs to be adjusted accordingly.
 
 simulation = 'FollowBifurcationFRSofLSR';
