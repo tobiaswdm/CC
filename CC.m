@@ -12,8 +12,7 @@
 % Contact: tobias.weidemann@ila.uni-stuttgart.de
 %
 % Feel free to use, share and modify under the GPL-3.0 license.
-% CC is purely academic and comes with no warranty.
-% If you use CC for your own research, please refer to the paper:
+% If you use CC, please refer to the paper:
 %
 % T. Weidemann, L. A. Bergman, A. F. Vakakis, M. Krack. (2025)
 % "Energy transfer and localization in a forced cyclic chain of
@@ -31,7 +30,7 @@ clc; close all; clearvars;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % System configuration file in configuration folder
-configuration = 'test_timeint';
+configuration = 'FRS_GSR';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -66,7 +65,7 @@ InitStructs;
 % Randomize Seed
 rng("shuffle");
 
-if isfile(['.\configuration\' configuration '.m']) 
+if exist(configuration,'file') 
     % Create path to save data and figures
     savepath = ['.\data\' configuration '\'];
     savepath_backup = ['.\data\' configuration '\backup\'];
